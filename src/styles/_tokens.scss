@@ -1,0 +1,47 @@
+// =============================================================================
+// Design tokens — single source of truth for colour.
+//
+// Retheming for another tenant/institution = edit the hex values below, both
+// blocks. Nothing else in the app should hardcode a colour: components read
+// Taiga UI CSS variables (see https://taiga-ui.dev/colors) or the
+// project-specific --oh-* variables declared at the bottom for concepts
+// Taiga does not cover.
+//
+// Do NOT reach for LESS/SCSS variables here — Taiga UI resolves colour
+// through these CSS custom properties at runtime, which is what lets
+// TUI_DARK_MODE swap palettes without a rebuild.
+// =============================================================================
+
+:root {
+  // --- Taiga UI accent overrides (light) --------------------------------
+  --tui-background-accent-1: #2f7d5c;
+  --tui-background-accent-1-hover: #37946c;
+  --tui-background-accent-1-pressed: #245f46;
+  --tui-background-accent-2: #d97706;
+  --tui-background-accent-2-hover: #e8890f;
+  --tui-background-accent-2-pressed: #b56304;
+
+  --tui-text-action: #2f7d5c;
+  --tui-text-action-hover: #245f46;
+
+  // --- Project-specific tokens (concepts Taiga does not cover) ----------
+  --oh-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --oh-layout-sidebar-width: 15rem;
+  --oh-layout-header-height: 3.5rem;
+}
+
+[tuiTheme='dark'] {
+  // --- Taiga UI accent overrides (dark) ----------------------------------
+  --tui-background-accent-1: #4ade9a;
+  --tui-background-accent-1-hover: #6ee8ac;
+  --tui-background-accent-1-pressed: #34c785;
+  --tui-background-accent-2: #f59e0b;
+  --tui-background-accent-2-hover: #fbb52c;
+  --tui-background-accent-2-pressed: #d98607;
+
+  --tui-text-action: #4ade9a;
+  --tui-text-action-hover: #6ee8ac;
+
+  // --- Project-specific tokens (concepts Taiga does not cover) ----------
+  --oh-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
