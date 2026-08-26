@@ -7,7 +7,14 @@
 // Full-viewport backdrop that centers the floating card, matching the "card on a soft-gray
 // page" reference layout instead of the previous full-bleed split screen.
 .auth-page__viewport {
-  min-height: 100dvh;
+  // height (not min-height) + overflow: hidden, scoped to this route only — card is capped
+  // below to always fit inside, so this route never scrolls even on short viewports.
+  // box-sizing: border-box is required here — there's no global reset in this project, so
+  // without it `height: 100dvh` + this padding add up to `100dvh + 4rem` of actual box
+  // height, overflowing the viewport by exactly the padding and forcing page scroll.
+  box-sizing: border-box;
+  height: 100dvh;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,7 +42,9 @@
     // switching modes — only `transform` does. A height change firing at the same time as the
     // slide is what breaks the "horizontal, linear, smooth" feel: any panel content taller
     // than this scrolls internally (see &--form below) instead of growing the card.
-    height: 44rem;
+    // Capped at `100dvh - 4rem` (viewport minus the viewport's own vertical padding) so bumping
+    // the target height never forces the page to scroll on shorter screens.
+    height: min(48rem, calc(100dvh - 4rem));
     grid-template-rows: 1fr;
   }
 }
@@ -44,7 +53,14 @@
   // Both panels stay in their source-order grid column always (message = col 1, form = col
   // 2) — "swapping sides" for login mode is done purely with `transform`, below, which is
   // what makes it transition-able. `order` can't be animated by a CSS transition.
-  transition: transform 0.5s ease-in;
+  // `border-radius` is transitioned alongside `transform`: the blob's curve flips instantly
+  // otherwise (it's a plain class-toggle, not itself animated), so the shape used to snap to
+  // its final state at frame 1 while the position kept easing for another 0.5s — the
+  // "jumps mid-slide" glitch. Easing both on the same smooth curve keeps the shape morphing
+  // in lockstep with the slide instead of leading it.
+  transition:
+    transform 0.6s cubic-bezier(0.65, 0, 0.35, 1),
+    border-radius 0.6s cubic-bezier(0.65, 0, 0.35, 1);
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
@@ -57,6 +73,9 @@
     padding: 3rem 2rem;
     color: #fff;
     background: linear-gradient(135deg, var(--tui-background-accent-1), var(--oh-color-secondary));
+    // Stays visually on top through the whole slide so the two panels never fight for
+    // paint order mid-transit — reads as the blob gliding across the form, not a flicker.
+    z-index: 2;
 
     @media (min-width: 900px) {
       padding: 3rem 3.5rem 3rem 2.5rem;
@@ -73,6 +92,7 @@
     justify-content: center;
     padding: 2.5rem 1.5rem;
     overflow-y: auto; // safety valve: content taller than the fixed height scrolls, never grows the card
+    z-index: 1;
   }
 }
 
