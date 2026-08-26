@@ -30,6 +30,10 @@ export function firstErrorMessage(
     const max = errors['maxlength'].requiredLength as number;
     return $localize`:@@auth.validation.maxLength:El campo «${fieldLabel}:fieldLabel:» debe tener como máximo ${max}:max: caracteres.`;
   }
+  if (errors['min']) {
+    const min = errors['min'].min as number;
+    return $localize`:@@auth.validation.min:El campo «${fieldLabel}:fieldLabel:» debe ser mayor o igual a ${min}:min:.`;
+  }
   if (errors['namePattern']) {
     return $localize`:@@auth.validation.namePattern:El campo «${fieldLabel}:fieldLabel:» solo puede contener letras.`;
   }

@@ -1,0 +1,51 @@
+<div class="admin-products__viewport">
+  <div class="admin-products">
+    <header class="admin-products__header">
+      <h1 i18n="@@products.adminList.title">Productos</h1>
+      <a routerLink="/admin/products/new" tuiButton size="l" i18n="@@products.adminList.new">Nuevo producto</a>
+    </header>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    } @else if (!products()) {
+      <p class="admin-products__caption" i18n="@@products.adminList.loading">Cargando productos…</p>
+    } @else if (products()!.length === 0) {
+      <p class="admin-products__caption" i18n="@@products.adminList.empty">
+        Todavía no hay productos registrados.
+      </p>
+    } @else {
+      <table class="admin-products__table">
+        <thead>
+          <tr>
+            <th i18n="@@products.adminList.column.sku">SKU</th>
+            <th i18n="@@products.adminList.column.name">Nombre</th>
+            <th i18n="@@products.adminList.column.price">Precio</th>
+            <th i18n="@@products.adminList.column.status">Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products()!; track product.id) {
+            <tr>
+              <td>{{ product.sku }}</td>
+              <td>{{ product.name }}</td>
+              <td>${{ product.price.toFixed(2) }}</td>
+              <td>
+                <span class="admin-products__status" [class.admin-products__status--discontinued]="product.status === 'discontinued'">
+                  @if (product.status === 'active') {
+                    <span i18n="@@products.adminList.status.active">Activo</span>
+                  } @else {
+                    <span i18n="@@products.adminList.status.discontinued">Descontinuado</span>
+                  }
+                </span>
+              </td>
+              <td>
+                <a [routerLink]="['/admin/products', product.id, 'edit']" i18n="@@products.adminList.edit">Editar</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

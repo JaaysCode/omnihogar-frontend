@@ -1,0 +1,81 @@
+:host {
+  display: block;
+}
+
+.catalog__viewport {
+  min-height: 100dvh;
+  padding: 2rem 1rem;
+  background: var(--oh-color-neutral, #f5f7f9);
+}
+
+.catalog {
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+
+  h1 {
+    margin: 0 0 1.5rem;
+    font-size: 1.75rem;
+  }
+}
+
+.catalog__caption,
+.catalog__empty {
+  color: var(--tui-text-secondary, #6b6b6b);
+}
+
+.catalog__empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  border-radius: 1rem;
+  background: var(--tui-background-base, #fff);
+}
+
+.catalog__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1.25rem;
+}
+
+.catalog__card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base, #fff);
+  box-shadow:
+    0 8px 24px -12px rgba(15, 23, 42, 0.2),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
+}
+
+.catalog__image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 0.75rem;
+  margin-bottom: 0.875rem;
+  object-fit: cover;
+  background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+
+  &--placeholder {
+    display: block;
+  }
+}
+
+.catalog__name {
+  margin: 0 0 0.375rem;
+  font-size: 1.0625rem;
+}
+
+.catalog__description {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--tui-text-secondary, #6b6b6b);
+  flex: 1;
+}
+
+.catalog__price {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--tui-text-action);
+}

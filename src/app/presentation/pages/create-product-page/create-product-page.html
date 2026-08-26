@@ -1,0 +1,13 @@
+<div class="product-page__viewport">
+  <div class="product-page">
+    <h2 i18n="@@products.create.title">Nuevo producto</h2>
+    <p class="product-page__caption" i18n="@@products.create.caption">
+      Completa los datos del producto para agregarlo al catálogo.
+    </p>
+    @if (formError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    }
+    <app-product-form [pending]="pending()" [fieldErrors]="fieldErrors()" (submitted)="onSubmit($event)" />
+    <a routerLink="/admin/products" class="product-page__back" i18n="@@products.create.back">&larr; Volver al listado</a>
+  </div>
+</div>

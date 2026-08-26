@@ -1,0 +1,32 @@
+<div class="catalog__viewport">
+  <div class="catalog">
+    <h1 i18n="@@products.catalog.title">Catálogo</h1>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    } @else if (!products()) {
+      <p class="catalog__caption" i18n="@@products.catalog.loading">Cargando productos…</p>
+    } @else if (products()!.length === 0) {
+      <p class="catalog__empty" role="status" i18n="@@products.catalog.empty">
+        No hay productos disponibles por el momento.
+      </p>
+    } @else {
+      <div class="catalog__grid">
+        @for (product of products()!; track product.id) {
+          <article class="catalog__card">
+            @if (product.imageUrl) {
+              <img [src]="product.imageUrl" [alt]="product.name" class="catalog__image" />
+            } @else {
+              <div class="catalog__image catalog__image--placeholder" aria-hidden="true"></div>
+            }
+            <h2 class="catalog__name">{{ product.name }}</h2>
+            @if (product.description) {
+              <p class="catalog__description">{{ product.description }}</p>
+            }
+            <p class="catalog__price">${{ product.price.toFixed(2) }}</p>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>

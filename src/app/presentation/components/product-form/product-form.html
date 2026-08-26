@@ -1,0 +1,126 @@
+@if (attemptedSubmit && form.invalid && invalidFieldSummary.length > 0) {
+  <div class="error-summary" role="alert" tabindex="-1" #errorSummary aria-labelledby="product-form-error-title">
+    <h2 id="product-form-error-title" i18n="@@products.form.errorSummary.title">Corrige lo siguiente</h2>
+    <ul>
+      @for (item of invalidFieldSummary; track item.control) {
+        <li>
+          <button type="button" class="error-summary__link" (click)="focusField(item.control)">
+            {{ item.message }}
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+}
+
+<form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <div class="auth-form__field">
+    <label for="product-form-sku" i18n="@@products.form.field.sku.label"
+      >SKU <span aria-hidden="true">*</span></label
+    >
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.tag" aria-hidden="true" />
+      <input
+        id="product-form-sku"
+        type="text"
+        formControlName="sku"
+        [attr.aria-invalid]="!!errorFor('sku')"
+        [attr.aria-describedby]="errorFor('sku') ? 'product-form-sku-error' : null"
+      />
+    </div>
+    @if (errorFor('sku'); as message) {
+      <p class="auth-form__error" id="product-form-sku-error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="auth-form__field">
+    <label for="product-form-name" i18n="@@products.form.field.name.label"
+      >Nombre <span aria-hidden="true">*</span></label
+    >
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.package" aria-hidden="true" />
+      <input
+        id="product-form-name"
+        type="text"
+        formControlName="name"
+        [attr.aria-invalid]="!!errorFor('name')"
+        [attr.aria-describedby]="errorFor('name') ? 'product-form-name-error' : null"
+      />
+    </div>
+    @if (errorFor('name'); as message) {
+      <p class="auth-form__error" id="product-form-name-error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="auth-form__field">
+    <label for="product-form-description" i18n="@@products.form.field.description.label"
+      >Descripción <span class="auth-form__optional">(opcional)</span></label
+    >
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.file-text" aria-hidden="true" />
+      <input id="product-form-description" type="text" formControlName="description" />
+    </div>
+  </div>
+
+  <div class="auth-form__field">
+    <label for="product-form-price" i18n="@@products.form.field.price.label"
+      >Precio <span aria-hidden="true">*</span></label
+    >
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.dollar-sign" aria-hidden="true" />
+      <input
+        id="product-form-price"
+        type="number"
+        step="0.01"
+        formControlName="price"
+        [attr.aria-invalid]="!!errorFor('price')"
+        [attr.aria-describedby]="errorFor('price') ? 'product-form-price-error' : null"
+      />
+    </div>
+    @if (errorFor('price'); as message) {
+      <p class="auth-form__error" id="product-form-price-error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="auth-form__field">
+    <label for="product-form-imageUrl" i18n="@@products.form.field.imageUrl.label"
+      >URL de imagen <span class="auth-form__optional">(opcional)</span></label
+    >
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.image" aria-hidden="true" />
+      <input
+        id="product-form-imageUrl"
+        type="url"
+        formControlName="imageUrl"
+        [attr.aria-invalid]="!!errorFor('imageUrl')"
+        [attr.aria-describedby]="errorFor('imageUrl') ? 'product-form-imageUrl-error' : null"
+      />
+    </div>
+    @if (errorFor('imageUrl'); as message) {
+      <p class="auth-form__error" id="product-form-imageUrl-error">{{ message }}</p>
+    }
+  </div>
+
+  @if (isEdit()) {
+    <div class="auth-form__field">
+      <label for="product-form-status" i18n="@@products.form.field.status.label">Estado</label>
+      <div class="auth-form__input">
+        <tui-icon icon="@tui.toggle-left" aria-hidden="true" />
+        <select id="product-form-status" formControlName="status">
+          <option value="active" i18n="@@products.form.field.status.active">Activo</option>
+          <option value="discontinued" i18n="@@products.form.field.status.discontinued">Descontinuado</option>
+        </select>
+      </div>
+    </div>
+  }
+
+  <button tuiButton type="submit" size="l" [disabled]="pending()" class="auth-form__submit">
+    @if (pending()) {
+      <span i18n="@@products.form.submit.pending">Guardando…</span>
+    } @else if (isEdit()) {
+      <span i18n="@@products.form.submit.editIdle">Guardar cambios</span>
+    } @else {
+      <span i18n="@@products.form.submit.createIdle">Crear producto</span>
+    }
+  </button>
+</form>

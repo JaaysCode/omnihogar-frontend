@@ -12,5 +12,32 @@ export const routes: Routes = [
     title: 'Create employee · OmniHogar',
     canActivate: [adminGuard],
   },
+  {
+    path: 'products',
+    loadComponent: () =>
+      import('./presentation/pages/product-catalog-page/product-catalog-page').then((m) => m.ProductCatalogPage),
+    title: 'Catálogo · OmniHogar',
+  },
+  {
+    path: 'admin/products',
+    loadComponent: () =>
+      import('./presentation/pages/admin-products-page/admin-products-page').then((m) => m.AdminProductsPage),
+    title: 'Productos · OmniHogar',
+    canActivate: [adminGuard],
+  },
+  {
+    path: 'admin/products/new',
+    loadComponent: () =>
+      import('./presentation/pages/create-product-page/create-product-page').then((m) => m.CreateProductPage),
+    title: 'Nuevo producto · OmniHogar',
+    canActivate: [adminGuard],
+  },
+  {
+    path: 'admin/products/:id/edit',
+    loadComponent: () =>
+      import('./presentation/pages/edit-product-page/edit-product-page').then((m) => m.EditProductPage),
+    title: 'Editar producto · OmniHogar',
+    canActivate: [adminGuard],
+  },
   { path: '', redirectTo: 'register', pathMatch: 'full' },
 ];

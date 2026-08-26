@@ -9,6 +9,8 @@ import { AuthRepositoryImpl } from './data/repositories/auth.repository.impl';
 import { AuthRouteReuseStrategy } from './core/routing/auth-route-reuse-strategy';
 import { EmployeeRepository } from './domain/repositories/employee.repository';
 import { EmployeeRepositoryImpl } from './data/repositories/employee.repository.impl';
+import { ProductRepository } from './domain/repositories/product.repository';
+import { ProductRepositoryImpl } from './data/repositories/product.repository.impl';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -20,6 +22,7 @@ export const appConfig: ApplicationConfig = {
     provideTaiga(),
     { provide: AuthRepository, useClass: AuthRepositoryImpl },
     { provide: EmployeeRepository, useClass: EmployeeRepositoryImpl },
+    { provide: ProductRepository, useClass: ProductRepositoryImpl },
     // Lets the register <-> login switch animate with a CSS `transform` transition instead of
     // a hard cut — see auth-route-reuse-strategy.ts and auth-page.scss.
     { provide: RouteReuseStrategy, useClass: AuthRouteReuseStrategy },

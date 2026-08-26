@@ -1,0 +1,22 @@
+<div class="product-page__viewport">
+  <div class="product-page">
+    <h2 i18n="@@products.edit.title">Editar producto</h2>
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    } @else if (!product()) {
+      <p class="product-page__caption" i18n="@@products.edit.loading">Cargando producto…</p>
+    } @else {
+      <p class="product-page__caption" i18n="@@products.edit.caption">Modifica los datos y guarda los cambios.</p>
+      @if (formError(); as message) {
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      }
+      <app-product-form
+        [initial]="product()"
+        [pending]="pending()"
+        [fieldErrors]="fieldErrors()"
+        (submitted)="onSubmit($event)"
+      />
+    }
+    <a routerLink="/admin/products" class="product-page__back" i18n="@@products.edit.back">&larr; Volver al listado</a>
+  </div>
+</div>
