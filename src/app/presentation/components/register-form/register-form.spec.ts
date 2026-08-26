@@ -45,7 +45,7 @@ describe('RegisterForm', () => {
 
     expect(emitted).toHaveLength(0);
     expect(fixture.nativeElement.querySelector('.error-summary')).toBeTruthy();
-    expect(fixture.nativeElement.textContent).toContain('First name is required.');
+    expect(fixture.nativeElement.textContent).toContain('El campo «Nombre» es obligatorio.');
   });
 
   it('emits a trimmed payload when the form is valid', () => {
@@ -78,7 +78,7 @@ describe('RegisterForm', () => {
     submitButton().click();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Password must include at least one number.');
+    expect(fixture.nativeElement.textContent).toContain('La contraseña debe incluir al menos un número.');
   });
 
   it('rejects a confirm password that does not match', () => {
@@ -89,7 +89,7 @@ describe('RegisterForm', () => {
     submitButton().click();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Passwords do not match.');
+    expect(fixture.nativeElement.textContent).toContain('Las contraseñas no coinciden.');
   });
 
   it('accepts a matching confirm password', () => {
@@ -101,7 +101,7 @@ describe('RegisterForm', () => {
     submitButton().click();
 
     expect(payload).toBeTruthy();
-    expect(fixture.nativeElement.textContent).not.toContain('Passwords do not match.');
+    expect(fixture.nativeElement.textContent).not.toContain('Las contraseñas no coinciden.');
   });
 
   it('rejects a first name containing digits', () => {
@@ -112,26 +112,26 @@ describe('RegisterForm', () => {
     submitButton().click();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('First name can only contain letters.');
+    expect(fixture.nativeElement.textContent).toContain('El campo «Nombre» solo puede contener letras.');
   });
 
   it('surfaces a server-side field error (e.g. duplicate email) on the matching control', () => {
     fillValidForm();
-    fixture.componentRef.setInput('fieldErrors', { email: ['Email is already registered.'] });
+    fixture.componentRef.setInput('fieldErrors', { email: ['El correo ya está registrado.'] });
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Email is already registered.');
+    expect(fixture.nativeElement.textContent).toContain('El correo ya está registrado.');
   });
 
   it('clears the server-side error once the user edits the field again', () => {
     fillValidForm();
-    fixture.componentRef.setInput('fieldErrors', { email: ['Email is already registered.'] });
+    fixture.componentRef.setInput('fieldErrors', { email: ['El correo ya está registrado.'] });
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Email is already registered.');
+    expect(fixture.nativeElement.textContent).toContain('El correo ya está registrado.');
 
     typeInto('register-email', 'someone-else@example.com');
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).not.toContain('Email is already registered.');
+    expect(fixture.nativeElement.textContent).not.toContain('El correo ya está registrado.');
   });
 });

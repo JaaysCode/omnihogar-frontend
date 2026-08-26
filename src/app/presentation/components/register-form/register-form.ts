@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, effect, ElementRef, input, output, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { FieldErrors, RegisterPayload } from '../../../domain/models/auth.model';
@@ -15,13 +24,20 @@ interface FieldSpec {
   readonly label: string;
 }
 
+// Bare field names (no required-marker, no markup) — fed into `firstErrorMessage` for the
+// error-summary and per-field error text. Kept as a separate translation unit from the
+// on-screen `<label>` in the template (`auth.register.field.*.label`), since that one also
+// carries the "*" required marker and would otherwise be a same-id/different-content clash.
 const FIELDS: readonly FieldSpec[] = [
-  { control: 'firstName', label: 'First name' },
-  { control: 'lastName', label: 'Last name' },
-  { control: 'email', label: 'Email' },
-  { control: 'phone', label: 'Phone' },
-  { control: 'password', label: 'Password' },
-  { control: 'confirmPassword', label: 'Confirm password' },
+  { control: 'firstName', label: $localize`:@@auth.register.field.firstName.name:Nombre` },
+  { control: 'lastName', label: $localize`:@@auth.register.field.lastName.name:Apellido` },
+  { control: 'email', label: $localize`:@@auth.register.field.email.name:Correo electrónico` },
+  { control: 'phone', label: $localize`:@@auth.register.field.phone.name:Teléfono` },
+  { control: 'password', label: $localize`:@@auth.register.field.password.name:Contraseña` },
+  {
+    control: 'confirmPassword',
+    label: $localize`:@@auth.register.field.confirmPassword.name:Confirmar contraseña`,
+  },
 ];
 
 @Component({
@@ -42,6 +58,16 @@ export class RegisterForm {
   private readonly fb = new FormBuilder().nonNullable;
 
   protected attemptedSubmit = false;
+
+  // A ternary directly in the template can't carry an `i18n` attribute (there's no single
+  // wrapping element for "the text node changes"), so the two submit-button strings are
+  // built here instead — each its own translation unit — and read into the template as a
+  // computed signal.
+  protected readonly submitLabel = computed(() =>
+    this.pending()
+      ? $localize`:@@auth.register.submit.pending:Creando cuenta…`
+      : $localize`:@@auth.register.submit.idle:Crear cuenta`,
+  );
 
   protected readonly form = this.fb.group(
     {

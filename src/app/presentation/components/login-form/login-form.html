@@ -4,7 +4,9 @@
 
 <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
   <div class="auth-form__field">
-    <label for="login-email">Email <span aria-hidden="true">*</span></label>
+    <label for="login-email" i18n="@@auth.login.field.email.label"
+      >Correo electrónico <span aria-hidden="true">*</span></label
+    >
     <div class="auth-form__input">
       <tui-icon icon="@tui.mail" aria-hidden="true" />
       <input
@@ -22,7 +24,9 @@
   </div>
 
   <div class="auth-form__field">
-    <label for="login-password">Password <span aria-hidden="true">*</span></label>
+    <label for="login-password" i18n="@@auth.login.field.password.label"
+      >Contraseña <span aria-hidden="true">*</span></label
+    >
     <div class="auth-form__input">
       <tui-icon icon="@tui.lock" aria-hidden="true" />
       <input
@@ -40,6 +44,6 @@
   </div>
 
   <button tuiButton type="submit" size="l" [disabled]="pending()" class="auth-form__submit">
-    {{ pending() ? 'Signing in…' : 'Sign in' }}
+    {{ submitLabel() }}
   </button>
 </form>

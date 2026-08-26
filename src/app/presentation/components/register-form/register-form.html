@@ -1,6 +1,6 @@
 @if (attemptedSubmit && form.invalid && invalidFieldSummary.length > 0) {
   <div class="error-summary" role="alert" tabindex="-1" #errorSummary aria-labelledby="register-error-title">
-    <h2 id="register-error-title">Please fix the following</h2>
+    <h2 id="register-error-title" i18n="@@auth.register.errorSummary.title">Corrige lo siguiente</h2>
     <ul>
       @for (item of invalidFieldSummary; track item.control) {
         <li>
@@ -16,7 +16,9 @@
 <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
   <div class="auth-form__row">
     <div class="auth-form__field">
-      <label for="register-firstName">First name <span aria-hidden="true">*</span></label>
+      <label for="register-firstName" i18n="@@auth.register.field.firstName.label"
+        >Nombre <span aria-hidden="true">*</span></label
+      >
       <div class="auth-form__input">
         <tui-icon icon="@tui.user" aria-hidden="true" />
         <input
@@ -34,7 +36,9 @@
     </div>
 
     <div class="auth-form__field">
-      <label for="register-lastName">Last name <span aria-hidden="true">*</span></label>
+      <label for="register-lastName" i18n="@@auth.register.field.lastName.label"
+        >Apellido <span aria-hidden="true">*</span></label
+      >
       <div class="auth-form__input">
         <tui-icon icon="@tui.user" aria-hidden="true" />
         <input
@@ -53,7 +57,9 @@
   </div>
 
   <div class="auth-form__field">
-    <label for="register-email">Email <span aria-hidden="true">*</span></label>
+    <label for="register-email" i18n="@@auth.register.field.email.label"
+      >Correo electrónico <span aria-hidden="true">*</span></label
+    >
     <div class="auth-form__input">
       <tui-icon icon="@tui.mail" aria-hidden="true" />
       <input
@@ -71,7 +77,9 @@
   </div>
 
   <div class="auth-form__field">
-    <label for="register-phone">Phone <span class="auth-form__optional">(optional)</span></label>
+    <label for="register-phone" i18n="@@auth.register.field.phone.label"
+      >Teléfono <span class="auth-form__optional">(opcional)</span></label
+    >
     <div class="auth-form__input">
       <tui-icon icon="@tui.phone" aria-hidden="true" />
       <input
@@ -89,7 +97,9 @@
   </div>
 
   <div class="auth-form__field">
-    <label for="register-password">Password <span aria-hidden="true">*</span></label>
+    <label for="register-password" i18n="@@auth.register.field.password.label"
+      >Contraseña <span aria-hidden="true">*</span></label
+    >
     <div class="auth-form__input">
       <tui-icon icon="@tui.lock" aria-hidden="true" />
       <input
@@ -104,12 +114,16 @@
     @if (errorFor('password'); as message) {
       <p class="auth-form__error" id="register-password-error">{{ message }}</p>
     } @else {
-      <p class="auth-form__hint" id="register-password-hint">At least 8 characters, with a letter and a number.</p>
+      <p class="auth-form__hint" id="register-password-hint" i18n="@@auth.register.field.password.hint">
+        Al menos 8 caracteres, con una letra y un número.
+      </p>
     }
   </div>
 
   <div class="auth-form__field">
-    <label for="register-confirmPassword">Confirm password <span aria-hidden="true">*</span></label>
+    <label for="register-confirmPassword" i18n="@@auth.register.field.confirmPassword.label"
+      >Confirmar contraseña <span aria-hidden="true">*</span></label
+    >
     <div class="auth-form__input">
       <tui-icon icon="@tui.lock" aria-hidden="true" />
       <input
@@ -127,6 +141,6 @@
   </div>
 
   <button tuiButton type="submit" size="l" [disabled]="pending()" class="auth-form__submit">
-    {{ pending() ? 'Creating account…' : 'Create account' }}
+    {{ submitLabel() }}
   </button>
 </form>

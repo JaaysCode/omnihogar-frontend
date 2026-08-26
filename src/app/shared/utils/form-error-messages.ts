@@ -2,8 +2,13 @@ import { ValidationErrors } from '@angular/forms';
 
 /**
  * First human-readable message for a control's current errors, in priority order.
- * `fieldLabel` (e.g. "First name") is interpolated into the generic messages so
- * screen reader users get a specific, not generic, announcement.
+ * `fieldLabel` (e.g. "Nombre") is interpolated into the generic messages so screen reader
+ * users get a specific, not generic, announcement.
+ *
+ * Messages are phrased as "El campo «X» ..." rather than "X ..." on purpose: agreement then
+ * always lands on the fixed masculine noun "campo", never on `fieldLabel` itself — Spanish
+ * field names disagree in gender ("la Contraseña" vs "el Nombre"), and this phrasing sidesteps
+ * having to know each label's gender at the call site.
  */
 export function firstErrorMessage(
   fieldLabel: string,
@@ -16,32 +21,32 @@ export function firstErrorMessage(
     return errors['server'] as string;
   }
   if (errors['required']) {
-    return `${fieldLabel} is required.`;
+    return $localize`:@@auth.validation.required:El campo «${fieldLabel}:fieldLabel:» es obligatorio.`;
   }
   if (errors['email']) {
-    return `Enter a valid email address.`;
+    return $localize`:@@auth.validation.email:Ingresa un correo electrónico válido.`;
   }
   if (errors['maxlength']) {
     const max = errors['maxlength'].requiredLength as number;
-    return `${fieldLabel} must be at most ${max} characters.`;
+    return $localize`:@@auth.validation.maxLength:El campo «${fieldLabel}:fieldLabel:» debe tener como máximo ${max}:max: caracteres.`;
   }
   if (errors['namePattern']) {
-    return `${fieldLabel} can only contain letters.`;
+    return $localize`:@@auth.validation.namePattern:El campo «${fieldLabel}:fieldLabel:» solo puede contener letras.`;
   }
   if (errors['phonePattern']) {
-    return `Enter a valid phone number.`;
+    return $localize`:@@auth.validation.phonePattern:Ingresa un número de teléfono válido.`;
   }
   if (errors['passwordMinLength']) {
-    return `Password must be at least 8 characters long.`;
+    return $localize`:@@auth.validation.passwordMinLength:La contraseña debe tener al menos 8 caracteres.`;
   }
   if (errors['passwordLetter']) {
-    return `Password must include at least one letter.`;
+    return $localize`:@@auth.validation.passwordLetter:La contraseña debe incluir al menos una letra.`;
   }
   if (errors['passwordDigit']) {
-    return `Password must include at least one number.`;
+    return $localize`:@@auth.validation.passwordDigit:La contraseña debe incluir al menos un número.`;
   }
   if (errors['passwordMismatch']) {
-    return `Passwords do not match.`;
+    return $localize`:@@auth.validation.passwordMismatch:Las contraseñas no coinciden.`;
   }
-  return `${fieldLabel} is invalid.`;
+  return $localize`:@@auth.validation.invalid:El campo «${fieldLabel}:fieldLabel:» no es válido.`;
 }

@@ -36,7 +36,7 @@ describe('LoginForm', () => {
     fixture.detectChanges();
 
     expect(emitted).toHaveLength(0);
-    expect(fixture.nativeElement.textContent).toContain('Email is required.');
+    expect(fixture.nativeElement.textContent).toContain('El campo «Correo electrónico» es obligatorio.');
   });
 
   it('emits a trimmed payload when valid', () => {
@@ -53,9 +53,9 @@ describe('LoginForm', () => {
   });
 
   it('shows a generic banner for a formError input (e.g. invalid credentials)', () => {
-    fixture.componentRef.setInput('formError', 'Invalid email or password.');
+    fixture.componentRef.setInput('formError', 'Correo electrónico o contraseña incorrectos.');
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Invalid email or password.');
+    expect(fixture.nativeElement.textContent).toContain('Correo electrónico o contraseña incorrectos.');
   });
 });

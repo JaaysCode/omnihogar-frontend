@@ -48,7 +48,7 @@ describe('AuthPage', () => {
 
   it('defaults to the register mode and shows the register heading', () => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Join OmniHogar');
+    expect(fixture.nativeElement.textContent).toContain('Únete a OmniHogar');
     expect(fixture.debugElement.query(By.directive(RegisterForm))).toBeTruthy();
   });
 
@@ -56,7 +56,7 @@ describe('AuthPage', () => {
     fixture.componentRef.setInput('mode', 'login');
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Welcome back');
+    expect(fixture.nativeElement.textContent).toContain('Bienvenido de nuevo');
     expect(fixture.debugElement.query(By.directive(LoginForm))).toBeTruthy();
   });
 
@@ -67,20 +67,20 @@ describe('AuthPage', () => {
     registerFormInstance().submitted.emit(VALID_REGISTER_PAYLOAD);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Account created');
+    expect(fixture.nativeElement.textContent).toContain('Cuenta creada');
   });
 
   it('on duplicate-email register failure: passes field errors through, does not show success', () => {
     authRepository.register.mockReturnValue(
-      throwError(() => new AuthApiError('Validation failed', { email: ['Email is already registered.'] })),
+      throwError(() => new AuthApiError('Validation failed', { email: ['El correo ya está registrado.'] })),
     );
     fixture.detectChanges();
 
     registerFormInstance().submitted.emit(VALID_REGISTER_PAYLOAD);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).not.toContain('Account created');
-    expect(fixture.nativeElement.textContent).toContain('Email is already registered.');
+    expect(fixture.nativeElement.textContent).not.toContain('Cuenta creada');
+    expect(fixture.nativeElement.textContent).toContain('El correo ya está registrado.');
   });
 
   it('on successful login: stores the session and navigates home', () => {
@@ -96,13 +96,13 @@ describe('AuthPage', () => {
   });
 
   it('on invalid-credentials login failure: shows the generic error banner', () => {
-    authRepository.login.mockReturnValue(throwError(() => new AuthApiError('Invalid email or password.')));
+    authRepository.login.mockReturnValue(throwError(() => new AuthApiError('Correo electrónico o contraseña incorrectos.')));
     fixture.componentRef.setInput('mode', 'login');
     fixture.detectChanges();
 
     loginFormInstance().submitted.emit({ email: 'jane@example.com', password: 'wrong' });
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Invalid email or password.');
+    expect(fixture.nativeElement.textContent).toContain('Correo electrónico o contraseña incorrectos.');
   });
 });
