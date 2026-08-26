@@ -1,6 +1,8 @@
 // =============================================================================
 // Design tokens — single source of truth for colour.
 //
+// Palette: Primary #2164E8, Secondary #324A6D, Tertiary #58C8E6, Neutral #F5F7F9.
+//
 // Retheming for another tenant/institution = edit the hex values below, both
 // blocks. Nothing else in the app should hardcode a colour: components read
 // Taiga UI CSS variables (see https://taiga-ui.dev/colors) or the
@@ -13,18 +15,31 @@
 // =============================================================================
 
 :root {
-  // --- Taiga UI accent overrides (light) --------------------------------
-  --tui-background-accent-1: #2f7d5c;
-  --tui-background-accent-1-hover: #37946c;
-  --tui-background-accent-1-pressed: #245f46;
-  --tui-background-accent-2: #d97706;
-  --tui-background-accent-2-hover: #e8890f;
-  --tui-background-accent-2-pressed: #b56304;
+  // --- Typeface ------------------------------------------------------------
+  // Plus Jakarta Sans replaces Taiga's default (Manrope): a single-family enterprise/SaaS
+  // sans chosen for legibility at small sizes (data tables, POS line items, dense forms) and
+  // clean tabular figures for prices/quantities. Loaded via <link> in index.html.
+  --tui-typography-family-text: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --tui-typography-family-display: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-  --tui-text-action: #2f7d5c;
-  --tui-text-action-hover: #245f46;
+  // --- Taiga UI accent overrides (light) --------------------------------
+  // Primary
+  --tui-background-accent-1: #2164e8;
+  --tui-background-accent-1-hover: #3d78ec;
+  --tui-background-accent-1-pressed: #1a4fc0;
+  // Tertiary
+  --tui-background-accent-2: #58c8e6;
+  --tui-background-accent-2-hover: #74d3ec;
+  --tui-background-accent-2-pressed: #3aa9c7;
+
+  --tui-text-action: #2164e8;
+  --tui-text-action-hover: #1a4fc0;
 
   // --- Project-specific tokens (concepts Taiga does not cover) ----------
+  // Secondary — brand's dark slate-blue, used for secondary surfaces/gradients.
+  --oh-color-secondary: #324a6d;
+  // Neutral — soft off-white surface tone (form panels, subtle section backgrounds).
+  --oh-color-neutral: #f5f7f9;
   --oh-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
   --oh-layout-sidebar-width: 15rem;
   --oh-layout-header-height: 3.5rem;
@@ -32,16 +47,20 @@
 
 [tuiTheme='dark'] {
   // --- Taiga UI accent overrides (dark) ----------------------------------
-  --tui-background-accent-1: #4ade9a;
-  --tui-background-accent-1-hover: #6ee8ac;
-  --tui-background-accent-1-pressed: #34c785;
-  --tui-background-accent-2: #f59e0b;
-  --tui-background-accent-2-hover: #fbb52c;
-  --tui-background-accent-2-pressed: #d98607;
+  // Primary, lightened for contrast against dark surfaces.
+  --tui-background-accent-1: #5b8df0;
+  --tui-background-accent-1-hover: #7ba5f3;
+  --tui-background-accent-1-pressed: #3d78ec;
+  // Tertiary — already light enough to read on dark; nudge up slightly on hover.
+  --tui-background-accent-2: #58c8e6;
+  --tui-background-accent-2-hover: #7ed4ec;
+  --tui-background-accent-2-pressed: #3aa9c7;
 
-  --tui-text-action: #4ade9a;
-  --tui-text-action-hover: #6ee8ac;
+  --tui-text-action: #5b8df0;
+  --tui-text-action-hover: #7ba5f3;
 
   // --- Project-specific tokens (concepts Taiga does not cover) ----------
+  --oh-color-secondary: #4c6d9e;
+  --oh-color-neutral: #10151c;
   --oh-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
 }
