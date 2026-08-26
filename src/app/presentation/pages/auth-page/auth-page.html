@@ -1,0 +1,46 @@
+<div class="auth-page__viewport">
+  <div class="auth-page" [class.auth-page--login]="!isRegister()">
+    <section class="auth-page__panel auth-page__panel--message">
+      <div class="auth-page__message-content">
+        @if (isRegister()) {
+          <h2>Join OmniHogar</h2>
+          <p>Create your account to start managing your home services in one place.</p>
+          <a routerLink="/login" class="auth-page__switch-pill">Sign in</a>
+        } @else {
+          <h2>Welcome back</h2>
+          <p>Sign in to pick up right where you left off.</p>
+          <a routerLink="/register" class="auth-page__switch-pill">Create an account</a>
+        }
+      </div>
+    </section>
+
+    <section class="auth-page__panel auth-page__panel--form">
+      <div class="auth-page__form-wrapper">
+        @if (isRegister()) {
+          @if (registered()) {
+            <div class="auth-page__success" role="status">
+              <h2>Account created</h2>
+              <p>Your OmniHogar account is ready and you're signed in.</p>
+              <button tuiButton type="button" size="l" (click)="continueAfterRegister()">Continue</button>
+            </div>
+          } @else {
+            <h2>Create your account</h2>
+            <p class="auth-page__caption">Use your email to get started.</p>
+            @if (formError(); as message) {
+              <div class="form-error-banner" role="alert">{{ message }}</div>
+            }
+            <app-register-form
+              [pending]="pending()"
+              [fieldErrors]="fieldErrors()"
+              (submitted)="onRegister($event)"
+            />
+          }
+        } @else {
+          <h2>Sign in</h2>
+          <p class="auth-page__caption">Use your email and password.</p>
+          <app-login-form [pending]="pending()" [formError]="formError()" (submitted)="onLogin($event)" />
+        }
+      </div>
+    </section>
+  </div>
+</div>

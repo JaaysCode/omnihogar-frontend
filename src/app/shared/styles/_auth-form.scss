@@ -1,0 +1,144 @@
+// Shared field/input/button styles for the register and login forms. @use'd (not
+// @forward'd) from each component's stylesheet — Angular compiles component styles as
+// separate units, so this is inlined per-component rather than deduped globally, which
+// is fine at this size.
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    @media (min-width: 480px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+
+    label {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--tui-text-primary, #1a1a1a);
+    }
+  }
+
+  // Icon-in-field style: a decorative leading icon sits inside a filled, borderless pill —
+  // the label above stays the accessible name (a placeholder alone isn't one).
+  &__input {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    tui-icon {
+      position: absolute;
+      left: 0.875rem;
+      font-size: 1.125rem;
+      color: var(--tui-text-secondary, #6b6b6b);
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      // 44px is the accessible touch-target floor (see priority-2 UX rule) — kept exactly at
+      // it rather than under; the "big" feel came from padding/icon size/gaps, trimmed below.
+      min-height: 44px;
+      padding: 0.5rem 0.875rem 0.5rem 2.5rem;
+      font-size: 0.9375rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+      color: var(--tui-text-primary, #1a1a1a);
+
+      &:focus-visible {
+        outline: 2px solid var(--tui-background-accent-1);
+        outline-offset: 1px;
+      }
+
+      &[aria-invalid='true'] {
+        border-color: var(--tui-status-negative, #d92d20);
+      }
+    }
+  }
+
+  &__optional {
+    font-weight: 400;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+
+  &__error {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--tui-status-negative, #d92d20);
+  }
+
+  &__submit {
+    align-self: stretch;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+}
+
+.error-summary {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.125rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--tui-status-negative, #d92d20);
+  background: color-mix(in srgb, var(--tui-status-negative, #d92d20) 8%, transparent);
+
+  &:focus-visible {
+    outline: 2px solid var(--tui-status-negative, #d92d20);
+    outline-offset: 2px;
+  }
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    color: var(--tui-status-negative, #d92d20);
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  &__link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.875rem;
+    color: var(--tui-status-negative, #d92d20);
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: left;
+    min-height: 24px;
+  }
+}
+
+.form-error-banner {
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--tui-status-negative, #d92d20);
+  background: color-mix(in srgb, var(--tui-status-negative, #d92d20) 8%, transparent);
+  color: var(--tui-status-negative, #d92d20);
+  font-size: 0.875rem;
+}

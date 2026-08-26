@@ -1,0 +1,180 @@
+@use '../../../shared/styles/auth-form';
+
+:host {
+  display: block;
+}
+
+// Full-viewport backdrop that centers the floating card, matching the "card on a soft-gray
+// page" reference layout instead of the previous full-bleed split screen.
+.auth-page__viewport {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: var(--oh-color-neutral, #f5f7f9);
+}
+
+.auth-page {
+  position: relative;
+  width: 100%;
+  max-width: 64rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden; // clips both panels to the card's rounded corners
+  border-radius: 1.5rem;
+  background: var(--tui-background-base, #fff);
+  box-shadow:
+    0 24px 48px -16px rgba(15, 23, 42, 0.28),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
+
+  @media (min-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+    // Fixed (not min-) height + a single 1fr row: the register and login panels always get
+    // exactly this height regardless of their own content, so the height never changes when
+    // switching modes — only `transform` does. A height change firing at the same time as the
+    // slide is what breaks the "horizontal, linear, smooth" feel: any panel content taller
+    // than this scrolls internally (see &--form below) instead of growing the card.
+    height: 44rem;
+    grid-template-rows: 1fr;
+  }
+}
+
+.auth-page__panel {
+  // Both panels stay in their source-order grid column always (message = col 1, form = col
+  // 2) — "swapping sides" for login mode is done purely with `transform`, below, which is
+  // what makes it transition-able. `order` can't be animated by a CSS transition.
+  transition: transform 0.5s ease-in;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &--message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 2rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--tui-background-accent-1), var(--oh-color-secondary));
+
+    @media (min-width: 900px) {
+      padding: 3rem 3.5rem 3rem 2.5rem;
+      // The blob: inner edge (facing the form panel) bulges into a big lens curve; the outer
+      // edge stays a plain rectangle — it's clipped to the card's own radius by `overflow:
+      // hidden` above, so it never needs rounding of its own.
+      border-radius: 0 999px 999px 0 / 0 55% 55% 0;
+    }
+  }
+
+  &--form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.5rem;
+    overflow-y: auto; // safety valve: content taller than the fixed height scrolls, never grows the card
+  }
+}
+
+.auth-page__message-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  max-width: 22rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 800;
+
+    @media (min-width: 900px) {
+      font-size: 2.25rem;
+    }
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.0625rem;
+    opacity: 0.92;
+  }
+}
+
+.auth-page__switch-pill {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+}
+
+// Login mode: message panel slides right into the form panel's column, form panel slides
+// left into the message panel's column — a full swap since the two columns are equal width.
+// The blob's curve mirrors too, so it keeps bulging toward whichever side the form is now on.
+// Scoped to the split-screen breakpoint; below it the panels stack in a single column, where
+// "swapping sides" doesn't apply.
+@media (min-width: 900px) {
+  .auth-page--login .auth-page__panel--message {
+    transform: translateX(100%);
+    padding: 3rem 2.5rem 3rem 3.5rem;
+    border-radius: 999px 0 0 999px / 55% 0 0 55%;
+  }
+
+  .auth-page--login .auth-page__panel--form {
+    transform: translateX(-100%);
+  }
+}
+
+.auth-page__form-wrapper {
+  width: 100%;
+  max-width: 24rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+}
+
+.auth-page__caption {
+  margin: -0.75rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--tui-text-secondary, #6b6b6b);
+}
+
+.auth-page__success {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  h2 {
+    margin: 0;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+}
