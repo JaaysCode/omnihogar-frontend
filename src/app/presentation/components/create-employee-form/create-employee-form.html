@@ -1,0 +1,135 @@
+@if (attemptedSubmit && form.invalid && invalidFieldSummary.length > 0) {
+  <div class="error-summary" role="alert" tabindex="-1" #errorSummary aria-labelledby="create-employee-error-title">
+    <h2 id="create-employee-error-title">Please fix the following</h2>
+    <ul>
+      @for (item of invalidFieldSummary; track item.control) {
+        <li>
+          <button type="button" class="error-summary__link" (click)="focusField(item.control)">
+            {{ item.message }}
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+}
+
+<form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <div class="auth-form__row">
+    <div class="auth-form__field">
+      <label for="create-employee-firstName">First name <span aria-hidden="true">*</span></label>
+      <div class="auth-form__input">
+        <tui-icon icon="@tui.user" aria-hidden="true" />
+        <input
+          id="create-employee-firstName"
+          type="text"
+          formControlName="firstName"
+          autocomplete="given-name"
+          [attr.aria-invalid]="!!errorFor('firstName')"
+          [attr.aria-describedby]="errorFor('firstName') ? 'create-employee-firstName-error' : null"
+        />
+      </div>
+      @if (errorFor('firstName'); as message) {
+        <p class="auth-form__error" id="create-employee-firstName-error">{{ message }}</p>
+      }
+    </div>
+
+    <div class="auth-form__field">
+      <label for="create-employee-lastName">Last name <span aria-hidden="true">*</span></label>
+      <div class="auth-form__input">
+        <tui-icon icon="@tui.user" aria-hidden="true" />
+        <input
+          id="create-employee-lastName"
+          type="text"
+          formControlName="lastName"
+          autocomplete="family-name"
+          [attr.aria-invalid]="!!errorFor('lastName')"
+          [attr.aria-describedby]="errorFor('lastName') ? 'create-employee-lastName-error' : null"
+        />
+      </div>
+      @if (errorFor('lastName'); as message) {
+        <p class="auth-form__error" id="create-employee-lastName-error">{{ message }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="auth-form__field">
+    <label for="create-employee-email">Email <span aria-hidden="true">*</span></label>
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.mail" aria-hidden="true" />
+      <input
+        id="create-employee-email"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        [attr.aria-invalid]="!!errorFor('email')"
+        [attr.aria-describedby]="errorFor('email') ? 'create-employee-email-error' : null"
+      />
+    </div>
+    @if (errorFor('email'); as message) {
+      <p class="auth-form__error" id="create-employee-email-error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="auth-form__field">
+    <label for="create-employee-phone">Phone <span class="auth-form__optional">(optional)</span></label>
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.phone" aria-hidden="true" />
+      <input
+        id="create-employee-phone"
+        type="tel"
+        formControlName="phone"
+        autocomplete="tel"
+        [attr.aria-invalid]="!!errorFor('phone')"
+        [attr.aria-describedby]="errorFor('phone') ? 'create-employee-phone-error' : null"
+      />
+    </div>
+    @if (errorFor('phone'); as message) {
+      <p class="auth-form__error" id="create-employee-phone-error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="auth-form__field">
+    <label for="create-employee-password">Password <span aria-hidden="true">*</span></label>
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.lock" aria-hidden="true" />
+      <input
+        id="create-employee-password"
+        type="password"
+        formControlName="password"
+        autocomplete="new-password"
+        [attr.aria-invalid]="!!errorFor('password')"
+        [attr.aria-describedby]="errorFor('password') ? 'create-employee-password-error' : 'create-employee-password-hint'"
+      />
+    </div>
+    @if (errorFor('password'); as message) {
+      <p class="auth-form__error" id="create-employee-password-error">{{ message }}</p>
+    } @else {
+      <p class="auth-form__hint" id="create-employee-password-hint">At least 8 characters, with a letter and a number.</p>
+    }
+  </div>
+
+  <div class="auth-form__field">
+    <label for="create-employee-roleId">Role <span aria-hidden="true">*</span></label>
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.shield" aria-hidden="true" />
+      <select
+        id="create-employee-roleId"
+        formControlName="roleId"
+        [attr.aria-invalid]="!!errorFor('roleId')"
+        [attr.aria-describedby]="errorFor('roleId') ? 'create-employee-roleId-error' : null"
+      >
+        <option value="" disabled>Select a role</option>
+        @for (role of roles(); track role.id) {
+          <option [value]="role.id">{{ role.name }}</option>
+        }
+      </select>
+    </div>
+    @if (errorFor('roleId'); as message) {
+      <p class="auth-form__error" id="create-employee-roleId-error">{{ message }}</p>
+    }
+  </div>
+
+  <button tuiButton type="submit" size="l" [disabled]="pending()" class="auth-form__submit">
+    {{ pending() ? 'Creating account…' : 'Create employee' }}
+  </button>
+</form>

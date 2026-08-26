@@ -1,0 +1,33 @@
+/** Payload for POST /employees. */
+export interface CreateEmployeePayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phone?: string | null;
+  roleId: string;
+}
+
+/** Assignable role, from GET /roles. */
+export interface Role {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
+/** Per-field validation messages, keyed by camelCase field name (e.g. "email"). */
+export type FieldErrors = Record<string, string[]>;
+
+/**
+ * Normalized error thrown by the employee data layer. `fieldErrors` is populated for
+ * 400 (validation / duplicate email) responses; absent for generic failures (e.g. 401, 403, 500).
+ */
+export class EmployeeApiError extends Error {
+  constructor(
+    message: string,
+    readonly fieldErrors?: FieldErrors,
+  ) {
+    super(message);
+    this.name = 'EmployeeApiError';
+  }
+}

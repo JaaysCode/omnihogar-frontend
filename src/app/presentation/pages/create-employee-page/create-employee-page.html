@@ -1,0 +1,26 @@
+<div class="employee-page__viewport">
+  <div class="employee-page">
+    @if (created()) {
+      <div class="employee-page__success" role="status">
+        <h2>Employee account created</h2>
+        <p>The new employee can now sign in with the email and password you set.</p>
+        <button tuiButton type="button" size="l" (click)="createAnother()">Create another</button>
+      </div>
+    } @else {
+      <h2>Create employee</h2>
+      <p class="employee-page__caption">Basic details and a role — permissions come from the role.</p>
+      @if (rolesError(); as message) {
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      }
+      @if (formError(); as message) {
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      }
+      <app-create-employee-form
+        [roles]="roles()"
+        [pending]="pending()"
+        [fieldErrors]="fieldErrors()"
+        (submitted)="onSubmit($event)"
+      />
+    }
+  </div>
+</div>
