@@ -23,7 +23,7 @@
             @if (product.description) {
               <p class="catalog__description">{{ product.description }}</p>
             }
-            <p class="catalog__price">${{ product.price.toFixed(2) }}</p>
+            <p class="catalog__price">{{ product.price | copCurrency }}</p>
           </article>
         }
       </div>
