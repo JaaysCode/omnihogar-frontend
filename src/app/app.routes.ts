@@ -57,5 +57,15 @@ export const routes: Routes = [
     title: 'Pedidos · OmniHogar',
     canActivate: [adminGuard],
   },
+  {
+    // "Agregar Unidades" opens add-stock-page as a `?addStock` query-param-driven modal on top
+    // of this page (see admin-inventory-page.ts/.html) instead of a separate route — still
+    // deep-linkable/bookmarkable/back-button-safe via /admin/inventory?addStock=1.
+    path: 'admin/inventory',
+    loadComponent: () =>
+      import('./presentation/pages/admin-inventory-page/admin-inventory-page').then((m) => m.AdminInventoryPage),
+    title: 'Inventario · OmniHogar',
+    canActivate: [adminGuard],
+  },
   { path: '', redirectTo: 'register', pathMatch: 'full' },
 ];

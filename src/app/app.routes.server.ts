@@ -36,6 +36,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    // Admin-only + live stock data — not prerenderable (same as the other admin/* routes).
+    path: 'admin/inventory',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender,
   },

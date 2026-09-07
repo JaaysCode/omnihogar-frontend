@@ -1,0 +1,248 @@
+<div class="inventory-shell">
+  <app-admin-sidebar />
+  <app-admin-tab-bar />
+
+  <main class="inventory-main">
+    <header class="inventory-main__header">
+      <div>
+        <h1 i18n="@@inventory.title">Inventario</h1>
+        <p class="inventory-main__subtitle" i18n="@@inventory.subtitle">
+          Busca un producto para ver las unidades disponibles por bodega o tienda.
+        </p>
+      </div>
+
+      <a
+        routerLink="/admin/inventory"
+        [queryParams]="{ addStock: '1' }"
+        tuiButton
+        size="l"
+        iconStart="@tui.plus"
+        class="inventory-main__add-button"
+        i18n="@@inventory.addUnits"
+      >
+        Agregar Unidades
+      </a>
+    </header>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    } @else {
+      <div class="inventory-content">
+        <section class="inventory-card">
+          <div class="inventory-card__header">
+            <h2 i18n="@@inventory.card.title">Stock en Tiempo Real</h2>
+
+            <div class="inventory-search__input">
+              <tui-icon icon="@tui.search" aria-hidden="true" />
+              <input
+                type="search"
+                [value]="searchTerm()"
+                (input)="onSearchInput(searchInput.value)"
+                #searchInput
+                placeholder="Buscar por SKU o nombre…"
+                i18n-placeholder="@@inventory.search.placeholder"
+                aria-label="Buscar producto"
+                i18n-aria-label="@@inventory.search.ariaLabel"
+              />
+            </div>
+          </div>
+
+          @if (!allProducts()) {
+            <p class="inventory-main__subtitle" i18n="@@inventory.loading">Cargando catálogo…</p>
+          } @else if (allProducts()!.length === 0) {
+            <div class="inventory-empty-state" role="status">
+              <tui-icon icon="@tui.package-x" aria-hidden="true" />
+              <p i18n="@@inventory.empty">Todavía no hay productos registrados.</p>
+            </div>
+          } @else if (noMatches()) {
+            <div class="inventory-empty-state" role="status">
+              <tui-icon icon="@tui.package-x" aria-hidden="true" />
+              <p i18n="@@inventory.notFound">
+                No existe ningún producto registrado con ese SKU o nombre.
+              </p>
+            </div>
+          } @else {
+            <div style="overflow-x: auto">
+              <table class="inventory-table">
+                <thead>
+                  <tr>
+                    <th i18n="@@inventory.table.column.product">Producto</th>
+                    <th i18n="@@inventory.table.column.sku">SKU</th>
+                    <th i18n="@@inventory.table.column.status">Estado</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (product of filteredProducts(); track product.id) {
+                    @let isOpen = selectedProduct()?.id === product.id;
+                    @let productStock = rowStock().get(product.id);
+                    @let rowErr = rowError().get(product.id);
+                    @let lowStock = !!productStock && productStock.inStock && productStock.totalAvailable < lowStockThreshold;
+                    <tr
+                      class="inventory-table__row"
+                      [class.inventory-table__row--active]="isOpen"
+                      (click)="selectProduct(product)"
+                    >
+                      <td>{{ product.name }}</td>
+                      <td>{{ product.sku }}</td>
+                      <td>
+                        @if (productStock) {
+                          <span
+                            class="inventory-pill"
+                            [class.tone-negative]="!productStock.inStock"
+                            [class.tone-warning]="productStock.inStock && lowStock"
+                            [class.tone-positive]="productStock.inStock && !lowStock"
+                          >
+                            @if (!productStock.inStock) {
+                              <span i18n="@@inventory.status.outOfStock">Sin Stock</span>
+                            } @else if (lowStock) {
+                              <span i18n="@@inventory.status.lowStock">Stock Bajo</span>
+                            } @else {
+                              <span i18n="@@inventory.status.inStock">En Stock</span>
+                            }
+                          </span>
+                        } @else {
+                          <span class="inventory-table__dash" [attr.title]="rowErr ?? null">—</span>
+                        }
+                      </td>
+                      <td class="inventory-table__actions">
+                        <tui-icon
+                          [icon]="isOpen ? '@tui.chevron-up' : '@tui.chevron-down'"
+                          aria-hidden="true"
+                        />
+                      </td>
+                    </tr>
+                    @if (isOpen) {
+                      <tr class="inventory-table__detail-row">
+                        <td colspan="4">
+                          @if (rowErr) {
+                            <div class="form-error-banner" role="alert">{{ rowErr }}</div>
+                          } @else if (!productStock) {
+                            <p class="inventory-main__subtitle" i18n="@@inventory.detail.loading">
+                              Consultando stock…
+                            </p>
+                          } @else {
+                            @if (!productStock.inStock) {
+                              <div class="inventory-empty-state tone-negative">
+                                <tui-icon icon="@tui.package-x" aria-hidden="true" />
+                                <p i18n="@@inventory.detail.outOfStock">
+                                  Este producto se encuentra sin stock.
+                                </p>
+                              </div>
+                            } @else {
+                              <div
+                                class="inventory-total"
+                                [class.tone-warning]="productStock.totalAvailable < lowStockThreshold"
+                                [class.tone-positive]="productStock.totalAvailable >= lowStockThreshold"
+                              >
+                                <span class="inventory-total__label" i18n="@@inventory.detail.totalLabel">
+                                  Unidades disponibles
+                                </span>
+                                <span class="inventory-total__value">{{ productStock.totalAvailable }}</span>
+                              </div>
+                            }
+
+                            @if (productStock.facilities.length > 0) {
+                              <ul class="inventory-facilities">
+                                @for (facility of productStock.facilities; track facility.facilityId) {
+                                  <li class="inventory-facilities__item">
+                                    <tui-icon
+                                      [icon]="facility.facilityType === 'POS' ? '@tui.store' : '@tui.warehouse'"
+                                      aria-hidden="true"
+                                    />
+                                    <div class="inventory-facilities__info">
+                                      <span class="inventory-facilities__name">{{ facility.facilityName }}</span>
+                                      <span class="inventory-facilities__city">{{ facility.city }}</span>
+                                    </div>
+                                    <span
+                                      class="inventory-facilities__qty"
+                                      [class.inventory-facilities__qty--zero]="facility.availableQuantity === 0"
+                                    >
+                                      {{ facility.availableQuantity }}
+                                    </span>
+                                  </li>
+                                }
+                              </ul>
+                            }
+                          }
+                        </td>
+                      </tr>
+                    }
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </section>
+
+        <!-- Presentational only — no backend feature behind either card yet (no sync-conflict
+             detection, no order/dispatch domain). Dimmed + non-interactive like the sidebar's
+             inert "Logística"/"Usuarios"/"Reportes" entries, so the shell matches the design
+             without claiming a page that doesn't exist yet. Static sample content stands in
+             until a real endpoint backs it. -->
+        <aside class="inventory-aside" aria-hidden="true">
+          <section class="inventory-widget">
+            <div class="inventory-widget__header">
+              <tui-icon icon="@tui.triangle-alert" aria-hidden="true" />
+              <h2 i18n="@@inventory.sync.title">Alertas de Sincronización</h2>
+            </div>
+            <div class="inventory-widget__alert">
+              <p i18n="@@inventory.sync.sample">
+                La Tienda A reporta discrepancias en el SKU CH-0932.
+              </p>
+              <span class="inventory-facilities__city" i18n="@@inventory.sync.sampleTime">Hace 10 min</span>
+            </div>
+          </section>
+
+          <section class="inventory-widget">
+            <div class="inventory-widget__header">
+              <h2 i18n="@@inventory.dispatch.title">Despachos de Pedidos</h2>
+            </div>
+
+            <ul class="inventory-widget__orders">
+              <li class="inventory-widget__order">
+                <div class="inventory-widget__order-top">
+                  <span class="inventory-widget__order-id">PED-9921A</span>
+                  <span class="inventory-pill tone-warning" i18n="@@inventory.dispatch.pending"
+                    >Pendiente</span
+                  >
+                </div>
+                <p i18n="@@inventory.dispatch.sample1">3 artículos a Madrid</p>
+                <button type="button" tuiButton appearance="secondary" size="s" disabled i18n="@@inventory.dispatch.generateLabel">
+                  Generar Guía
+                </button>
+              </li>
+
+              <li class="inventory-widget__order">
+                <div class="inventory-widget__order-top">
+                  <span class="inventory-widget__order-id">PED-9922B</span>
+                  <span class="inventory-pill tone-positive" i18n="@@inventory.dispatch.packed">Empaquetado</span>
+                </div>
+                <p i18n="@@inventory.dispatch.sample2">1 artículo a Barcelona</p>
+              </li>
+
+              <li class="inventory-widget__order">
+                <div class="inventory-widget__order-top">
+                  <span class="inventory-widget__order-id">PED-9915C</span>
+                  <span class="inventory-pill tone-positive" i18n="@@inventory.dispatch.shipped">Enviado</span>
+                </div>
+                <p i18n="@@inventory.dispatch.sample3">5 artículos a Valencia</p>
+                <button type="button" tuiButton size="s" disabled i18n="@@inventory.dispatch.markDelivered">
+                  Marcar Entregado
+                </button>
+              </li>
+            </ul>
+          </section>
+        </aside>
+      </div>
+    }
+  </main>
+
+  @if (addStock()) {
+    <app-add-stock-page
+      [products]="allProducts() ?? []"
+      [preselected]="selectedProduct()"
+      (closed)="onStockModalClosed()"
+    />
+  }
+</div>

@@ -1,0 +1,97 @@
+@if (attemptedSubmit && form.invalid && invalidFieldSummary.length > 0) {
+  <div class="error-summary" role="alert" tabindex="-1" #errorSummary aria-labelledby="add-stock-error-title">
+    <h2 id="add-stock-error-title" i18n="@@inventory.addStock.errorSummary.title">Corrige lo siguiente</h2>
+    <ul>
+      @for (item of invalidFieldSummary; track item.control) {
+        <li>
+          <button type="button" class="error-summary__link" (click)="focusField(item.control)">
+            {{ item.message }}
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+}
+
+<form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <div class="auth-form__field">
+    <label for="add-stock-productId" i18n="@@inventory.addStock.field.product.label"
+      >Producto <span aria-hidden="true">*</span></label
+    >
+    <button
+      id="add-stock-productId"
+      type="button"
+      tuiButton
+      tuiChevron
+      appearance="outline"
+      size="l"
+      class="auth-form__dropdown-trigger"
+      [class.auth-form__dropdown-trigger--placeholder]="!selectedProduct()"
+      [tuiDropdown]="productDropdown"
+      [(tuiDropdownOpen)]="productMenuOpen"
+      [attr.aria-expanded]="productMenuOpen()"
+      [attr.aria-invalid]="!!errorFor('productId')"
+      [attr.aria-describedby]="errorFor('productId') ? 'add-stock-productId-error' : null"
+    >
+      {{ productButtonLabel() }}
+    </button>
+    <ng-template #productDropdown>
+      <tui-data-list>
+        @for (product of products(); track product.id) {
+          <button tuiOption type="button" (click)="onSelectProduct(product)">
+            {{ product.name }} <span class="auth-form__optional">({{ product.sku }})</span>
+          </button>
+        }
+      </tui-data-list>
+    </ng-template>
+    @if (errorFor('productId'); as message) {
+      <p class="auth-form__error" id="add-stock-productId-error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="auth-form__field">
+    <label for="add-stock-quantity" i18n="@@inventory.addStock.field.quantity.label"
+      >Cantidad <span aria-hidden="true">*</span></label
+    >
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.boxes" aria-hidden="true" />
+      <input
+        id="add-stock-quantity"
+        type="number"
+        min="1"
+        step="1"
+        formControlName="quantity"
+        [attr.aria-invalid]="!!errorFor('quantity')"
+        [attr.aria-describedby]="errorFor('quantity') ? 'add-stock-quantity-error' : null"
+      />
+    </div>
+    @if (errorFor('quantity'); as message) {
+      <p class="auth-form__error" id="add-stock-quantity-error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="auth-form__field">
+    <label for="add-stock-reason" i18n="@@inventory.addStock.field.reason.label"
+      >Motivo <span class="auth-form__optional">(opcional)</span></label
+    >
+    <div class="auth-form__input">
+      <tui-icon icon="@tui.clipboard-list" aria-hidden="true" />
+      <input
+        id="add-stock-reason"
+        type="text"
+        formControlName="reason"
+        placeholder="Ej: Reposición de proveedor"
+        i18n-placeholder="@@inventory.addStock.field.reason.placeholder"
+        [attr.aria-invalid]="!!errorFor('reason')"
+        [attr.aria-describedby]="errorFor('reason') ? 'add-stock-reason-error' : null"
+      />
+    </div>
+    @if (errorFor('reason'); as message) {
+      <p class="auth-form__error" id="add-stock-reason-error">{{ message }}</p>
+    }
+  </div>
+
+  <button tuiButton type="submit" size="l" [disabled]="pending()" class="auth-form__submit">
+    {{ submitLabel() }}
+  </button>
+</form>

@@ -1,0 +1,42 @@
+<div class="stock-modal">
+  <button
+    type="button"
+    class="stock-modal__backdrop"
+    (click)="close()"
+    aria-label="Cerrar"
+    i18n-aria-label="@@inventory.addStock.close"
+  ></button>
+
+  <div class="stock-modal__panel" role="dialog" aria-modal="true" aria-labelledby="stock-modal-title" tabindex="-1" #panel>
+    <header class="stock-modal__header">
+      <h1 id="stock-modal-title" i18n="@@inventory.addStock.title">Agregar Unidades</h1>
+      <button
+        type="button"
+        class="stock-modal__close"
+        (click)="close()"
+        aria-label="Cerrar"
+        i18n-aria-label="@@inventory.addStock.close"
+      >
+        <tui-icon icon="@tui.x" aria-hidden="true" />
+      </button>
+    </header>
+
+    <div class="stock-modal__body">
+      <p class="stock-modal__caption" i18n="@@inventory.addStock.caption">
+        Registra unidades recibidas manualmente para un producto.
+      </p>
+
+      @if (formError(); as message) {
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      }
+
+      <app-add-stock-form
+        [products]="products()"
+        [preselected]="preselected()"
+        [pending]="pending()"
+        [fieldErrors]="fieldErrors()"
+        (submitted)="onSubmit($event)"
+      />
+    </div>
+  </div>
+</div>

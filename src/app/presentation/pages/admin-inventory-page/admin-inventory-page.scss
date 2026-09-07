@@ -1,0 +1,366 @@
+@use '../../../shared/styles/auth-form';
+
+:host {
+  display: block;
+}
+
+.inventory-shell {
+  display: flex;
+  min-height: 100dvh;
+  background: var(--oh-color-neutral, #f5f7f9);
+}
+
+.inventory-main {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem 2.5rem;
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 800;
+    }
+  }
+
+  &__add-button {
+    flex-shrink: 0;
+  }
+
+  &__subtitle {
+    margin: 0.375rem 0 0;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+}
+
+.inventory-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20rem;
+  align-items: start;
+  gap: 1.5rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inventory-search {
+  &__input {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 20rem;
+
+    tui-icon {
+      position: absolute;
+      left: 0.875rem;
+      font-size: 1.125rem;
+      color: var(--tui-text-secondary, #6b6b6b);
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      min-height: 44px;
+      padding: 0.5rem 0.875rem 0.5rem 2.5rem;
+      font-size: 0.9375rem;
+      border-radius: 999px;
+      border: 1px solid var(--tui-border-normal, #e5e7eb);
+      background: var(--tui-background-base, #fff);
+      color: var(--tui-text-primary, #1a1a1a);
+
+      &:focus-visible {
+        outline: 2px solid var(--tui-background-accent-1);
+        outline-offset: 1px;
+      }
+    }
+  }
+}
+
+.inventory-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base, #fff);
+  box-shadow: var(--oh-shadow-card);
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+  }
+}
+
+.inventory-table {
+  width: 100%;
+  min-width: 32rem;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--tui-border-normal, #e5e7eb);
+  }
+
+  th {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+
+  &__row {
+    cursor: pointer;
+
+    &:hover,
+    &--active {
+      background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+    }
+  }
+
+  &__actions {
+    text-align: right;
+
+    tui-icon {
+      color: var(--tui-text-secondary, #6b6b6b);
+    }
+  }
+
+  &__dash {
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+
+  &__detail-row {
+    td {
+      padding: 1.25rem 1rem 1.5rem;
+      background: var(--oh-color-neutral, #f5f7f9);
+    }
+  }
+}
+
+// Shared status colour pairs — pill, empty-state banner and the total-units box all tint from
+// the same three tones, so the pale/solid pair is defined once here instead of per component.
+.tone-positive {
+  background: var(--tui-status-positive-pale, #dcfce7);
+  color: var(--tui-status-positive, #16a34a);
+}
+
+.tone-warning {
+  background: var(--tui-status-warning-pale, #fef3c7);
+  color: var(--tui-status-warning, #b45309);
+}
+
+.tone-negative {
+  background: var(--tui-status-negative-pale, #fee2e2);
+  color: var(--tui-status-negative, #d92d20);
+}
+
+.inventory-pill {
+  display: inline-block;
+  padding: 0.125rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.inventory-empty-state {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 28rem;
+  padding: 1rem 1.125rem;
+  border-radius: 0.75rem;
+  background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+  color: var(--tui-text-secondary, #6b6b6b);
+
+  tui-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+}
+
+.inventory-total {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.125rem;
+  border-radius: 0.75rem;
+
+  &__label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  &__value {
+    font-size: 1.75rem;
+    font-weight: 800;
+  }
+}
+
+.inventory-facilities {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: var(--oh-color-neutral, #f5f7f9);
+
+    tui-icon {
+      font-size: 1.25rem;
+      color: var(--tui-text-secondary, #6b6b6b);
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__name {
+    font-weight: 600;
+    color: var(--tui-text-primary, #1a1a1a);
+  }
+
+  &__city {
+    font-size: 0.8125rem;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+
+  &__qty {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--tui-text-primary, #1a1a1a);
+
+    &--zero {
+      color: var(--tui-status-negative, #d92d20);
+    }
+  }
+}
+
+// Presentational-only widgets (see template comment above <aside>) — dimmed + inert until a
+// real sync-alert / dispatch feature backs them.
+.inventory-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.inventory-widget {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base, #fff);
+  box-shadow: var(--oh-shadow-card);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    tui-icon {
+      color: var(--tui-status-warning, #b45309);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1rem;
+    }
+  }
+
+  &__alert {
+    padding: 0.875rem 1rem;
+    border-left: 3px solid var(--tui-status-warning, #b45309);
+    border-radius: 0.5rem;
+    background: var(--oh-color-neutral, #f5f7f9);
+
+    p {
+      margin: 0 0 0.375rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  &__orders {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  &__order {
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--tui-border-normal, #e5e7eb);
+    border-radius: 0.75rem;
+
+    p {
+      margin: 0 0 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+
+  &__order-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.375rem;
+  }
+
+  &__order-id {
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .inventory-shell {
+    flex-direction: column;
+  }
+
+  // Bottom padding clears AdminTabBar.
+  .inventory-main {
+    padding: 1.5rem 1.25rem calc(1.5rem + var(--oh-layout-tabbar-height));
+  }
+
+  .inventory-card {
+    padding: 1.125rem;
+  }
+}
