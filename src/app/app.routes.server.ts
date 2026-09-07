@@ -22,6 +22,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    // Admin-only + live catalog data, plus an in-memory cart — not prerenderable.
+    path: 'admin/pos',
+    renderMode: RenderMode.Client,
+  },
+  {
     // Admin-only + live order data — not prerenderable.
     path: 'admin/orders',
     renderMode: RenderMode.Client,

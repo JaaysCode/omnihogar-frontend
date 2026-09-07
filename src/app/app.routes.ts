@@ -39,6 +39,12 @@ export const routes: Routes = [
     canActivate: [adminGuard],
   },
   {
+    path: 'admin/pos',
+    loadComponent: () => import('./presentation/pages/pos-page/pos-page').then((m) => m.PosPage),
+    title: 'Punto de Venta · OmniHogar',
+    canActivate: [adminGuard],
+  },
+  {
     // Detail view opens as a `?order` query-param-driven modal on top of this page (see
     // orders-page.ts/.html) instead of a separate route — deep-linkable/bookmarkable like
     // /admin/products?create=1.

@@ -1,0 +1,209 @@
+<div class="pos-shell">
+  <app-admin-sidebar />
+  <app-admin-tab-bar />
+
+  <main class="pos-main">
+    <header class="pos-main__header">
+      <div>
+        <h1 i18n="@@pos.title">Punto de Venta</h1>
+        <p class="pos-main__subtitle" i18n="@@pos.subtitle">Terminal 01 • Caja Abierta</p>
+      </div>
+      <div class="pos-timer">
+        <tui-icon icon="@tui.clock" aria-hidden="true" />
+        <span>{{ formatElapsed() }}</span>
+      </div>
+    </header>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    }
+
+    <div class="pos-body">
+      <section class="pos-cart">
+        <div class="pos-search">
+          <tui-icon icon="@tui.search" aria-hidden="true" />
+          <input
+            type="search"
+            [value]="searchTerm()"
+            (input)="onSearchInput($any($event.target).value)"
+            placeholder="Buscar producto por nombre, SKU o código de barras…"
+            i18n-placeholder="@@pos.search.placeholder"
+            aria-label="Buscar producto"
+            i18n-aria-label="@@pos.search.ariaLabel"
+          />
+          <tui-icon icon="@tui.scan-barcode" aria-hidden="true" class="pos-search__scan" />
+
+          @if (searchResults().length > 0) {
+            <ul class="pos-search__results" role="listbox">
+              @for (product of searchResults(); track product.id) {
+                <li>
+                  <button type="button" role="option" aria-selected="false" (click)="addToCart(product)">
+                    <span class="pos-search__name">{{ product.name }}</span>
+                    <span class="pos-search__sku">{{ product.sku }}</span>
+                    <span class="pos-search__price">{{ product.price | copCurrency }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="pos-table-card">
+          @if (!catalog()) {
+            <p class="pos-main__caption" i18n="@@pos.loading">Cargando catálogo…</p>
+          } @else if (cart().length === 0) {
+            <div class="pos-empty" role="status">
+              <tui-icon icon="@tui.shopping-cart" aria-hidden="true" />
+              <p i18n="@@pos.cart.empty">Busca un producto para agregarlo a la venta.</p>
+            </div>
+          } @else {
+            <div style="overflow-x: auto">
+              <table class="pos-table">
+                <thead>
+                  <tr>
+                    <th i18n="@@pos.column.product">PRODUCTO</th>
+                    <th i18n="@@pos.column.quantity">CANTIDAD</th>
+                    <th i18n="@@pos.column.unitPrice">PRECIO UNIT.</th>
+                    <th i18n="@@pos.column.subtotal">SUBTOTAL</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (line of cart(); track line.product.id) {
+                    <tr>
+                      <td class="pos-table__product">
+                        @if (line.product.imageUrl) {
+                          <img [src]="line.product.imageUrl" [alt]="line.product.name" class="pos-thumb" />
+                        } @else {
+                          <span class="pos-thumb pos-thumb--placeholder">
+                            <tui-icon icon="@tui.image" aria-hidden="true" />
+                          </span>
+                        }
+                        <span>
+                          <span class="pos-table__name">{{ line.product.name }}</span>
+                          <span class="pos-table__sku">SKU: {{ line.product.sku }}</span>
+                        </span>
+                      </td>
+                      <td>
+                        <div class="pos-stepper">
+                          <button
+                            type="button"
+                            (click)="decrementLine(line.product.id)"
+                            aria-label="Disminuir cantidad"
+                            i18n-aria-label="@@pos.stepper.decrease"
+                          >
+                            <tui-icon icon="@tui.minus" aria-hidden="true" />
+                          </button>
+                          <span>{{ line.quantity }}</span>
+                          <button
+                            type="button"
+                            (click)="incrementLine(line.product.id)"
+                            aria-label="Aumentar cantidad"
+                            i18n-aria-label="@@pos.stepper.increase"
+                          >
+                            <tui-icon icon="@tui.plus" aria-hidden="true" />
+                          </button>
+                        </div>
+                      </td>
+                      <td>{{ line.product.price | copCurrency }}</td>
+                      <td class="pos-table__subtotal">{{ line.product.price * line.quantity | copCurrency }}</td>
+                      <td>
+                        <button
+                          type="button"
+                          class="pos-table__remove"
+                          (click)="removeLine(line.product.id)"
+                          [attr.aria-label]="'Quitar ' + line.product.name"
+                        >
+                          <tui-icon icon="@tui.trash-2" aria-hidden="true" />
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </section>
+
+      <aside class="pos-summary">
+        @if (receipt(); as sale) {
+          <div class="pos-receipt" role="status">
+            <tui-icon icon="@tui.circle-check" aria-hidden="true" />
+            <p class="pos-receipt__title" i18n="@@pos.receipt.title">Venta registrada</p>
+            <p class="pos-receipt__total">{{ sale.total | copCurrency }}</p>
+            <button type="button" tuiButton appearance="secondary" size="m" (click)="dismissReceipt()" i18n="@@pos.receipt.newSale">
+              Nueva venta
+            </button>
+          </div>
+        } @else {
+          <div class="pos-summary__lines">
+            <p class="pos-summary__heading" i18n="@@pos.summary.heading">RESUMEN DE VENTA</p>
+            <div class="pos-summary__row">
+              <span i18n="@@pos.summary.subtotal">Subtotal ({{ itemCount() }} artículos)</span>
+              <span>{{ subtotal() | copCurrency }}</span>
+            </div>
+            <div class="pos-summary__row">
+              <span i18n="@@pos.summary.discounts">Descuentos</span>
+              <span>-{{ 0 | copCurrency }}</span>
+            </div>
+            <div class="pos-summary__row">
+              <span i18n="@@pos.summary.tax">Impuestos (IVA 19%)</span>
+              <span>{{ tax() | copCurrency }}</span>
+            </div>
+            <div class="pos-summary__total">
+              <span i18n="@@pos.summary.totalLabel">Total a Pagar</span>
+              <span>{{ total() | copCurrency }}</span>
+            </div>
+          </div>
+
+          <div class="pos-payment">
+            <p class="pos-summary__heading" i18n="@@pos.payment.heading">MÉTODO DE PAGO RÁPIDO</p>
+            <div class="pos-payment__options">
+              <button
+                type="button"
+                class="pos-payment__option"
+                [class.pos-payment__option--active]="paymentMethod() === 'cash'"
+                (click)="selectPaymentMethod('cash')"
+              >
+                <tui-icon icon="@tui.banknote" aria-hidden="true" />
+                <span i18n="@@pos.payment.cash">Efectivo</span>
+              </button>
+              <button
+                type="button"
+                class="pos-payment__option"
+                [class.pos-payment__option--active]="paymentMethod() === 'card'"
+                (click)="selectPaymentMethod('card')"
+              >
+                <tui-icon icon="@tui.credit-card" aria-hidden="true" />
+                <span i18n="@@pos.payment.card">Tarjeta</span>
+              </button>
+              <button
+                type="button"
+                class="pos-payment__option"
+                [class.pos-payment__option--active]="paymentMethod() === 'transfer'"
+                (click)="selectPaymentMethod('transfer')"
+              >
+                <tui-icon icon="@tui.landmark" aria-hidden="true" />
+                <span i18n="@@pos.payment.transfer">Transferencia</span>
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            tuiButton
+            size="l"
+            iconStart="@tui.receipt"
+            class="pos-finalize"
+            [disabled]="cart().length === 0"
+            (click)="finalizeSale()"
+            i18n="@@pos.finalize"
+          >
+            Finalizar Venta
+          </button>
+        }
+      </aside>
+    </div>
+  </main>
+</div>

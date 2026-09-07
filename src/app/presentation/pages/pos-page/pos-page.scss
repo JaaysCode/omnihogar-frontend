@@ -1,0 +1,394 @@
+@use '../../../shared/styles/auth-form';
+
+:host {
+  display: block;
+}
+
+.pos-shell {
+  display: flex;
+  min-height: 100dvh;
+  background: var(--oh-color-neutral);
+}
+
+.pos-main {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem 2.5rem;
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 800;
+    }
+  }
+
+  &__subtitle,
+  &__caption {
+    margin: 0.25rem 0 0;
+    color: var(--tui-text-secondary);
+  }
+}
+
+.pos-timer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--tui-background-base);
+  box-shadow: var(--oh-shadow-card);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+
+  tui-icon {
+    color: var(--tui-text-action);
+  }
+}
+
+.pos-body {
+  display: grid;
+  grid-template-columns: 1fr 22rem;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.pos-cart {
+  min-width: 0;
+}
+
+.pos-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.25rem;
+
+  > tui-icon:first-child,
+  &__scan {
+    position: absolute;
+    font-size: 1.125rem;
+    color: var(--tui-text-secondary);
+    pointer-events: none;
+  }
+
+  > tui-icon:first-child {
+    left: 1rem;
+  }
+
+  &__scan {
+    right: 1rem;
+  }
+
+  input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.625rem 2.75rem;
+    font-size: 0.9375rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--tui-border-normal);
+    background: var(--tui-background-base);
+    color: var(--tui-text-primary);
+  }
+
+  &__results {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 0.375rem);
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0.375rem;
+    list-style: none;
+    border-radius: 0.75rem;
+    background: var(--tui-background-base);
+    box-shadow: var(--oh-shadow-card);
+    max-height: 20rem;
+    overflow-y: auto;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.625rem 0.75rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--tui-background-neutral-1);
+      }
+    }
+  }
+
+  &__name {
+    flex: 1;
+    font-weight: 600;
+  }
+
+  &__sku {
+    font-size: 0.8125rem;
+    color: var(--tui-text-secondary);
+  }
+
+  &__price {
+    font-weight: 700;
+  }
+}
+
+.pos-table-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base);
+  box-shadow: var(--oh-shadow-card);
+}
+
+.pos-table {
+  width: 100%;
+  min-width: 32rem;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--tui-border-normal);
+  }
+
+  th {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--tui-text-secondary);
+  }
+
+  &__product {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    > span {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  &__name {
+    font-weight: 700;
+  }
+
+  &__sku {
+    font-size: 0.8125rem;
+    color: var(--tui-text-secondary);
+  }
+
+  &__subtotal {
+    font-weight: 700;
+    color: var(--tui-text-action);
+  }
+
+  &__remove {
+    display: inline-flex;
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    color: var(--tui-text-secondary);
+    cursor: pointer;
+  }
+}
+
+.pos-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  border-radius: 0.625rem;
+  object-fit: cover;
+
+  &--placeholder {
+    background: var(--tui-background-neutral-1);
+
+    tui-icon {
+      font-size: 1.25rem;
+      color: var(--tui-text-secondary);
+    }
+  }
+}
+
+.pos-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+
+  span {
+    min-width: 1.25rem;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--tui-border-normal);
+    background: var(--tui-background-base);
+    cursor: pointer;
+  }
+}
+
+.pos-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem 1.125rem;
+  color: var(--tui-text-secondary);
+  text-align: center;
+
+  tui-icon {
+    font-size: 2rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+}
+
+.pos-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base);
+  box-shadow: var(--oh-shadow-card);
+  position: sticky;
+  top: 2rem;
+
+  &__heading {
+    margin: 0 0 0.875rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--tui-text-secondary);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.625rem;
+    font-size: 0.9375rem;
+  }
+
+  &__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--tui-border-normal);
+    font-weight: 700;
+
+    span:last-child {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--tui-text-action);
+    }
+  }
+}
+
+.pos-payment__options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.625rem;
+}
+
+.pos-payment__option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.75rem 0.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--tui-border-normal);
+  background: var(--tui-background-base);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  tui-icon {
+    font-size: 1.25rem;
+  }
+
+  &--active {
+    border-color: var(--tui-background-accent-1);
+    background: var(--tui-background-accent-1);
+    color: #fff;
+  }
+}
+
+.pos-finalize {
+  width: 100%;
+  background: var(--tui-status-positive) !important;
+  border-color: var(--tui-status-positive) !important;
+}
+
+.pos-receipt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  text-align: center;
+
+  tui-icon {
+    font-size: 2.5rem;
+    color: var(--tui-status-positive);
+  }
+
+  &__title {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  &__total {
+    margin: 0 0 0.75rem;
+    font-size: 1.75rem;
+    font-weight: 800;
+  }
+}
+
+@media (max-width: 1024px) {
+  .pos-body {
+    grid-template-columns: 1fr;
+  }
+
+  .pos-summary {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .pos-shell {
+    flex-direction: column;
+  }
+
+  .pos-main {
+    // Extra bottom padding clears AdminTabBar, fixed to the bottom edge at this width.
+    padding: 1.5rem 1.25rem calc(1.5rem + var(--oh-layout-tabbar-height));
+  }
+}
