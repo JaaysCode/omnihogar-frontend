@@ -1,0 +1,109 @@
+<div class="order-modal">
+  <button
+    type="button"
+    class="order-modal__backdrop"
+    (click)="close()"
+    aria-label="Cerrar"
+    i18n-aria-label="@@orders.detail.close"
+  ></button>
+
+  <div class="order-modal__panel" role="dialog" aria-modal="true" aria-labelledby="order-modal-title" tabindex="-1" #panel>
+    @if (detail(); as order) {
+      <header class="order-modal__header">
+        <div>
+          <h1 id="order-modal-title">{{ order.orderNumber }}</h1>
+          <p class="order-modal__subtitle" i18n="@@orders.detail.subtitle">Detalle del pedido</p>
+        </div>
+        <button type="button" class="order-modal__close" (click)="close()" aria-label="Cerrar" i18n-aria-label="@@orders.detail.close">
+          <tui-icon icon="@tui.x" aria-hidden="true" />
+        </button>
+      </header>
+
+      <div class="order-modal__body">
+        <dl class="order-meta">
+          <div class="order-meta__item">
+            <dt i18n="@@orders.detail.customer">Cliente</dt>
+            <dd>{{ order.customerName }}</dd>
+          </div>
+          <div class="order-meta__item">
+            <dt i18n="@@orders.detail.email">Correo</dt>
+            <dd>{{ order.customerEmail }}</dd>
+          </div>
+          <div class="order-meta__item">
+            <dt i18n="@@orders.detail.channel">Canal</dt>
+            <dd>
+              <span class="order-pill tone-neutral">{{ channelLabel(order.channel) }}</span>
+            </dd>
+          </div>
+          <div class="order-meta__item">
+            <dt i18n="@@orders.detail.status">Estado</dt>
+            <dd>
+              <span class="order-pill tone-neutral">{{ statusLabel(order.status) }}</span>
+            </dd>
+          </div>
+          <div class="order-meta__item">
+            <dt i18n="@@orders.detail.date">Fecha</dt>
+            <dd>{{ order.createdAt | date: 'medium' }}</dd>
+          </div>
+        </dl>
+
+        <div style="overflow-x: auto">
+          <table class="order-items-table">
+            <thead>
+              <tr>
+                <th i18n="@@orders.detail.column.product">PRODUCTO</th>
+                <th i18n="@@orders.detail.column.quantity">CANTIDAD</th>
+                <th i18n="@@orders.detail.column.unitPrice">PRECIO UNIT.</th>
+                <th i18n="@@orders.detail.column.subtotal">SUBTOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of order.items; track item.productId) {
+                <tr>
+                  <td>
+                    <span class="order-items-table__name">{{ item.productName }}</span>
+                    <span class="order-items-table__sku">SKU: {{ item.sku }}</span>
+                  </td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ item.unitPrice | copCurrency }}</td>
+                  <td class="order-items-table__subtotal">{{ item.subtotal | copCurrency }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="order-totals">
+          <div class="order-totals__row">
+            <span i18n="@@orders.detail.subtotal">Subtotal</span>
+            <span>{{ order.subtotal | copCurrency }}</span>
+          </div>
+          <div class="order-totals__row order-totals__row--total">
+            <span i18n="@@orders.detail.totalLabel">Total</span>
+            <span>{{ order.total | copCurrency }}</span>
+          </div>
+        </div>
+      </div>
+    } @else if (loadError(); as message) {
+      <header class="order-modal__header">
+        <h1 id="order-modal-title" i18n="@@orders.detail.errorTitle">No se pudo cargar el pedido</h1>
+        <button type="button" class="order-modal__close" (click)="close()" aria-label="Cerrar" i18n-aria-label="@@orders.detail.close">
+          <tui-icon icon="@tui.x" aria-hidden="true" />
+        </button>
+      </header>
+      <div class="order-modal__body">
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      </div>
+    } @else {
+      <header class="order-modal__header">
+        <h1 id="order-modal-title" i18n="@@orders.detail.loadingTitle">Cargando pedido…</h1>
+        <button type="button" class="order-modal__close" (click)="close()" aria-label="Cerrar" i18n-aria-label="@@orders.detail.close">
+          <tui-icon icon="@tui.x" aria-hidden="true" />
+        </button>
+      </header>
+      <div class="order-modal__body">
+        <p class="order-modal__caption" i18n="@@orders.detail.loading">Cargando detalle del pedido…</p>
+      </div>
+    }
+  </div>
+</div>

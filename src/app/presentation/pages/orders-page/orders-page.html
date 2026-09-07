@@ -1,0 +1,82 @@
+<div class="orders-shell">
+  <app-admin-sidebar />
+  <app-admin-tab-bar />
+
+  <main class="orders-main">
+    <header class="orders-main__header">
+      <div class="orders-main__heading">
+        <h1 i18n="@@orders.list.title">Pedidos</h1>
+        @if (orders(); as list) {
+          <span class="orders-count">{{ list.length }}</span>
+        }
+      </div>
+      <p class="orders-main__caption" i18n="@@orders.list.subtitle">Pedidos registrados en todos los canales de venta.</p>
+    </header>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    } @else {
+      <section class="orders-card">
+        @if (!orders()) {
+          <p class="orders-main__caption" i18n="@@orders.list.loading">Cargando pedidos…</p>
+        } @else if (orders()!.length === 0) {
+          <div class="orders-empty" role="status">
+            <tui-icon icon="@tui.inbox" aria-hidden="true" />
+            <p i18n="@@orders.list.empty">Todavía no hay pedidos registrados.</p>
+          </div>
+        } @else {
+          <div style="overflow-x: auto">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th i18n="@@orders.list.column.orderNumber">PEDIDO</th>
+                  <th i18n="@@orders.list.column.customer">CLIENTE</th>
+                  <th i18n="@@orders.list.column.channel">CANAL</th>
+                  <th i18n="@@orders.list.column.status">ESTADO</th>
+                  <th i18n="@@orders.list.column.items">ARTÍCULOS</th>
+                  <th i18n="@@orders.list.column.total">TOTAL</th>
+                  <th i18n="@@orders.list.column.date">FECHA</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (o of orders()!; track o.id) {
+                  <tr>
+                    <td class="orders-table__number">{{ o.orderNumber }}</td>
+                    <td>{{ o.customerName }}</td>
+                    <td>
+                      <span class="orders-pill tone-neutral">{{ channelLabel(o.channel) }}</span>
+                    </td>
+                    <td>
+                      <span
+                        class="orders-pill"
+                        [class.tone-positive]="statusTone(o.status) === 'positive'"
+                        [class.tone-neutral]="statusTone(o.status) === 'neutral'"
+                        [class.tone-warning]="statusTone(o.status) === 'warning'"
+                        [class.tone-negative]="statusTone(o.status) === 'negative'"
+                      >
+                        {{ statusLabel(o.status) }}
+                      </span>
+                    </td>
+                    <td>{{ o.itemCount }}</td>
+                    <td class="orders-table__total">{{ o.total | copCurrency }}</td>
+                    <td class="orders-table__muted">{{ o.createdAt | date: 'shortDate' }}</td>
+                    <td class="orders-table__actions">
+                      <a routerLink="/admin/orders" [queryParams]="{ order: o.id }" i18n="@@orders.list.viewDetail">Ver detalle</a>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
+  </main>
+
+  @if (order(); as id) {
+    @defer (on immediate) {
+      <app-order-detail-modal [orderId]="id" (closed)="onModalClosed()" />
+    }
+  }
+</div>
