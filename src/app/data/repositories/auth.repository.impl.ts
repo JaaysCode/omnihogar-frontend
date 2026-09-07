@@ -22,4 +22,11 @@ export class AuthRepositoryImpl implements AuthRepository {
       catchError((error) => throwError(() => toAuthApiError(error))),
     );
   }
+
+  refresh(refreshToken: string): Observable<AuthSession> {
+    return this.api.refresh(refreshToken).pipe(
+      map(toAuthSession),
+      catchError((error) => throwError(() => toAuthApiError(error))),
+    );
+  }
 }

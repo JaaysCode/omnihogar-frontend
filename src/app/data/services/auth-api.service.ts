@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { LoginPayload, RegisterPayload } from '../../domain/models/auth.model';
-import { AuthResponseDto, LoginRequestDto, RegisterRequestDto } from './auth-api.dto';
+import { AuthResponseDto, LoginRequestDto, RefreshRequestDto, RegisterRequestDto } from './auth-api.dto';
 
 /**
  * Raw HTTP client for the `/auth` endpoints. Transport-only: no error translation,
@@ -28,5 +28,10 @@ export class AuthApiService {
   login(payload: LoginPayload): Observable<AuthResponseDto> {
     const body: LoginRequestDto = { email: payload.email, password: payload.password };
     return this.http.post<AuthResponseDto>(`${this.baseUrl}/auth/login`, body);
+  }
+
+  refresh(refreshToken: string): Observable<AuthResponseDto> {
+    const body: RefreshRequestDto = { refreshToken };
+    return this.http.post<AuthResponseDto>(`${this.baseUrl}/auth/refresh`, body);
   }
 }
