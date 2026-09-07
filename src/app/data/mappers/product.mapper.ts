@@ -1,7 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { FieldErrors, Product, ProductApiError } from '../../domain/models/product.model';
+import { Category, FieldErrors, FacilityStock, Product, ProductApiError, ProductStock } from '../../domain/models/product.model';
 import { ApiProblemDto } from '../services/auth-api.dto';
-import { ProductDto } from '../services/product-api.dto';
+import { CategoryDto, ProductDto, ProductStockDto } from '../services/product-api.dto';
+
+export function toCategory(dto: CategoryDto): Category {
+  return { id: dto.id, name: dto.name };
+}
 
 export function toProduct(dto: ProductDto): Product {
   return {
@@ -13,6 +17,25 @@ export function toProduct(dto: ProductDto): Product {
     price: dto.price,
     imageUrl: dto.imageUrl,
     status: dto.status === 'discontinued' ? 'discontinued' : 'active',
+  };
+}
+
+export function toProductStock(dto: ProductStockDto): ProductStock {
+  return {
+    productId: dto.productId,
+    sku: dto.sku,
+    productName: dto.productName,
+    totalAvailable: dto.totalAvailable,
+    inStock: dto.inStock,
+    facilities: dto.facilities.map(
+      (f): FacilityStock => ({
+        facilityId: f.facilityId,
+        facilityName: f.facilityName,
+        facilityType: f.facilityType === 'POS' ? 'POS' : 'WAREHOUSE',
+        city: f.city,
+        availableQuantity: f.availableQuantity,
+      }),
+    ),
   };
 }
 

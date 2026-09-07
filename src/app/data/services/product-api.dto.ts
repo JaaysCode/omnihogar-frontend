@@ -11,6 +11,11 @@ export interface ProductDto {
   status: string;
 }
 
+export interface CategoryDto {
+  id: string;
+  name: string;
+}
+
 export interface CreateProductRequestDto {
   sku: string;
   name: string;
@@ -18,9 +23,32 @@ export interface CreateProductRequestDto {
   categoryId: string | null;
   price: number;
   imageUrl: string | null;
+  initialStock: number | null;
 }
 
-export interface UpdateProductRequestDto extends CreateProductRequestDto {
+export interface UpdateProductRequestDto extends Omit<CreateProductRequestDto, 'initialStock'> {
   id: string;
   status: string;
+}
+
+export interface AddStockRequestDto {
+  quantity: number;
+  reason: string | null;
+}
+
+export interface FacilityStockDto {
+  facilityId: string;
+  facilityName: string;
+  facilityType: string;
+  city: string;
+  availableQuantity: number;
+}
+
+export interface ProductStockDto {
+  productId: string;
+  sku: string;
+  productName: string;
+  totalAvailable: number;
+  inStock: boolean;
+  facilities: FacilityStockDto[];
 }

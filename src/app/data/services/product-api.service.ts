@@ -2,8 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../core/config/api.config';
-import { CreateProductPayload, UpdateProductPayload } from '../../domain/models/product.model';
-import { CreateProductRequestDto, ProductDto, UpdateProductRequestDto } from './product-api.dto';
+import { AddStockPayload, CreateProductPayload, UpdateProductPayload } from '../../domain/models/product.model';
+import {
+  AddStockRequestDto,
+  CategoryDto,
+  CreateProductRequestDto,
+  ProductDto,
+  ProductStockDto,
+  UpdateProductRequestDto,
+} from './product-api.dto';
 
 /**
  * Raw HTTP client for the `/products` endpoints. Transport-only: no error translation,
@@ -26,6 +33,14 @@ export class ProductApiService {
     return this.http.get<ProductDto>(`${this.baseUrl}/products/${id}`);
   }
 
+  getStock(id: string): Observable<ProductStockDto> {
+    return this.http.get<ProductStockDto>(`${this.baseUrl}/products/${id}/stock`);
+  }
+
+  getCategories(): Observable<CategoryDto[]> {
+    return this.http.get<CategoryDto[]>(`${this.baseUrl}/categories`);
+  }
+
   create(payload: CreateProductPayload): Observable<string> {
     const body: CreateProductRequestDto = {
       sku: payload.sku,
@@ -34,6 +49,7 @@ export class ProductApiService {
       categoryId: payload.categoryId,
       price: payload.price,
       imageUrl: payload.imageUrl,
+      initialStock: payload.initialStock,
     };
     return this.http.post<string>(`${this.baseUrl}/products`, body);
   }
@@ -50,5 +66,10 @@ export class ProductApiService {
       status: payload.status,
     };
     return this.http.put<void>(`${this.baseUrl}/products/${id}`, body);
+  }
+
+  addStock(id: string, payload: AddStockPayload): Observable<void> {
+    const body: AddStockRequestDto = { quantity: payload.quantity, reason: payload.reason };
+    return this.http.post<void>(`${this.baseUrl}/products/${id}/stock`, body);
   }
 }
