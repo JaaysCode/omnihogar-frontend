@@ -73,6 +73,23 @@
     }
   }
 
+  // Trigger button for a `[tuiDropdown]` + `tui-data-list` field (e.g. "Rol") — styled to read as
+  // a form input, not a button: full width, label left-aligned, chevron pinned to the end.
+  &__dropdown-trigger {
+    width: 100%;
+    justify-content: space-between;
+    font-weight: 400;
+    text-align: left;
+
+    &--placeholder {
+      color: var(--tui-text-tertiary, #9ca3af);
+    }
+
+    &[aria-invalid='true'] {
+      border-color: var(--tui-status-negative, #d92d20);
+    }
+  }
+
   &__optional {
     font-weight: 400;
     color: var(--tui-text-secondary, #6b6b6b);

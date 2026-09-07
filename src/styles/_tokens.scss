@@ -43,6 +43,9 @@
   --oh-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
   --oh-layout-sidebar-width: 15rem;
   --oh-layout-header-height: 3.5rem;
+  // Bottom tab bar (AdminTabBar) that replaces the sidebar below the mobile breakpoint — pages
+  // reserve this much bottom padding so its fixed position never covers the last row of content.
+  --oh-layout-tabbar-height: 4.25rem;
 }
 
 [tuiTheme='dark'] {

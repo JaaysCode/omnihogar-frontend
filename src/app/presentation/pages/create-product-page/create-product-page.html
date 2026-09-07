@@ -1,13 +1,93 @@
-<div class="product-page__viewport">
-  <div class="product-page">
-    <h2 i18n="@@products.create.title">Nuevo producto</h2>
-    <p class="product-page__caption" i18n="@@products.create.caption">
-      Completa los datos del producto para agregarlo al catálogo.
-    </p>
-    @if (formError(); as message) {
-      <div class="form-error-banner" role="alert">{{ message }}</div>
-    }
-    <app-product-form [pending]="pending()" [fieldErrors]="fieldErrors()" (submitted)="onSubmit($event)" />
-    <a routerLink="/admin/products" class="product-page__back" i18n="@@products.create.back">&larr; Volver al listado</a>
+<div class="product-modal">
+  <button type="button" class="product-modal__backdrop" (click)="close()" aria-label="Cerrar" i18n-aria-label="@@products.create.close"></button>
+
+  <div class="product-modal__panel" role="dialog" aria-modal="true" aria-labelledby="product-modal-title" tabindex="-1" #panel>
+    <header class="product-modal__header">
+      <h1 id="product-modal-title" i18n="@@products.create.title">Añadir Nuevo Producto</h1>
+      <button type="button" class="product-modal__close" (click)="close()" aria-label="Cerrar" i18n-aria-label="@@products.create.close">
+        <tui-icon icon="@tui.x" aria-hidden="true" />
+      </button>
+    </header>
+
+    <div class="product-create-tabs" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="entryMode() === 'manual'"
+        class="product-create-tabs__tab"
+        [class.product-create-tabs__tab--active]="entryMode() === 'manual'"
+        (click)="setEntryMode('manual')"
+        i18n="@@products.create.tabs.manual"
+      >
+        Ingreso Manual
+      </button>
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="entryMode() === 'batch'"
+        class="product-create-tabs__tab"
+        [class.product-create-tabs__tab--active]="entryMode() === 'batch'"
+        (click)="setEntryMode('batch')"
+        i18n="@@products.create.tabs.batch"
+      >
+        Ingreso por Lote
+      </button>
+    </div>
+
+    <div class="product-modal__body">
+      @if (categoriesError(); as message) {
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      }
+      @if (formError(); as message) {
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      }
+
+      @if (entryMode() === 'manual') {
+        <app-product-form
+          [categories]="categories()"
+          [pending]="pending()"
+          [fieldErrors]="fieldErrors()"
+          (submitted)="onSubmit($event)"
+        />
+      } @else {
+        <!-- Presentational only — see class doc. No CSV/invoice-scan endpoint exists yet; every
+             control here is inert until a real bulk-import feature backs it. -->
+        <section class="product-batch" aria-disabled="true">
+          <tui-icon icon="@tui.upload-cloud" aria-hidden="true" />
+          <h2 i18n="@@products.batch.title">Carga Masiva de Datos</h2>
+          <p i18n="@@products.batch.caption">
+            Sube tu inventario rápidamente importando un archivo estandarizado o dejando que nuestro
+            sistema procese tus facturas.
+          </p>
+
+          <div class="product-batch__dropzone">
+            <tui-icon icon="@tui.cloud-upload" aria-hidden="true" />
+            <p i18n="@@products.batch.dropzone">Cargar Factura o Archivo CSV/Excel</p>
+            <span i18n="@@products.batch.dropzoneHint">Arrastra los archivos aquí o haz clic para explorar</span>
+          </div>
+
+          <div class="product-batch__ai">
+            <tui-icon icon="@tui.sparkles" aria-hidden="true" />
+            <div>
+              <p i18n="@@products.batch.ai.title">Escaneo de Factura por IA</p>
+              <span i18n="@@products.batch.ai.caption"
+                >Extrae SKU, nombres, cantidades y precios automáticamente de PDFs o imágenes de
+                facturas.</span
+              >
+            </div>
+            <span class="product-batch__toggle" aria-hidden="true"></span>
+          </div>
+
+          <div class="product-batch__actions">
+            <button type="button" tuiButton appearance="secondary" size="l" disabled iconStart="@tui.download" i18n="@@products.batch.downloadTemplate">
+              Descargar Plantilla CSV
+            </button>
+            <button type="button" tuiButton size="l" disabled iconStart="@tui.play" i18n="@@products.batch.process">
+              Procesar Lote
+            </button>
+          </div>
+        </section>
+      }
+    </div>
   </div>
 </div>

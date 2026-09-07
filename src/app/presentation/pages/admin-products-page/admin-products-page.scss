@@ -1,78 +1,292 @@
+@use '../../../shared/styles/auth-form';
+
 :host {
   display: block;
 }
 
-.admin-products__viewport {
+.admin-products-shell {
+  display: flex;
   min-height: 100dvh;
-  padding: 2rem 1rem;
   background: var(--oh-color-neutral, #f5f7f9);
 }
 
-.admin-products {
-  width: 100%;
-  max-width: 64rem;
-  margin: 0 auto;
-  padding: 2rem;
-  border-radius: 1.5rem;
-  background: var(--tui-background-base, #fff);
-  box-shadow:
-    0 24px 48px -16px rgba(15, 23, 42, 0.28),
-    0 0 0 1px rgba(15, 23, 42, 0.04);
+.admin-products-main {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem 2.5rem;
 
   &__header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
     margin-bottom: 1.5rem;
 
     h1 {
       margin: 0;
-      font-size: 1.5rem;
+      font-size: 2rem;
+      font-weight: 800;
     }
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
   }
 
   &__caption {
+    margin: 0;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+}
+
+.admin-products-count {
+  padding: 0.125rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.06));
+  color: var(--tui-text-secondary, #6b6b6b);
+}
+
+// Presentational only — search/filters wired up in a later session (see template comment).
+.admin-products-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  opacity: 0.65;
+}
+
+.admin-products-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 20rem;
+
+  tui-icon {
+    position: absolute;
+    left: 0.875rem;
+    font-size: 1.125rem;
+    color: var(--tui-text-secondary, #6b6b6b);
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    min-height: 40px;
+    padding: 0.5rem 0.875rem 0.5rem 2.5rem;
+    font-size: 0.9375rem;
+    border-radius: 999px;
+    border: 1px solid var(--tui-border-normal, #e5e7eb);
+    background: var(--tui-background-base, #fff);
+    color: var(--tui-text-primary, #1a1a1a);
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.admin-products-filters {
+  display: flex;
+  padding: 0.25rem;
+  border-radius: 0.75rem;
+  background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+
+  &__tab {
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    color: var(--tui-text-secondary, #6b6b6b);
+
+    &--active {
+      background: var(--tui-background-base, #fff);
+      color: var(--tui-text-primary, #1a1a1a);
+    }
+  }
+}
+
+.admin-products-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base, #fff);
+  box-shadow: var(--oh-shadow-card);
+}
+
+.admin-products-table {
+  width: 100%;
+  min-width: 32rem;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--tui-border-normal, #e5e7eb);
+  }
+
+  th {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--tui-text-secondary, #6b6b6b);
+
+    tui-icon {
+      margin-left: 0.25rem;
+      font-size: 0.875rem;
+      vertical-align: middle;
+      color: var(--tui-text-secondary, #6b6b6b);
+      opacity: 0.55;
+    }
+  }
+
+  &__muted {
     color: var(--tui-text-secondary, #6b6b6b);
   }
 
-  &__table {
-    width: 100%;
-    border-collapse: collapse;
-
-    th,
-    td {
-      padding: 0.75rem 1rem;
-      text-align: left;
-      border-bottom: 1px solid var(--tui-border-normal, #e5e7eb);
-    }
-
-    th {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--tui-text-secondary, #6b6b6b);
-    }
+  // Wraps the row's action controls — kept off the <td> itself: `display: flex` on a table
+  // cell drops it out of the row's table-cell box model, so its content no longer follows the
+  // shared `vertical-align: middle` and ends up misaligned with the other cells in the row.
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 
     a {
+      display: inline-flex;
       color: var(--tui-text-action);
       text-decoration: none;
 
       &:hover {
-        text-decoration: underline;
+        opacity: 0.75;
       }
     }
+
+    // Presentational only — no delete() on ProductRepository yet.
+    button {
+      display: inline-flex;
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--tui-text-secondary, #6b6b6b);
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
   }
+}
 
-  &__status {
-    display: inline-block;
-    padding: 0.125rem 0.625rem;
-    border-radius: 999px;
-    font-size: 0.8125rem;
-    background: var(--tui-status-positive-pale, #dcfce7);
-    color: var(--tui-status-positive, #16a34a);
+.admin-products-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.625rem;
+  object-fit: cover;
 
-    &--discontinued {
-      background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.06));
+  &--placeholder {
+    background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.06));
+
+    tui-icon {
+      font-size: 1.25rem;
       color: var(--tui-text-secondary, #6b6b6b);
     }
+  }
+}
+
+.admin-products-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  opacity: 0.55;
+  font-size: 0.8125rem;
+  color: var(--tui-text-secondary, #6b6b6b);
+
+  &__controls {
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--tui-border-normal, #e5e7eb);
+      background: var(--tui-background-base, #fff);
+      color: var(--tui-text-secondary, #6b6b6b);
+      cursor: not-allowed;
+    }
+  }
+}
+
+.tone-positive {
+  background: var(--tui-status-positive-pale, #dcfce7);
+  color: var(--tui-status-positive, #16a34a);
+}
+
+.tone-neutral {
+  background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.06));
+  color: var(--tui-text-secondary, #6b6b6b);
+}
+
+.tone-warning {
+  background: var(--tui-status-warning-pale, #fef3c7);
+  color: var(--tui-status-warning, #b45309);
+}
+
+.tone-negative {
+  background: var(--tui-status-negative-pale, #fee2e2);
+  color: var(--tui-status-negative, #d92d20);
+}
+
+.admin-products-pill {
+  display: inline-block;
+  padding: 0.125rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.admin-products-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem;
+  border-radius: 0.75rem;
+  background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+  color: var(--tui-text-secondary, #6b6b6b);
+
+  tui-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-products-shell {
+    flex-direction: column;
+  }
+
+  .admin-products-main {
+    // Extra bottom padding clears AdminTabBar, fixed to the bottom edge at this width.
+    padding: 1.5rem 1.25rem calc(1.5rem + var(--oh-layout-tabbar-height));
+  }
+
+  .admin-products-card {
+    padding: 1.125rem;
   }
 }

@@ -1,51 +1,178 @@
-<div class="admin-products__viewport">
-  <div class="admin-products">
-    <header class="admin-products__header">
-      <h1 i18n="@@products.adminList.title">Productos</h1>
-      <a routerLink="/admin/products/new" tuiButton size="l" i18n="@@products.adminList.new">Nuevo producto</a>
+<div class="admin-products-shell">
+  <app-admin-sidebar />
+  <app-admin-tab-bar />
+
+  <main class="admin-products-main">
+    <header class="admin-products-main__header">
+      <div class="admin-products-main__heading">
+        <h1 i18n="@@products.adminList.title">Productos</h1>
+        @if (products(); as list) {
+          <span class="admin-products-count">{{ list.length }}</span>
+        }
+      </div>
+      <a
+        routerLink="/admin/products"
+        [queryParams]="{ create: '1' }"
+        tuiButton
+        size="l"
+        iconStart="@tui.plus"
+        i18n="@@products.adminList.new"
+        >Nuevo Producto</a
+      >
     </header>
 
     @if (loadError(); as message) {
       <div class="form-error-banner" role="alert">{{ message }}</div>
-    } @else if (!products()) {
-      <p class="admin-products__caption" i18n="@@products.adminList.loading">Cargando productos…</p>
-    } @else if (products()!.length === 0) {
-      <p class="admin-products__caption" i18n="@@products.adminList.empty">
-        Todavía no hay productos registrados.
-      </p>
     } @else {
-      <table class="admin-products__table">
-        <thead>
-          <tr>
-            <th i18n="@@products.adminList.column.sku">SKU</th>
-            <th i18n="@@products.adminList.column.name">Nombre</th>
-            <th i18n="@@products.adminList.column.price">Precio</th>
-            <th i18n="@@products.adminList.column.status">Estado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (product of products()!; track product.id) {
-            <tr>
-              <td>{{ product.sku }}</td>
-              <td>{{ product.name }}</td>
-              <td>${{ product.price.toFixed(2) }}</td>
-              <td>
-                <span class="admin-products__status" [class.admin-products__status--discontinued]="product.status === 'discontinued'">
-                  @if (product.status === 'active') {
-                    <span i18n="@@products.adminList.status.active">Activo</span>
-                  } @else {
-                    <span i18n="@@products.adminList.status.discontinued">Descontinuado</span>
-                  }
-                </span>
-              </td>
-              <td>
-                <a [routerLink]="['/admin/products', product.id, 'edit']" i18n="@@products.adminList.edit">Editar</a>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+      <!-- Search + status filters — presentational only for now, wired up in a later session.
+           Kept inert like the sidebar's not-yet-built sections instead of hidden outright. -->
+      <div class="admin-products-toolbar" aria-disabled="true">
+        <div class="admin-products-search">
+          <tui-icon icon="@tui.search" aria-hidden="true" />
+          <input
+            type="search"
+            disabled
+            placeholder="Buscar por SKU o nombre…"
+            i18n-placeholder="@@products.adminList.search.placeholder"
+            aria-label="Buscar producto"
+            i18n-aria-label="@@products.adminList.search.ariaLabel"
+          />
+        </div>
+        <div class="admin-products-filters" role="tablist">
+          <span class="admin-products-filters__tab admin-products-filters__tab--active" i18n="@@products.adminList.filter.all"
+            >Todos</span
+          >
+          <span class="admin-products-filters__tab" i18n="@@products.adminList.filter.active">Activo</span>
+          <span class="admin-products-filters__tab" i18n="@@products.adminList.filter.discontinued">Descontinuado</span>
+        </div>
+      </div>
+
+      <section class="admin-products-card">
+        @if (!products()) {
+          <p class="admin-products-main__caption" i18n="@@products.adminList.loading">Cargando productos…</p>
+        } @else if (products()!.length === 0) {
+          <div class="admin-products-empty" role="status">
+            <tui-icon icon="@tui.package-x" aria-hidden="true" />
+            <p i18n="@@products.adminList.empty">Todavía no hay productos registrados.</p>
+          </div>
+        } @else {
+          <div style="overflow-x: auto">
+            <table class="admin-products-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th i18n="@@products.adminList.column.sku">SKU</th>
+                  <th>
+                    <span i18n="@@products.adminList.column.name">Nombre</span>
+                    <tui-icon icon="@tui.chevrons-up-down" aria-hidden="true" />
+                  </th>
+                  <th i18n="@@products.adminList.column.category">Categoría</th>
+                  <th>
+                    <span i18n="@@products.adminList.column.price">Precio</span>
+                    <tui-icon icon="@tui.chevrons-up-down" aria-hidden="true" />
+                  </th>
+                  <th i18n="@@products.adminList.column.stock">Stock</th>
+                  <th i18n="@@products.adminList.column.status">Estado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (product of products()!; track product.id) {
+                  @let productStock = rowStock().get(product.id);
+                  @let stockErr = rowStockError().get(product.id);
+                  @let lowStock = !!productStock && productStock.inStock && productStock.totalAvailable < lowStockThreshold;
+                  <tr>
+                    <td>
+                      @if (product.imageUrl) {
+                        <img class="admin-products-thumb" [src]="product.imageUrl" [alt]="product.name" />
+                      } @else {
+                        <span class="admin-products-thumb admin-products-thumb--placeholder">
+                          <tui-icon icon="@tui.image" aria-hidden="true" />
+                        </span>
+                      }
+                    </td>
+                    <td>{{ product.sku }}</td>
+                    <td>{{ product.name }}</td>
+                    <td class="admin-products-table__muted" i18n="@@products.adminList.category.none">Sin categorizar</td>
+                    <td>{{ product.price | copCurrency }}</td>
+                    <td>
+                      @if (productStock) {
+                        <span
+                          class="admin-products-pill"
+                          [class.tone-negative]="!productStock.inStock"
+                          [class.tone-warning]="productStock.inStock && lowStock"
+                          [class.tone-positive]="productStock.inStock && !lowStock"
+                        >
+                          @if (!productStock.inStock) {
+                            <span i18n="@@products.adminList.stock.outOfStock">Sin Stock</span>
+                          } @else {
+                            {{ productStock.totalAvailable }}
+                          }
+                        </span>
+                      } @else {
+                        <span class="admin-products-pill tone-neutral" [attr.title]="stockErr ?? null">—</span>
+                      }
+                    </td>
+                    <td>
+                      <span
+                        class="admin-products-pill"
+                        [class.tone-positive]="product.status === 'active'"
+                        [class.tone-neutral]="product.status === 'discontinued'"
+                      >
+                        @if (product.status === 'active') {
+                          <span i18n="@@products.adminList.status.active">Activo</span>
+                        } @else {
+                          <span i18n="@@products.adminList.status.discontinued">Descontinuado</span>
+                        }
+                      </span>
+                    </td>
+                    <td>
+                      <div class="admin-products-table__actions">
+                        <a
+                          routerLink="/admin/products"
+                          [queryParams]="{ edit: product.id }"
+                          aria-label="Editar"
+                          i18n-aria-label="@@products.adminList.edit"
+                        >
+                          <tui-icon icon="@tui.square-pen" aria-hidden="true" />
+                        </a>
+                        <button type="button" disabled aria-label="Eliminar" i18n-aria-label="@@products.adminList.delete">
+                          <tui-icon icon="@tui.trash-2" aria-hidden="true" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination — presentational only, getAdminList() returns the full list today. -->
+          <div class="admin-products-pagination" aria-disabled="true">
+            <span i18n="@@products.adminList.pagination.page">Página 1 de 1</span>
+            <div class="admin-products-pagination__controls">
+              <button type="button" disabled aria-label="Anterior" i18n-aria-label="@@products.adminList.pagination.prev">
+                <tui-icon icon="@tui.chevron-left" aria-hidden="true" />
+              </button>
+              <button type="button" disabled aria-label="Siguiente" i18n-aria-label="@@products.adminList.pagination.next">
+                <tui-icon icon="@tui.chevron-right" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+        }
+      </section>
     }
-  </div>
+  </main>
+
+  @if (create()) {
+    @defer (on immediate) {
+      <app-create-product-page (closed)="onModalClosed()" />
+    }
+  }
+
+  @if (edit(); as id) {
+    @defer (on immediate) {
+      <app-edit-product-page [productId]="id" (closed)="onModalClosed()" />
+    }
+  }
 </div>

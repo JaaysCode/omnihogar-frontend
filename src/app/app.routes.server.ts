@@ -22,15 +22,6 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
-    path: 'admin/products/new',
-    renderMode: RenderMode.Client,
-  },
-  {
-    // Dynamic :id segment Prerender can't enumerate, plus admin-only + live data.
-    path: 'admin/products/:id/edit',
-    renderMode: RenderMode.Client,
-  },
-  {
     // Admin-only + live order data — not prerenderable.
     path: 'admin/orders',
     renderMode: RenderMode.Client,

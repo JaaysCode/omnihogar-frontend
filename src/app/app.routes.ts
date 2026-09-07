@@ -28,24 +28,14 @@ export const routes: Routes = [
     title: 'Catálogo · OmniHogar',
   },
   {
+    // "Nuevo Producto" / row "Editar" open create-product-page / edit-product-page as
+    // `?create` / `?edit` query-param-driven modals on top of this page (see
+    // admin-products-page.ts/.html) instead of separate routes — still
+    // deep-linkable/bookmarkable/back-button-safe via /admin/products?create=1 or ?edit=<id>.
     path: 'admin/products',
     loadComponent: () =>
       import('./presentation/pages/admin-products-page/admin-products-page').then((m) => m.AdminProductsPage),
     title: 'Productos · OmniHogar',
-    canActivate: [adminGuard],
-  },
-  {
-    path: 'admin/products/new',
-    loadComponent: () =>
-      import('./presentation/pages/create-product-page/create-product-page').then((m) => m.CreateProductPage),
-    title: 'Nuevo producto · OmniHogar',
-    canActivate: [adminGuard],
-  },
-  {
-    path: 'admin/products/:id/edit',
-    loadComponent: () =>
-      import('./presentation/pages/edit-product-page/edit-product-page').then((m) => m.EditProductPage),
-    title: 'Editar producto · OmniHogar',
     canActivate: [adminGuard],
   },
   {
