@@ -1,0 +1,231 @@
+@use '../../../shared/styles/auth-form';
+
+:host {
+  display: block;
+}
+
+.admin-users-shell {
+  display: flex;
+  min-height: 100dvh;
+  background: var(--oh-color-neutral, #f5f7f9);
+}
+
+.admin-users-main {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem 2.5rem;
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 800;
+    }
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__caption {
+    margin: 0;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+}
+
+.admin-users-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base, #fff);
+  box-shadow: var(--oh-shadow-card);
+}
+
+.admin-users-table {
+  width: 100%;
+  min-width: 32rem;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--tui-border-normal, #e5e7eb);
+  }
+
+  th {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+
+  &__muted {
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+
+  &__actions button {
+    display: inline-flex;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--tui-text-secondary, #6b6b6b);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--tui-text-primary, #1a1a1a);
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.admin-users-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+}
+
+.admin-users-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #fff;
+
+  &.avatar--indigo {
+    background: #4f46e5;
+  }
+
+  &.avatar--amber {
+    background: #b45309;
+  }
+
+  &.avatar--sky {
+    background: #0284c7;
+  }
+
+  &.avatar--rose {
+    background: #be123c;
+  }
+
+  &.avatar--emerald {
+    background: #047857;
+  }
+}
+
+.admin-users-pill {
+  display: inline-block;
+  padding: 0.125rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1px solid var(--tui-border-normal, #e5e7eb);
+  background: var(--tui-background-base, #fff);
+  color: var(--tui-text-secondary, #6b6b6b);
+
+  &--admin {
+    border-color: transparent;
+    background: var(--tui-background-accent-1, #1e293b);
+    color: #fff;
+  }
+}
+
+.tone-positive {
+  border-color: transparent;
+  background: var(--tui-status-positive-pale, #dcfce7);
+  color: var(--tui-status-positive, #16a34a);
+}
+
+.tone-negative {
+  border-color: transparent;
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.admin-users-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem;
+  border-radius: 0.75rem;
+  background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+  color: var(--tui-text-secondary, #6b6b6b);
+
+  tui-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+}
+
+.admin-users-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--tui-text-secondary, #6b6b6b);
+
+  &__controls {
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--tui-border-normal, #e5e7eb);
+      background: var(--tui-background-base, #fff);
+      color: var(--tui-text-secondary, #6b6b6b);
+      cursor: pointer;
+
+      &:hover:not(:disabled) {
+        background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.06));
+      }
+
+      &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-users-shell {
+    flex-direction: column;
+  }
+
+  .admin-users-main {
+    // Extra bottom padding clears AdminTabBar, fixed to the bottom edge at this width.
+    padding: 1.5rem 1.25rem calc(1.5rem + var(--oh-layout-tabbar-height));
+  }
+
+  .admin-users-card {
+    padding: 1.125rem;
+  }
+}

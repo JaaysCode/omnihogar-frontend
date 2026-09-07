@@ -1,0 +1,120 @@
+<div class="admin-users-shell">
+  <app-admin-sidebar />
+  <app-admin-tab-bar />
+
+  <main class="admin-users-main">
+    <header class="admin-users-main__header">
+      <div class="admin-users-main__heading">
+        <h1 i18n="@@users.adminList.title">Gestión de Usuarios</h1>
+        <p class="admin-users-main__caption" i18n="@@users.adminList.caption">Administre los accesos y permisos del personal del sistema.</p>
+      </div>
+      <a
+        routerLink="/admin/users"
+        [queryParams]="{ create: '1' }"
+        tuiButton
+        size="l"
+        iconStart="@tui.user-plus"
+        i18n="@@users.adminList.new"
+        >Agregar Nuevo Usuario</a
+      >
+    </header>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    } @else {
+      <section class="admin-users-card">
+        @if (!employees()) {
+          <p class="admin-users-main__caption" i18n="@@users.adminList.loading">Cargando usuarios…</p>
+        } @else if (employees()!.length === 0) {
+          <div class="admin-users-empty" role="status">
+            <tui-icon icon="@tui.user-x" aria-hidden="true" />
+            <p i18n="@@users.adminList.empty">Todavía no hay usuarios registrados.</p>
+          </div>
+        } @else {
+          <div style="overflow-x: auto">
+            <table class="admin-users-table">
+              <thead>
+                <tr>
+                  <th i18n="@@users.adminList.column.user">Usuario</th>
+                  <th i18n="@@users.adminList.column.email">Correo Electrónico</th>
+                  <th i18n="@@users.adminList.column.role">Rol</th>
+                  <th i18n="@@users.adminList.column.status">Estado</th>
+                  <th i18n="@@users.adminList.column.actions">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (employee of pageItems()!; track employee.id) {
+                  <tr>
+                    <td>
+                      <div class="admin-users-identity">
+                        <span class="admin-users-avatar" [class]="avatarClass(employee.id)">{{ initials(employee.fullName) }}</span>
+                        <span>{{ employee.fullName }}</span>
+                      </div>
+                    </td>
+                    <td class="admin-users-table__muted">{{ employee.email }}</td>
+                    <td>
+                      @if (employee.roleName; as role) {
+                        <span class="admin-users-pill" [class.admin-users-pill--admin]="role === 'Admin'">{{ role }}</span>
+                      } @else {
+                        <span class="admin-users-pill admin-users-table__muted" i18n="@@users.adminList.role.none">Sin rol</span>
+                      }
+                    </td>
+                    <td>
+                      <span class="admin-users-pill" [class.tone-positive]="employee.status" [class.tone-negative]="!employee.status">
+                        @if (employee.status) {
+                          <span i18n="@@users.adminList.status.active">Activo</span>
+                        } @else {
+                          <span i18n="@@users.adminList.status.inactive">Inactivo</span>
+                        }
+                      </span>
+                    </td>
+                    <td class="admin-users-table__actions">
+                      <!-- Presentational only — editing an existing employee isn't wired up yet. -->
+                      <button type="button" disabled aria-label="Editar" i18n-aria-label="@@users.adminList.edit">
+                        <tui-icon icon="@tui.pencil" aria-hidden="true" />
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          @if (rangeLabel(); as range) {
+            <div class="admin-users-pagination">
+              <span i18n="@@users.adminList.pagination.range">
+                Mostrando {{ range.start }} a {{ range.end }} de {{ range.total }} usuarios
+              </span>
+              <div class="admin-users-pagination__controls">
+                <button
+                  type="button"
+                  [disabled]="page() === 1"
+                  (click)="goToPage(page() - 1)"
+                  aria-label="Anterior"
+                  i18n-aria-label="@@users.adminList.pagination.prev"
+                >
+                  <tui-icon icon="@tui.chevron-left" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  [disabled]="page() === totalPages()"
+                  (click)="goToPage(page() + 1)"
+                  aria-label="Siguiente"
+                  i18n-aria-label="@@users.adminList.pagination.next"
+                >
+                  <tui-icon icon="@tui.chevron-right" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          }
+        }
+      </section>
+    }
+  </main>
+
+  @if (create()) {
+    @defer (on immediate) {
+      <app-create-employee-page (closed)="onModalClosed()" />
+    }
+  }
+</div>

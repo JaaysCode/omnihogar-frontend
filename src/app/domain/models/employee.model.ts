@@ -15,6 +15,16 @@ export interface Role {
   description: string | null;
 }
 
+/** Row shape for the "Gestión de Usuarios" list, from GET /employees. */
+export interface Employee {
+  id: string;
+  fullName: string;
+  email: string;
+  /** Null if the account somehow has no role assigned yet. */
+  roleName: string | null;
+  status: boolean;
+}
+
 /** Per-field validation messages, keyed by camelCase field name (e.g. "email"). */
 export type FieldErrors = Record<string, string[]>;
 

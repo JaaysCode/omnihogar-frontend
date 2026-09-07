@@ -1,26 +1,42 @@
-<div class="employee-page__viewport">
-  <div class="employee-page">
-    @if (created()) {
-      <div class="employee-page__success" role="status">
-        <h2>Employee account created</h2>
-        <p>The new employee can now sign in with the email and password you set.</p>
-        <button tuiButton type="button" size="l" (click)="createAnother()">Create another</button>
-      </div>
-    } @else {
-      <h2>Create employee</h2>
-      <p class="employee-page__caption">Basic details and a role — permissions come from the role.</p>
+<div class="employee-modal">
+  <button
+    type="button"
+    class="employee-modal__backdrop"
+    (click)="close()"
+    aria-label="Cerrar"
+    i18n-aria-label="@@employees.create.close"
+  ></button>
+
+  <div class="employee-modal__panel" role="dialog" aria-modal="true" aria-labelledby="employee-modal-title" tabindex="-1" #panel>
+    <header class="employee-modal__header">
+      <h1 id="employee-modal-title" i18n="@@employees.create.title">Agregar Nuevo Usuario</h1>
+      <button
+        type="button"
+        class="employee-modal__close"
+        (click)="close()"
+        aria-label="Cerrar"
+        i18n-aria-label="@@employees.create.close"
+      >
+        <tui-icon icon="@tui.x" aria-hidden="true" />
+      </button>
+    </header>
+
+    <div class="employee-modal__body">
+      <p class="employee-modal__caption" i18n="@@employees.create.caption">Datos básicos y un rol — los permisos vienen del rol.</p>
+
       @if (rolesError(); as message) {
         <div class="form-error-banner" role="alert">{{ message }}</div>
       }
       @if (formError(); as message) {
         <div class="form-error-banner" role="alert">{{ message }}</div>
       }
+
       <app-create-employee-form
         [roles]="roles()"
         [pending]="pending()"
         [fieldErrors]="fieldErrors()"
         (submitted)="onSubmit($event)"
       />
-    }
+    </div>
   </div>
 </div>

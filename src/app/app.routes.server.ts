@@ -7,8 +7,8 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
-    // Admin-only, reads localStorage + a live authenticated API — not prerenderable.
-    path: 'admin/employees/new',
+    // Admin-only + live data (list) — not prerenderable.
+    path: 'admin/users',
     renderMode: RenderMode.Client,
   },
   {

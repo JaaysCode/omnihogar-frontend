@@ -13,10 +13,12 @@ export const routes: Routes = [
     canActivate: [adminGuard],
   },
   {
-    path: 'admin/employees/new',
-    loadComponent: () =>
-      import('./presentation/pages/create-employee-page/create-employee-page').then((m) => m.CreateEmployeePage),
-    title: 'Create employee · OmniHogar',
+    // "Agregar Nuevo Usuario" opens create-employee-page as a `?create` query-param-driven modal
+    // on top of this page (see admin-users-page.ts/.html) instead of a separate route — still
+    // deep-linkable/bookmarkable/back-button-safe via /admin/users?create=1.
+    path: 'admin/users',
+    loadComponent: () => import('./presentation/pages/admin-users-page/admin-users-page').then((m) => m.AdminUsersPage),
+    title: 'Usuarios · OmniHogar',
     canActivate: [adminGuard],
   },
   {

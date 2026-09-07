@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { CreateEmployeePayload } from '../../domain/models/employee.model';
-import { CreateEmployeeRequestDto, RoleDto } from './employee-api.dto';
+import { CreateEmployeeRequestDto, EmployeeDto, RoleDto } from './employee-api.dto';
 
 /**
  * Raw HTTP client for the `/employees` and `/roles` endpoints. Transport-only: no error
@@ -13,6 +13,10 @@ import { CreateEmployeeRequestDto, RoleDto } from './employee-api.dto';
 export class EmployeeApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(API_BASE_URL);
+
+  getEmployees(): Observable<EmployeeDto[]> {
+    return this.http.get<EmployeeDto[]>(`${this.baseUrl}/employees`);
+  }
 
   createEmployee(payload: CreateEmployeePayload): Observable<string> {
     const body: CreateEmployeeRequestDto = {

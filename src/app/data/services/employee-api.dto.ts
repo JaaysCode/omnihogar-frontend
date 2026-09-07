@@ -14,3 +14,12 @@ export interface RoleDto {
   name: string;
   description: string | null;
 }
+
+export interface EmployeeDto {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  roleName: string | null;
+  status: boolean;
+}

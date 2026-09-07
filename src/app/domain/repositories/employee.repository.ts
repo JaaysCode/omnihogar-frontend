@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { CreateEmployeePayload, Role } from '../models/employee.model';
+import { CreateEmployeePayload, Employee, Role } from '../models/employee.model';
 
 /**
  * Domain-facing contract for employee provisioning. The presentation layer depends on
@@ -9,4 +9,6 @@ import { CreateEmployeePayload, Role } from '../models/employee.model';
 export abstract class EmployeeRepository {
   abstract createEmployee(payload: CreateEmployeePayload): Observable<string>;
   abstract getRoles(): Observable<Role[]>;
+  /** Admin "Gestión de Usuarios" list — employee accounts only. */
+  abstract getEmployees(): Observable<Employee[]>;
 }

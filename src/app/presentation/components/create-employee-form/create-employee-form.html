@@ -1,6 +1,6 @@
 @if (attemptedSubmit && form.invalid && invalidFieldSummary.length > 0) {
   <div class="error-summary" role="alert" tabindex="-1" #errorSummary aria-labelledby="create-employee-error-title">
-    <h2 id="create-employee-error-title">Please fix the following</h2>
+    <h2 id="create-employee-error-title" i18n="@@employees.create.errorSummary.title">Corrige lo siguiente</h2>
     <ul>
       @for (item of invalidFieldSummary; track item.control) {
         <li>
@@ -16,7 +16,9 @@
 <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
   <div class="auth-form__row">
     <div class="auth-form__field">
-      <label for="create-employee-firstName">First name <span aria-hidden="true">*</span></label>
+      <label for="create-employee-firstName" i18n="@@employees.create.field.firstName.label"
+        >Nombre <span aria-hidden="true">*</span></label
+      >
       <div class="auth-form__input">
         <tui-icon icon="@tui.user" aria-hidden="true" />
         <input
@@ -34,7 +36,9 @@
     </div>
 
     <div class="auth-form__field">
-      <label for="create-employee-lastName">Last name <span aria-hidden="true">*</span></label>
+      <label for="create-employee-lastName" i18n="@@employees.create.field.lastName.label"
+        >Apellido <span aria-hidden="true">*</span></label
+      >
       <div class="auth-form__input">
         <tui-icon icon="@tui.user" aria-hidden="true" />
         <input
@@ -53,7 +57,9 @@
   </div>
 
   <div class="auth-form__field">
-    <label for="create-employee-email">Email <span aria-hidden="true">*</span></label>
+    <label for="create-employee-email" i18n="@@employees.create.field.email.label"
+      >Correo electrónico <span aria-hidden="true">*</span></label
+    >
     <div class="auth-form__input">
       <tui-icon icon="@tui.mail" aria-hidden="true" />
       <input
@@ -71,7 +77,9 @@
   </div>
 
   <div class="auth-form__field">
-    <label for="create-employee-phone">Phone <span class="auth-form__optional">(optional)</span></label>
+    <label for="create-employee-phone" i18n="@@employees.create.field.phone.label"
+      >Teléfono <span class="auth-form__optional">(opcional)</span></label
+    >
     <div class="auth-form__input">
       <tui-icon icon="@tui.phone" aria-hidden="true" />
       <input
@@ -89,7 +97,9 @@
   </div>
 
   <div class="auth-form__field">
-    <label for="create-employee-password">Password <span aria-hidden="true">*</span></label>
+    <label for="create-employee-password" i18n="@@employees.create.field.password.label"
+      >Contraseña <span aria-hidden="true">*</span></label
+    >
     <div class="auth-form__input">
       <tui-icon icon="@tui.lock" aria-hidden="true" />
       <input
@@ -104,32 +114,46 @@
     @if (errorFor('password'); as message) {
       <p class="auth-form__error" id="create-employee-password-error">{{ message }}</p>
     } @else {
-      <p class="auth-form__hint" id="create-employee-password-hint">At least 8 characters, with a letter and a number.</p>
+      <p class="auth-form__hint" id="create-employee-password-hint" i18n="@@employees.create.field.password.hint">
+        Al menos 8 caracteres, con una letra y un número.
+      </p>
     }
   </div>
 
   <div class="auth-form__field">
-    <label for="create-employee-roleId">Role <span aria-hidden="true">*</span></label>
-    <div class="auth-form__input">
-      <tui-icon icon="@tui.shield" aria-hidden="true" />
-      <select
-        id="create-employee-roleId"
-        formControlName="roleId"
-        [attr.aria-invalid]="!!errorFor('roleId')"
-        [attr.aria-describedby]="errorFor('roleId') ? 'create-employee-roleId-error' : null"
-      >
-        <option value="" disabled>Select a role</option>
+    <label for="create-employee-roleId" i18n="@@employees.create.field.roleId.label"
+      >Rol <span aria-hidden="true">*</span></label
+    >
+    <button
+      id="create-employee-roleId"
+      type="button"
+      tuiButton
+      tuiChevron
+      appearance="outline"
+      size="l"
+      class="auth-form__dropdown-trigger"
+      [class.auth-form__dropdown-trigger--placeholder]="!selectedRole()"
+      [tuiDropdown]="roleDropdown"
+      [(tuiDropdownOpen)]="roleMenuOpen"
+      [attr.aria-expanded]="roleMenuOpen()"
+      [attr.aria-invalid]="!!errorFor('roleId')"
+      [attr.aria-describedby]="errorFor('roleId') ? 'create-employee-roleId-error' : null"
+    >
+      {{ roleButtonLabel() }}
+    </button>
+    <ng-template #roleDropdown>
+      <tui-data-list>
         @for (role of roles(); track role.id) {
-          <option [value]="role.id">{{ role.name }}</option>
+          <button tuiOption type="button" (click)="onSelectRole(role)">{{ role.name }}</button>
         }
-      </select>
-    </div>
+      </tui-data-list>
+    </ng-template>
     @if (errorFor('roleId'); as message) {
       <p class="auth-form__error" id="create-employee-roleId-error">{{ message }}</p>
     }
   </div>
 
   <button tuiButton type="submit" size="l" [disabled]="pending()" class="auth-form__submit">
-    {{ pending() ? 'Creating account…' : 'Create employee' }}
+    {{ submitLabel() }}
   </button>
 </form>

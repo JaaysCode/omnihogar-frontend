@@ -1,10 +1,20 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { EmployeeApiError, FieldErrors, Role } from '../../domain/models/employee.model';
+import { Employee, EmployeeApiError, FieldErrors, Role } from '../../domain/models/employee.model';
 import { ApiProblemDto } from '../services/auth-api.dto';
-import { RoleDto } from '../services/employee-api.dto';
+import { EmployeeDto, RoleDto } from '../services/employee-api.dto';
 
 export function toRole(dto: RoleDto): Role {
   return { id: dto.id, name: dto.name, description: dto.description };
+}
+
+export function toEmployee(dto: EmployeeDto): Employee {
+  return {
+    id: dto.id,
+    fullName: `${dto.firstName} ${dto.lastName}`,
+    email: dto.email,
+    roleName: dto.roleName,
+    status: dto.status,
+  };
 }
 
 /** Lowercases the backend's PascalCase field-error keys (e.g. "Email" -> "email"). */
