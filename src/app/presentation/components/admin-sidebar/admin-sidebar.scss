@@ -1,0 +1,129 @@
+// No global box-sizing: border-box reset in this project (see auth-page.scss) — set it
+// explicitly wherever width/height is combined with padding, or the box grows past its
+// intended size. `<a>` defaults to content-box (unlike `<button>`, whose UA stylesheet
+// already defaults to border-box), which is exactly why the nav links used to overflow
+// past the sidebar's right edge while the "Cerrar Sesión" button never did.
+:host {
+  display: flex;
+  flex-direction: column;
+  // Pin to the viewport instead of stretching with the flex row's cross size (which grows to
+  // match `main`'s content, however tall that is) — otherwise "Cerrar Sesión" ends up past
+  // the fold on any page long enough to scroll. `align-self: flex-start` opts out of the
+  // parent shell's default stretch so the explicit viewport height below actually applies.
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100dvh;
+}
+
+// Below this width the column sidebar would eat most of the screen, so AdminTabBar (fixed to
+// the bottom edge) takes over instead — every `*-shell` still renders both, this is what makes
+// only one of them actually show up. Matches AdminTabBar's own breakpoint exactly; the two must
+// move together since they occupy the same job.
+@media (max-width: 768px) {
+  :host {
+    display: none;
+  }
+}
+
+.admin-sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-sizing: border-box;
+  width: var(--oh-layout-sidebar-width);
+  padding: 1.5rem 1rem;
+  background: var(--tui-background-base, #fff);
+  border-right: 1px solid var(--tui-border-normal, #e5e7eb);
+
+  &__brand {
+    padding: 0 0.75rem 1.5rem;
+
+    &-name {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--tui-text-action);
+    }
+
+    &-tagline {
+      margin: 0.125rem 0 0;
+      font-size: 0.8125rem;
+      color: var(--tui-text-secondary, #6b6b6b);
+    }
+  }
+
+  &__list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__footer {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--tui-border-normal, #e5e7eb);
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.625rem 0.75rem;
+    border: none;
+    border-radius: 0.625rem;
+    background: none;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--tui-text-primary, #1a1a1a);
+    text-decoration: none;
+    cursor: pointer;
+    min-height: 44px;
+
+    tui-icon {
+      font-size: 1.125rem;
+      color: var(--tui-text-secondary, #6b6b6b);
+    }
+
+    &:hover {
+      background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--tui-background-accent-1);
+      outline-offset: 2px;
+    }
+
+    &--active {
+      background: var(--tui-background-accent-2, #58c8e6);
+      color: #0a2b33;
+
+      tui-icon {
+        color: #0a2b33;
+      }
+
+      &:hover {
+        background: var(--tui-background-accent-2-hover, #74d3ec);
+      }
+    }
+
+    &--disabled {
+      cursor: default;
+      color: var(--tui-text-secondary, #6b6b6b);
+      opacity: 0.55;
+
+      &:hover {
+        background: none;
+      }
+    }
+  }
+}

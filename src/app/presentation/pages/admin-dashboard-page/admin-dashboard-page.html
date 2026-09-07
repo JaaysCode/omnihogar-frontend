@@ -1,0 +1,193 @@
+<div class="dashboard-shell">
+  <app-admin-sidebar />
+  <app-admin-tab-bar />
+
+  <main class="dashboard-main">
+    <header class="dashboard-main__header">
+      <div>
+        <h1 i18n="@@dashboard.title">Resumen</h1>
+        <p class="dashboard-main__subtitle muted" i18n="@@dashboard.subtitle">
+          Administre sus operaciones comerciales y rendimiento.
+        </p>
+      </div>
+      <a
+        routerLink="/admin/products"
+        [queryParams]="{ create: '1' }"
+        tuiButton
+        size="l"
+        iconStart="@tui.plus"
+        i18n="@@dashboard.addProduct"
+      >
+        Añadir Producto
+      </a>
+    </header>
+
+    <section class="dashboard-stats" aria-label="Estadísticas" i18n-aria-label="@@dashboard.stats.ariaLabel">
+      @for (stat of statCards; track stat.label) {
+        <article class="stat-card" [class.stat-card--warning]="stat.variant === 'warning'">
+          <div class="stat-card__top">
+            <span class="stat-card__label muted semibold">{{ stat.label }}</span>
+            <span class="stat-card__icon center-flex">
+              <tui-icon [icon]="stat.icon" aria-hidden="true" />
+            </span>
+          </div>
+          <p class="stat-card__value">{{ stat.value }}</p>
+          <p class="stat-card__trend semibold flex-c">
+            <tui-icon [icon]="stat.trendIcon" aria-hidden="true" />
+            <span>{{ stat.trend }}</span>
+          </p>
+        </article>
+      }
+    </section>
+
+    <section class="dashboard-panels">
+      <article class="panel-card chart-card">
+        <header class="chart-card__header">
+          <h2 i18n="@@dashboard.chart.title">Ventas por Canal</h2>
+          <ul class="chart-card__legend muted">
+            <li class="flex-c"><span class="chart-card__swatch" style="background: var(--tui-background-accent-1)"></span>Web</li>
+            <li class="flex-c"><span class="chart-card__swatch" style="background: var(--oh-color-secondary)"></span>Tienda</li>
+            <li class="flex-c"><span class="chart-card__swatch" style="background: var(--tui-background-accent-2)"></span>Chatbot</li>
+          </ul>
+        </header>
+
+        <div class="chart" role="img" i18n-aria-label="@@dashboard.chart.ariaLabel" aria-label="Ventas por canal, últimos 5 días">
+          <div class="chart__axis muted">
+            <span>100k</span>
+            <span>75k</span>
+            <span>50k</span>
+            <span>25k</span>
+            <span>0</span>
+          </div>
+          <div class="chart__plot">
+            @for (sample of chartSeries; track sample.label) {
+              <div class="chart__group">
+                <div class="chart__bars">
+                  <span class="chart__bar" style="background: var(--tui-background-accent-1)" [style.height]="barHeight(sample.web)"></span>
+                  <span class="chart__bar" style="background: var(--oh-color-secondary)" [style.height]="barHeight(sample.store)"></span>
+                  <span class="chart__bar" style="background: var(--tui-background-accent-2)" [style.height]="barHeight(sample.chatbot)"></span>
+                </div>
+                <span class="chart__group-label muted">{{ sample.label }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </article>
+
+      <article class="panel-card team-card">
+        <header class="team-card__header">
+          <h2 i18n="@@dashboard.team.title">Roles de Equipo</h2>
+          <tui-icon icon="@tui.plus" aria-hidden="true" />
+        </header>
+
+        <ul class="team-list">
+          @for (member of teamMembers; track member.name) {
+            <li class="team-list__item flex-c">
+              <span class="team-list__avatar center-flex">{{ member.initials }}</span>
+              <div class="team-list__info">
+                <span class="team-list__name semibold">{{ member.name }}</span>
+                <span class="team-list__role semibold">{{ member.role }}</span>
+              </div>
+              <tui-icon icon="@tui.square-pen" class="muted" aria-hidden="true" />
+            </li>
+          }
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel-card recent-products">
+      <header class="recent-products__header">
+        <h2 i18n="@@dashboard.recent.title">Productos Recientes</h2>
+        <div class="recent-products__search flex-c">
+          <tui-icon icon="@tui.search" class="muted" aria-hidden="true" />
+          <input
+            type="search"
+            [value]="searchTerm()"
+            (input)="onSearchInput(searchInput.value)"
+            #searchInput
+            placeholder="Buscar productos…"
+            i18n-placeholder="@@dashboard.recent.search.placeholder"
+            aria-label="Buscar productos"
+            i18n-aria-label="@@dashboard.recent.search.ariaLabel"
+          />
+        </div>
+      </header>
+
+      @if (loadError(); as message) {
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      } @else if (!allProducts()) {
+        <p class="recent-products__caption muted" i18n="@@dashboard.recent.loading">Cargando productos…</p>
+      } @else if (displayedProducts().length === 0) {
+        <p class="recent-products__caption muted" i18n="@@dashboard.recent.empty">No se encontraron productos.</p>
+      } @else {
+        <div style="overflow-x: auto">
+        <table class="recent-products__table">
+          <thead>
+            <tr>
+              <th class="muted semibold" i18n="@@dashboard.recent.column.product">Producto</th>
+              <th class="muted semibold" i18n="@@dashboard.recent.column.sku">SKU</th>
+              <th class="muted semibold" i18n="@@dashboard.recent.column.price">Precio</th>
+              <th class="muted semibold" i18n="@@dashboard.recent.column.status">Estado</th>
+              <th class="muted semibold" i18n="@@dashboard.recent.column.actions">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of displayedProducts(); track product.id) {
+              <tr>
+                <td>
+                  <div class="recent-products__product flex-c">
+                    @if (product.imageUrl) {
+                      <img [src]="product.imageUrl" [alt]="product.name" class="recent-products__thumb" />
+                    } @else {
+                      <span class="recent-products__thumb recent-products__thumb--placeholder muted center-flex">
+                        <tui-icon icon="@tui.package" aria-hidden="true" />
+                      </span>
+                    }
+                    <span class="semibold">{{ product.name }}</span>
+                  </div>
+                </td>
+                <td>{{ product.sku }}</td>
+                <td>{{ product.price | copCurrency }}</td>
+                <td>
+                  <span
+                    class="recent-products__status"
+                    [class.recent-products__status--discontinued]="product.status === 'discontinued'"
+                  >
+                    @if (product.status === 'active') {
+                      <span i18n="@@dashboard.recent.status.active">En Stock</span>
+                    } @else {
+                      <span i18n="@@dashboard.recent.status.discontinued">Descontinuado</span>
+                    }
+                  </span>
+                </td>
+                <td>
+                  <div class="recent-products__actions flex-c">
+                    <a
+                      routerLink="/admin/products"
+                      [queryParams]="{ edit: product.id }"
+                      class="recent-products__quick-edit semibold"
+                      i18n="@@dashboard.recent.quickEdit"
+                    >
+                      Edición Rápida
+                    </a>
+                    <!-- No delete endpoint on ProductRepository yet — inert, shell ahead of backend. -->
+                    <button
+                      type="button"
+                      class="recent-products__delete center-flex"
+                      disabled
+                      aria-label="Eliminar producto"
+                      i18n-aria-label="@@dashboard.recent.delete.ariaLabel"
+                    >
+                      <tui-icon icon="@tui.trash-2" aria-hidden="true" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        </div>
+      }
+    </section>
+  </main>
+</div>

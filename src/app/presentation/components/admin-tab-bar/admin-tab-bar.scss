@@ -1,0 +1,124 @@
+// Desktop keeps the sidebar; this only takes over below AdminSidebar's own breakpoint (the two
+// must move together — see the comment on its media query).
+:host {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  :host {
+    display: block;
+    position: fixed;
+    z-index: 20;
+    inset-inline: 0;
+    inset-block-end: 0;
+    // Without its own compositing layer, mobile Safari/Chrome defer repainting a `position: fixed`
+    // element until momentum scrolling settles — it visually vanishes mid-scroll and only snaps
+    // back into place once the page stops. Promoting it to a layer up front keeps it painted
+    // (and pinned) through the whole scroll, not just at rest.
+    transform: translateZ(0);
+    will-change: transform;
+  }
+}
+
+.tab-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  height: var(--oh-layout-tabbar-height);
+  padding-inline: 0.25rem;
+  // The home indicator on a modern phone eats the bottom edge; the inset keeps the tabs above
+  // it while the bar's own background still runs to the physical edge.
+  padding-block-end: env(safe-area-inset-bottom);
+  border-top: 1px solid var(--tui-border-normal, #e5e7eb);
+  background: var(--tui-background-base, #fff);
+  box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.06);
+}
+
+// Icon over label, the whole cell tappable — the target is the column, not the glyph.
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1875rem;
+  height: 100%;
+  min-height: 44px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--tui-text-secondary, #6b6b6b);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+
+  tui-icon {
+    font-size: 1.25rem;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tui-background-accent-1);
+    outline-offset: -2px;
+  }
+}
+
+.tab--active {
+  color: var(--tui-text-action);
+}
+
+.more-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 12rem;
+  padding: 0.5rem;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.625rem 0.75rem;
+    border: none;
+    border-radius: 0.625rem;
+    background: none;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--tui-text-primary, #1a1a1a);
+    text-decoration: none;
+    cursor: pointer;
+    min-height: 44px;
+
+    tui-icon {
+      font-size: 1.125rem;
+      color: var(--tui-text-secondary, #6b6b6b);
+    }
+
+    &:hover {
+      background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+    }
+
+    &--active {
+      color: var(--tui-text-action);
+    }
+
+    &--disabled {
+      cursor: default;
+      color: var(--tui-text-secondary, #6b6b6b);
+      opacity: 0.55;
+
+      &:hover {
+        background: none;
+      }
+    }
+  }
+}

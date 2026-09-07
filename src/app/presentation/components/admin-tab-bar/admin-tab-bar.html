@@ -1,0 +1,56 @@
+<nav class="tab-bar" aria-label="Admin" i18n-aria-label="@@admin.nav.ariaLabel">
+  @for (item of primaryItems; track item.label) {
+    @if (item.link; as link) {
+      <a class="tab" [routerLink]="link" routerLinkActive="tab--active" [routerLinkActiveOptions]="{ exact: true }">
+        <tui-icon [icon]="item.icon" aria-hidden="true" />
+        <span>{{ item.compactLabel ?? item.label }}</span>
+      </a>
+    } @else {
+      <button type="button" class="tab" disabled>
+        <tui-icon [icon]="item.icon" aria-hidden="true" />
+        <span>{{ item.compactLabel ?? item.label }}</span>
+      </button>
+    }
+  }
+
+  <button
+    type="button"
+    class="tab"
+    [tuiDropdown]="moreMenu"
+    [(tuiDropdownOpen)]="menuOpen"
+    tuiDropdownDirection="top"
+    i18n-aria-label="@@admin.nav.more"
+    aria-label="Más opciones"
+  >
+    <tui-icon icon="@tui.menu" aria-hidden="true" />
+    <span i18n="@@admin.nav.more">Más</span>
+  </button>
+</nav>
+
+<ng-template #moreMenu>
+  <div class="more-menu">
+    @for (item of overflowItems; track item.label) {
+      @if (item.link; as link) {
+        <a
+          [routerLink]="link"
+          routerLinkActive="more-menu__item--active"
+          class="more-menu__item"
+          (click)="menuOpen.set(false)"
+        >
+          <tui-icon [icon]="item.icon" aria-hidden="true" />
+          <span>{{ item.label }}</span>
+        </a>
+      } @else {
+        <span class="more-menu__item more-menu__item--disabled" aria-disabled="true">
+          <tui-icon [icon]="item.icon" aria-hidden="true" />
+          <span>{{ item.label }}</span>
+        </span>
+      }
+    }
+
+    <button type="button" class="more-menu__item" (click)="onLogout()">
+      <tui-icon icon="@tui.log-out" aria-hidden="true" />
+      <span i18n="@@admin.nav.logout">Cerrar Sesión</span>
+    </button>
+  </div>
+</ng-template>

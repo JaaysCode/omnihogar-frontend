@@ -6,6 +6,13 @@ export const routes: Routes = [
   { path: 'register', component: AuthPage, data: { mode: 'register' }, title: 'Create account · OmniHogar' },
   { path: 'login', component: AuthPage, data: { mode: 'login' }, title: 'Sign in · OmniHogar' },
   {
+    path: 'admin/dashboard',
+    loadComponent: () =>
+      import('./presentation/pages/admin-dashboard-page/admin-dashboard-page').then((m) => m.AdminDashboardPage),
+    title: 'Panel de control · OmniHogar',
+    canActivate: [adminGuard],
+  },
+  {
     path: 'admin/employees/new',
     loadComponent: () =>
       import('./presentation/pages/create-employee-page/create-employee-page').then((m) => m.CreateEmployeePage),

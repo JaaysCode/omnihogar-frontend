@@ -1,0 +1,35 @@
+<nav class="admin-sidebar" aria-label="Admin" i18n-aria-label="@@admin.nav.ariaLabel">
+  <div class="admin-sidebar__brand">
+    <p class="admin-sidebar__brand-name">OmniHogar Admin</p>
+    <p class="admin-sidebar__brand-tagline" i18n="@@admin.brand.tagline">Centro Logístico</p>
+  </div>
+
+  <ul class="admin-sidebar__list">
+    @for (item of navItems; track item.label) {
+      <li>
+        @if (item.link) {
+          <a
+            [routerLink]="item.link"
+            routerLinkActive="admin-sidebar__item--active"
+            class="admin-sidebar__item"
+          >
+            <tui-icon [icon]="item.icon" aria-hidden="true" />
+            <span>{{ item.label }}</span>
+          </a>
+        } @else {
+          <span class="admin-sidebar__item admin-sidebar__item--disabled" aria-disabled="true">
+            <tui-icon [icon]="item.icon" aria-hidden="true" />
+            <span>{{ item.label }}</span>
+          </span>
+        }
+      </li>
+    }
+  </ul>
+
+  <div class="admin-sidebar__footer">
+    <button type="button" class="admin-sidebar__item" (click)="onLogout()">
+      <tui-icon icon="@tui.log-out" aria-hidden="true" />
+      <span i18n="@@admin.nav.logout">Cerrar Sesión</span>
+    </button>
+  </div>
+</nav>

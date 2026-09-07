@@ -1,0 +1,443 @@
+@use '../../../shared/styles/auth-form';
+
+:host {
+  display: block;
+}
+
+// Two tiny utilities pulled out because they'd otherwise repeat verbatim across most
+// blocks below — keeps this file under the anyComponentStyle budget without changing layout.
+.muted {
+  color: var(--tui-text-secondary);
+}
+
+.semibold {
+  font-weight: 600;
+}
+
+.flex-c {
+  display: flex;
+  align-items: center;
+}
+
+.center-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-shell {
+  display: flex;
+  min-height: 100dvh;
+  background: var(--oh-color-neutral);
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+  }
+}
+
+.dashboard-main {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem 2.5rem 3rem;
+
+  @media (max-width: 1024px) {
+    padding: 1.5rem 1.25rem 2rem;
+  }
+
+  // Extra bottom padding clears AdminTabBar, fixed to the bottom edge at this width.
+  @media (max-width: 768px) {
+    padding-bottom: calc(2rem + var(--oh-layout-tabbar-height));
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    h1 {
+      margin: 0;
+      font-size: 2.25rem;
+      font-weight: 800;
+    }
+  }
+
+  &__subtitle {
+    margin: 0.375rem 0 0;
+  }
+}
+
+.panel-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base);
+  box-shadow: var(--oh-shadow-card);
+
+  h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+}
+
+// --- Stat cards --------------------------------------------------------
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base);
+  box-shadow: var(--oh-shadow-card);
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  &__label {
+    font-size: 0.9375rem;
+  }
+
+  &__icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.625rem;
+    background: var(--oh-color-neutral);
+    color: var(--tui-text-action);
+  }
+
+  &__value {
+    margin: 0 0 0.375rem;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+
+  &__trend {
+    gap: 0.375rem;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--tui-status-positive);
+
+    tui-icon {
+      font-size: 1rem;
+    }
+  }
+
+  &--warning {
+    .stat-card__icon {
+      background: var(--tui-status-negative-pale);
+      color: var(--tui-status-negative);
+    }
+
+    .stat-card__trend {
+      color: var(--tui-status-negative);
+    }
+  }
+}
+
+// --- Chart + team row ----------------------------------------------------
+// Bar/swatch colours are set inline in the template (style="background:…") rather than as
+// modifier classes here — three colours × two element kinds would otherwise double the rules.
+
+.dashboard-panels {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-card__header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-card__legend {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+
+  li {
+    gap: 0.375rem;
+  }
+}
+
+.chart-card__swatch {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 0.1875rem;
+}
+
+.chart {
+  display: flex;
+  gap: 0.75rem;
+  height: 16rem;
+
+  &__axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 1.5rem;
+    font-size: 0.75rem;
+  }
+
+  &__plot {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    gap: 1.5rem;
+    padding-left: 0.5rem;
+    border-left: 1px solid var(--tui-border-normal);
+    border-bottom: 1px solid var(--tui-border-normal);
+  }
+
+  &__group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    height: 100%;
+
+    &-label {
+      font-size: 0.75rem;
+    }
+  }
+
+  &__bars {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.25rem;
+    width: 100%;
+  }
+
+  &__bar {
+    flex: 1;
+    min-height: 2px;
+    border-radius: 0.25rem 0.25rem 0 0;
+  }
+}
+
+// --- Team roles ------------------------------------------------------------
+
+.team-card__header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  tui-icon {
+    font-size: 1.125rem;
+    color: var(--tui-text-action);
+  }
+}
+
+.team-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+
+  &__item {
+    gap: 0.75rem;
+
+    tui-icon {
+      flex-shrink: 0;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    background: var(--oh-color-secondary);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__role {
+    align-self: flex-start;
+    margin-top: 0.1875rem;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    background: var(--tui-background-accent-2);
+    color: #0a2b33;
+  }
+}
+
+// --- Recent products ---------------------------------------------------
+
+.recent-products {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__search {
+    position: relative;
+    width: 18rem;
+    max-width: 100%;
+
+    tui-icon {
+      position: absolute;
+      left: 0.875rem;
+      font-size: 1.125rem;
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      min-height: 40px;
+      padding: 0.5rem 0.875rem 0.5rem 2.5rem;
+      font-size: 0.875rem;
+      border-radius: 999px;
+      border: 1px solid var(--tui-border-normal);
+      background: var(--oh-color-neutral);
+
+      &:focus-visible {
+        outline: 2px solid var(--tui-background-accent-1);
+      }
+    }
+  }
+
+  &__table {
+    width: 100%;
+    min-width: 32rem;
+    // Fixed layout + explicit column widths: columns stretch to fill the full card width
+    // (auto layout was leaving the "Estado"/"Acciones" columns at content width, wasting
+    // the space on the right instead of spreading it between columns).
+    table-layout: fixed;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 0.75rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--tui-border-normal);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    th {
+      font-size: 0.8125rem;
+    }
+
+    th:first-child,
+    td:first-child {
+      width: 34%;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 16%;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 16%;
+    }
+
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 16%;
+    }
+
+    th:last-child,
+    td:last-child {
+      width: 18%;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  &__product {
+    gap: 0.75rem;
+  }
+
+  &__thumb {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    flex-shrink: 0;
+
+    &--placeholder {
+      background: var(--oh-color-neutral);
+    }
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 0.125rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    background: var(--tui-status-positive-pale);
+    color: var(--tui-status-positive);
+
+    &--discontinued {
+      background: var(--tui-status-warning-pale);
+      color: var(--tui-status-warning);
+    }
+  }
+
+  &__actions {
+    gap: 0.75rem;
+  }
+
+  &__quick-edit {
+    padding: 0.375rem 0.875rem;
+    border: 1px solid var(--tui-background-accent-1);
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--tui-text-action);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  &__delete {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: none;
+    color: var(--tui-status-negative);
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}

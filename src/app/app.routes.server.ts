@@ -2,6 +2,11 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
+    // Admin-only + live stats/catalog data — not prerenderable.
+    path: 'admin/dashboard',
+    renderMode: RenderMode.Client,
+  },
+  {
     // Admin-only, reads localStorage + a live authenticated API — not prerenderable.
     path: 'admin/employees/new',
     renderMode: RenderMode.Client,
