@@ -1,3 +1,5 @@
+export type { Role, Permission } from './role.model';
+
 /** Payload for POST /employees. */
 export interface CreateEmployeePayload {
   firstName: string;
@@ -8,13 +10,6 @@ export interface CreateEmployeePayload {
   roleId: string;
 }
 
-/** Assignable role, from GET /roles. */
-export interface Role {
-  id: string;
-  name: string;
-  description: string | null;
-}
-
 /** Row shape for the "Gestión de Usuarios" list, from GET /employees. */
 export interface Employee {
   id: string;
@@ -22,6 +17,8 @@ export interface Employee {
   email: string;
   /** Null if the account somehow has no role assigned yet. */
   roleName: string | null;
+  /** Id of the assigned role, for the "cambiar rol" editor (HU-31). */
+  roleId: string | null;
   status: boolean;
 }
 

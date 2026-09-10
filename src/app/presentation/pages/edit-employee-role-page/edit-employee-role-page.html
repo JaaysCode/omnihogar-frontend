@@ -1,0 +1,90 @@
+<div class="role-edit-modal">
+  <button
+    type="button"
+    class="role-edit-modal__backdrop"
+    (click)="close()"
+    aria-label="Cerrar"
+    i18n-aria-label="@@users.editRole.close"
+  ></button>
+
+  <div
+    class="role-edit-modal__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="employee-role-modal-title"
+    tabindex="-1"
+    #panel
+  >
+    <header class="role-edit-modal__header">
+      <h1 id="employee-role-modal-title" i18n="@@users.editRole.title">Cambiar rol</h1>
+      <button
+        type="button"
+        class="role-edit-modal__close"
+        (click)="close()"
+        aria-label="Cerrar"
+        i18n-aria-label="@@users.editRole.close"
+      >
+        <tui-icon icon="@tui.x" aria-hidden="true" />
+      </button>
+    </header>
+
+    <div class="role-edit-modal__body">
+      @if (loadError(); as message) {
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      } @else if (!ready()) {
+        <p class="role-edit-modal__caption" i18n="@@users.editRole.loading">Cargando datos…</p>
+      } @else {
+        <p class="role-edit-modal__caption">
+          <span i18n="@@users.editRole.caption">Asigna un rol a</span>
+          <strong>{{ employee()!.fullName }}</strong
+          >. <span i18n="@@users.editRole.caption.apply">Deberá volver a iniciar sesión para aplicar los permisos.</span>
+        </p>
+
+        @if (formError(); as message) {
+          <div class="form-error-banner" role="alert">{{ message }}</div>
+        }
+
+        <form (submit)="$event.preventDefault(); onSubmit()">
+          <div class="role-edit-field">
+            <span id="employee-role-label" class="role-edit-field__label" i18n="@@users.editRole.field.label">Rol</span>
+            <button
+              type="button"
+              tuiButton
+              tuiChevron
+              appearance="outline"
+              size="l"
+              class="role-edit-field__trigger"
+              [class.role-edit-field__trigger--placeholder]="!selectedRoleId()"
+              [tuiDropdown]="roleDropdown"
+              [(tuiDropdownOpen)]="menuOpen"
+              [attr.aria-expanded]="menuOpen()"
+              aria-labelledby="employee-role-label"
+            >
+              {{ selectedRoleName() }}
+            </button>
+            <ng-template #roleDropdown>
+              <tui-data-list>
+                @for (role of roles(); track role.id) {
+                  <button tuiOption type="button" (click)="onSelectRole(role)">{{ role.name }}</button>
+                }
+              </tui-data-list>
+            </ng-template>
+          </div>
+
+          <div class="role-edit-modal__actions">
+            <button type="button" class="role-edit-modal__cancel" (click)="close()" i18n="@@users.editRole.cancel">
+              Cancelar
+            </button>
+            <button type="submit" tuiButton size="l" [disabled]="pending() || !dirty()">
+              @if (pending()) {
+                <span i18n="@@users.editRole.submit.pending">Guardando…</span>
+              } @else {
+                <span i18n="@@users.editRole.submit.idle">Guardar rol</span>
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</div>

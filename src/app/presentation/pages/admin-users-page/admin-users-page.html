@@ -69,10 +69,14 @@
                       </span>
                     </td>
                     <td class="admin-users-table__actions">
-                      <!-- Presentational only — editing an existing employee isn't wired up yet. -->
-                      <button type="button" disabled aria-label="Editar" i18n-aria-label="@@users.adminList.edit">
+                      <a
+                        routerLink="/admin/users"
+                        [queryParams]="{ editRole: employee.id }"
+                        aria-label="Cambiar rol"
+                        i18n-aria-label="@@users.adminList.editRole"
+                      >
                         <tui-icon icon="@tui.pencil" aria-hidden="true" />
-                      </button>
+                      </a>
                     </td>
                   </tr>
                 }
@@ -115,6 +119,12 @@
   @if (create()) {
     @defer (on immediate) {
       <app-create-employee-page (closed)="onModalClosed()" />
+    }
+  }
+
+  @if (editRole(); as id) {
+    @defer (on immediate) {
+      <app-edit-employee-role-page [employeeId]="id" (closed)="onModalClosed()" />
     }
   }
 </div>

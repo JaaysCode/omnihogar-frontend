@@ -71,12 +71,14 @@
     color: var(--tui-text-secondary, #6b6b6b);
   }
 
-  &__actions button {
+  &__actions button,
+  &__actions a {
     display: inline-flex;
     background: none;
     border: none;
     padding: 0;
     color: var(--tui-text-secondary, #6b6b6b);
+    text-decoration: none;
     cursor: pointer;
 
     &:hover {

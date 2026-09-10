@@ -1,10 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Employee, EmployeeApiError, FieldErrors, Role } from '../../domain/models/employee.model';
+import { Employee, EmployeeApiError, FieldErrors } from '../../domain/models/employee.model';
+import { Role } from '../../domain/models/role.model';
 import { ApiProblemDto } from '../services/auth-api.dto';
 import { EmployeeDto, RoleDto } from '../services/employee-api.dto';
 
 export function toRole(dto: RoleDto): Role {
-  return { id: dto.id, name: dto.name, description: dto.description };
+  return {
+    id: dto.id,
+    name: dto.name,
+    description: dto.description,
+    permissions: dto.permissions ?? [],
+  };
 }
 
 export function toEmployee(dto: EmployeeDto): Employee {
@@ -13,6 +19,7 @@ export function toEmployee(dto: EmployeeDto): Employee {
     fullName: `${dto.firstName} ${dto.lastName}`,
     email: dto.email,
     roleName: dto.roleName,
+    roleId: dto.roleId,
     status: dto.status,
   };
 }
@@ -48,6 +55,10 @@ export function toEmployeeApiError(error: unknown): EmployeeApiError {
     return new EmployeeApiError(
       $localize`:@@employees.error.forbidden:No tienes permisos para gestionar cuentas de empleados.`,
     );
+  }
+
+  if (error.status === 404) {
+    return new EmployeeApiError($localize`:@@employees.error.notFound:El empleado solicitado no existe.`);
   }
 
   if (error.status === 0) {

@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { EmployeeRepository } from '../../domain/repositories/employee.repository';
-import { CreateEmployeePayload, Employee, Role } from '../../domain/models/employee.model';
+import { CreateEmployeePayload, Employee } from '../../domain/models/employee.model';
+import { Role } from '../../domain/models/role.model';
 import { toEmployee, toEmployeeApiError, toRole } from '../mappers/employee.mapper';
 import { EmployeeApiService } from '../services/employee-api.service';
 
@@ -27,5 +28,18 @@ export class EmployeeRepositoryImpl implements EmployeeRepository {
       map((dtos) => dtos.map(toEmployee)),
       catchError((error) => throwError(() => toEmployeeApiError(error))),
     );
+  }
+
+  getEmployeeById(id: string): Observable<Employee> {
+    return this.api.getEmployeeById(id).pipe(
+      map(toEmployee),
+      catchError((error) => throwError(() => toEmployeeApiError(error))),
+    );
+  }
+
+  changeRole(employeeId: string, roleId: string): Observable<void> {
+    return this.api
+      .changeRole(employeeId, roleId)
+      .pipe(catchError((error) => throwError(() => toEmployeeApiError(error))));
   }
 }

@@ -4,6 +4,7 @@ import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { AdminSidebar } from '../../components/admin-sidebar/admin-sidebar';
 import { AdminTabBar } from '../../components/admin-tab-bar/admin-tab-bar';
 import { CreateEmployeePage } from '../create-employee-page/create-employee-page';
+import { EditEmployeeRolePage } from '../edit-employee-role-page/edit-employee-role-page';
 import { Employee, EmployeeApiError } from '../../../domain/models/employee.model';
 import { EmployeeRepository } from '../../../domain/repositories/employee.repository';
 
@@ -19,7 +20,7 @@ const AVATAR_PALETTE = ['avatar--indigo', 'avatar--amber', 'avatar--sky', 'avata
  */
 @Component({
   selector: 'app-admin-users-page',
-  imports: [RouterLink, AdminSidebar, AdminTabBar, CreateEmployeePage, TuiButton, TuiIcon],
+  imports: [RouterLink, AdminSidebar, AdminTabBar, CreateEmployeePage, EditEmployeeRolePage, TuiButton, TuiIcon],
   templateUrl: './admin-users-page.html',
   styleUrl: './admin-users-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +31,9 @@ export class AdminUsersPage implements OnInit {
 
   /** Bound from the `?create` query param by withComponentInputBinding (see app.config.ts). */
   readonly create = input<string | undefined>(undefined);
+
+  /** Bound from the `?editRole` query param (holds the employee id) by withComponentInputBinding. */
+  readonly editRole = input<string | undefined>(undefined);
 
   protected readonly employees = signal<Employee[] | null>(null);
   protected readonly loadError = signal<string | null>(null);
