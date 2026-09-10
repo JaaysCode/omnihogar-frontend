@@ -29,23 +29,32 @@ function toFieldErrors(errors: Record<string, string[]>): FieldErrors {
 
 /** Translates a failed HTTP call into a domain-level {@link EmployeeApiError}. */
 export function toEmployeeApiError(error: unknown): EmployeeApiError {
+  const generic = $localize`:@@employees.error.generic:Ocurrió un error inesperado. Inténtalo de nuevo.`;
+
   if (!(error instanceof HttpErrorResponse)) {
-    return new EmployeeApiError('Something went wrong. Please try again.');
+    return new EmployeeApiError(generic);
   }
 
   if (error.status === 400) {
     const problem = error.error as ApiProblemDto | null;
     const fieldErrors = problem?.errors ? toFieldErrors(problem.errors) : undefined;
-    return new EmployeeApiError(problem?.title ?? 'Some fields need to be corrected.', fieldErrors);
+    return new EmployeeApiError(
+      problem?.title ?? $localize`:@@employees.error.validation:Hay campos que corregir.`,
+      fieldErrors,
+    );
   }
 
   if (error.status === 401 || error.status === 403) {
-    return new EmployeeApiError('You do not have permission to create employee accounts.');
+    return new EmployeeApiError(
+      $localize`:@@employees.error.forbidden:No tienes permisos para gestionar cuentas de empleados.`,
+    );
   }
 
   if (error.status === 0) {
-    return new EmployeeApiError('Could not reach the server. Check your connection and try again.');
+    return new EmployeeApiError(
+      $localize`:@@employees.error.offline:No se pudo conectar con el servidor. Verifica tu conexión e inténtalo de nuevo.`,
+    );
   }
 
-  return new EmployeeApiError('Something went wrong. Please try again.');
+  return new EmployeeApiError(generic);
 }

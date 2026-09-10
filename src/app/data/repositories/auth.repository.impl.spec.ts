@@ -59,6 +59,6 @@ describe('AuthRepositoryImpl', () => {
       .login({ email: 'jane@example.com', password: 'wrong' })
       .subscribe({ error: (err) => (caught = err) });
 
-    expect(caught?.message).toBe('Invalid email or password.');
+    expect(caught?.message).toBe('Correo o contraseña incorrectos.');
   });
 });

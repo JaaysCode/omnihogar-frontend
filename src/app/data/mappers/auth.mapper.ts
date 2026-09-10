@@ -22,23 +22,30 @@ function toFieldErrors(errors: Record<string, string[]>): FieldErrors {
 
 /** Translates a failed HTTP call into a domain-level {@link AuthApiError}. */
 export function toAuthApiError(error: unknown): AuthApiError {
+  const generic = $localize`:@@auth.error.generic:Ocurrió un error inesperado. Inténtalo de nuevo.`;
+
   if (!(error instanceof HttpErrorResponse)) {
-    return new AuthApiError('Something went wrong. Please try again.');
+    return new AuthApiError(generic);
   }
 
   if (error.status === 400) {
     const problem = error.error as ApiProblemDto | null;
     const fieldErrors = problem?.errors ? toFieldErrors(problem.errors) : undefined;
-    return new AuthApiError(problem?.title ?? 'Some fields need to be corrected.', fieldErrors);
+    return new AuthApiError(
+      problem?.title ?? $localize`:@@auth.error.validation:Hay campos que corregir.`,
+      fieldErrors,
+    );
   }
 
   if (error.status === 401) {
-    return new AuthApiError('Invalid email or password.');
+    return new AuthApiError($localize`:@@auth.error.invalidCredentials:Correo o contraseña incorrectos.`);
   }
 
   if (error.status === 0) {
-    return new AuthApiError('Could not reach the server. Check your connection and try again.');
+    return new AuthApiError(
+      $localize`:@@auth.error.offline:No se pudo conectar con el servidor. Verifica tu conexión e inténtalo de nuevo.`,
+    );
   }
 
-  return new AuthApiError('Something went wrong. Please try again.');
+  return new AuthApiError(generic);
 }

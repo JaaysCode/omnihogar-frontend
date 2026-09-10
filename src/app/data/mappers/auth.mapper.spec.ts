@@ -50,22 +50,22 @@ describe('toAuthApiError', () => {
   it('maps a 401 to an invalid-credentials message', () => {
     const httpError = new HttpErrorResponse({ status: 401 });
 
-    expect(toAuthApiError(httpError).message).toBe('Invalid email or password.');
+    expect(toAuthApiError(httpError).message).toBe('Correo o contraseña incorrectos.');
   });
 
   it('maps a network failure (status 0) to a connectivity message', () => {
     const httpError = new HttpErrorResponse({ status: 0 });
 
-    expect(toAuthApiError(httpError).message).toContain('Could not reach the server');
+    expect(toAuthApiError(httpError).message).toContain('No se pudo conectar con el servidor');
   });
 
   it('maps a 500 to a generic message', () => {
     const httpError = new HttpErrorResponse({ status: 500 });
 
-    expect(toAuthApiError(httpError).message).toBe('Something went wrong. Please try again.');
+    expect(toAuthApiError(httpError).message).toBe('Ocurrió un error inesperado. Inténtalo de nuevo.');
   });
 
   it('maps a non-HttpErrorResponse to a generic message', () => {
-    expect(toAuthApiError(new Error('boom')).message).toBe('Something went wrong. Please try again.');
+    expect(toAuthApiError(new Error('boom')).message).toBe('Ocurrió un error inesperado. Inténtalo de nuevo.');
   });
 });
