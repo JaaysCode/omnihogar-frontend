@@ -15,6 +15,8 @@ import { ProductRepository } from './domain/repositories/product.repository';
 import { ProductRepositoryImpl } from './data/repositories/product.repository.impl';
 import { OrderRepository } from './domain/repositories/order.repository';
 import { OrderRepositoryImpl } from './data/repositories/order.repository.impl';
+import { CartRepository } from './domain/repositories/cart.repository';
+import { CartRepositoryImpl } from './data/repositories/cart.repository.impl';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -32,6 +34,7 @@ export const appConfig: ApplicationConfig = {
     { provide: RoleRepository, useClass: RoleRepositoryImpl },
     { provide: ProductRepository, useClass: ProductRepositoryImpl },
     { provide: OrderRepository, useClass: OrderRepositoryImpl },
+    { provide: CartRepository, useClass: CartRepositoryImpl },
     // Lets the register <-> login switch animate with a CSS `transform` transition instead of
     // a hard cut — see auth-route-reuse-strategy.ts and auth-page.scss.
     { provide: RouteReuseStrategy, useClass: AuthRouteReuseStrategy },

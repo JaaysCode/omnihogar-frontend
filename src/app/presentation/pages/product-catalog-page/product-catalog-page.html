@@ -26,6 +26,23 @@
               <p class="catalog__description">{{ product.description }}</p>
             }
             <p class="catalog__price">{{ product.price | copCurrency }}</p>
+
+            @if (product.inStock === false) {
+              <p class="catalog__out-of-stock" role="status" i18n="@@products.catalog.outOfStock">Agotado</p>
+            } @else {
+              <button
+                type="button"
+                tuiButton
+                size="s"
+                iconStart="@tui.shopping-cart"
+                class="catalog__add"
+                [disabled]="adding().has(product.id)"
+                (click)="onAddToCart(product)"
+                i18n="@@products.catalog.addToCart"
+              >
+                Agregar al carrito
+              </button>
+            }
           </article>
         }
       </div>

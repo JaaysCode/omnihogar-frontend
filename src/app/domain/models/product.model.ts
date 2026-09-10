@@ -10,6 +10,10 @@ export interface Product {
   price: number;
   imageUrl: string | null;
   status: ProductStatus;
+  /** Units available across all facilities (HU-05). `null` when the query didn't compute it. */
+  availableQuantity: number | null;
+  /** `true` when `availableQuantity > 0` (HU-05). `null` when not computed. */
+  inStock: boolean | null;
 }
 
 /** Product category — GET /categories, populates the "Categoría" select in the product form. */

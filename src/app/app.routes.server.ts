@@ -22,6 +22,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    // HU-05 — carrito por usuario, requiere sesión. No prerenderizable.
+    path: 'cart',
+    renderMode: RenderMode.Client,
+  },
+  {
     // Admin-only + live data (list) — not prerenderable.
     path: 'admin/products',
     renderMode: RenderMode.Client,

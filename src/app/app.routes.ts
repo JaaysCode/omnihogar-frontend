@@ -48,6 +48,13 @@ export const routes: Routes = [
     title: 'Catálogo · OmniHogar',
   },
   {
+    // HU-05 — carrito del cliente. Requiere sesión (el carrito vive en el servidor por usuario).
+    path: 'cart',
+    loadComponent: () => import('./presentation/pages/cart-page/cart-page').then((m) => m.CartPage),
+    title: 'Carrito · OmniHogar',
+    canActivate: [authGuard],
+  },
+  {
     // "Nuevo Producto" / row "Editar" open create-product-page / edit-product-page as
     // `?create` / `?edit` query-param-driven modals on top of this page (see
     // admin-products-page.ts/.html) instead of separate routes — still

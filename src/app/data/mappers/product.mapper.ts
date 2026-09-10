@@ -17,6 +17,8 @@ export function toProduct(dto: ProductDto): Product {
     price: dto.price,
     imageUrl: dto.imageUrl,
     status: dto.status === 'discontinued' ? 'discontinued' : 'active',
+    availableQuantity: dto.availableQuantity ?? null,
+    inStock: dto.inStock ?? null,
   };
 }
 

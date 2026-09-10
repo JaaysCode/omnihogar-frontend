@@ -1,0 +1,95 @@
+<app-public-header />
+
+<div class="cart__viewport">
+  <div class="cart">
+    <h1 i18n="@@cart.page.title">Tu carrito</h1>
+
+    @if (items().length === 0) {
+      <div class="cart__empty" role="status">
+        <tui-icon icon="@tui.shopping-cart" aria-hidden="true" />
+        <p i18n="@@cart.page.empty">Tu carrito está vacío.</p>
+        <a routerLink="/products" tuiButton size="m" i18n="@@cart.page.goToCatalog">Ir al catálogo</a>
+      </div>
+    } @else {
+      <div class="cart__layout">
+        <section class="cart__lines">
+          @for (item of items(); track item.productId) {
+            <article class="cart-line">
+              @if (item.imageUrl) {
+                <img [src]="item.imageUrl" [alt]="item.name" class="cart-line__thumb" />
+              } @else {
+                <span class="cart-line__thumb cart-line__thumb--placeholder" aria-hidden="true">
+                  <tui-icon icon="@tui.image" />
+                </span>
+              }
+
+              <div class="cart-line__info">
+                <span class="cart-line__name">{{ item.name }}</span>
+                <span class="cart-line__sku">SKU: {{ item.sku }}</span>
+                <span class="cart-line__unit">{{ item.unitPrice | copCurrency }} c/u</span>
+              </div>
+
+              <div class="cart-line__stepper">
+                <button
+                  type="button"
+                  [disabled]="item.quantity <= 1"
+                  (click)="onDecrease(item)"
+                  aria-label="Disminuir cantidad"
+                  i18n-aria-label="@@cart.stepper.decrease"
+                >
+                  <tui-icon icon="@tui.minus" aria-hidden="true" />
+                </button>
+                <span>{{ item.quantity }}</span>
+                <button
+                  type="button"
+                  [disabled]="item.quantity >= item.availableQuantity"
+                  (click)="onIncrease(item)"
+                  aria-label="Aumentar cantidad"
+                  i18n-aria-label="@@cart.stepper.increase"
+                >
+                  <tui-icon icon="@tui.plus" aria-hidden="true" />
+                </button>
+              </div>
+
+              <span class="cart-line__subtotal">{{ item.subtotal | copCurrency }}</span>
+
+              <button
+                type="button"
+                class="cart-line__remove"
+                (click)="onRemove(item)"
+                [attr.aria-label]="'Quitar ' + item.name"
+              >
+                <tui-icon icon="@tui.trash-2" aria-hidden="true" />
+              </button>
+            </article>
+          }
+        </section>
+
+        <aside class="cart__summary">
+          <h2 i18n="@@cart.summary.title">Resumen</h2>
+          <div class="cart__summary-row">
+            <span i18n="@@cart.summary.subtotal">Subtotal ({{ itemCount() }} artículos)</span>
+            <span>{{ subtotal() | copCurrency }}</span>
+          </div>
+          <div class="cart__summary-row cart__summary-row--total">
+            <span i18n="@@cart.summary.total">Total</span>
+            <span>{{ total() | copCurrency }}</span>
+          </div>
+          <button
+            type="button"
+            tuiButton
+            size="l"
+            class="cart__checkout"
+            disabled
+            i18n="@@cart.summary.checkout"
+          >
+            Realizar pedido
+          </button>
+          <p class="cart__checkout-note" i18n="@@cart.summary.checkoutPending">
+            El pago estará disponible próximamente.
+          </p>
+        </aside>
+      </div>
+    }
+  </div>
+</div>

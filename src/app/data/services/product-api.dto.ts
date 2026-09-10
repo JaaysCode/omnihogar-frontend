@@ -9,6 +9,9 @@ export interface ProductDto {
   price: number;
   imageUrl: string | null;
   status: string;
+  /** HU-05 — present on the public catalog payload; absent elsewhere. */
+  availableQuantity?: number | null;
+  inStock?: boolean | null;
 }
 
 export interface CategoryDto {

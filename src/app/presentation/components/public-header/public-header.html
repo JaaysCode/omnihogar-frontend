@@ -3,6 +3,12 @@
 
   <nav class="public-header__actions" aria-label="Cuenta" i18n-aria-label="@@publicHeader.ariaLabel">
     @if (isAuthenticated()) {
+      <a routerLink="/cart" class="public-header__cart" aria-label="Carrito" i18n-aria-label="@@publicHeader.cart">
+        <tui-icon icon="@tui.shopping-cart" aria-hidden="true" />
+        @if (cartCount() > 0) {
+          <span class="public-header__cart-badge">{{ cartCount() }}</span>
+        }
+      </a>
       @if (isEmployee()) {
         <a routerLink="/admin/dashboard" tuiButton size="s" appearance="secondary" i18n="@@publicHeader.adminArea">
           Panel de administración
