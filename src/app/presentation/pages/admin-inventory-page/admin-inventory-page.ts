@@ -103,7 +103,7 @@ export class AdminInventoryPage implements OnInit {
 
   protected onStockModalClosed(): void {
     // Plain absolute navigate with no queryParams — matches admin-products-page's onModalClosed.
-    void this.router.navigate(['/admin/inventory']);
+    void this.router.navigate(['/inventario']);
     this.loadProducts();
   }
 

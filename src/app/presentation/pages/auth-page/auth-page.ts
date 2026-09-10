@@ -2,11 +2,10 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, signal } f
 import { Router, RouterLink } from '@angular/router';
 import { TuiButton } from '@taiga-ui/core';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
-import { AuthApiError, AuthSession, FieldErrors, LoginPayload, RegisterPayload } from '../../../domain/models/auth.model';
+import { AuthApiError, FieldErrors, LoginPayload, RegisterPayload } from '../../../domain/models/auth.model';
 import { AuthRepository } from '../../../domain/repositories/auth.repository';
 import { LoginForm } from '../../components/login-form/login-form';
 import { RegisterForm } from '../../components/register-form/register-form';
-import { decodeJwtRoles } from '../../../shared/utils/jwt-roles';
 
 export type AuthMode = 'login' | 'register';
 
@@ -64,7 +63,8 @@ export class AuthPage {
       next: (authSession) => {
         this.session.setSession(authSession);
         this.pending.set(false);
-        void this.router.navigateByUrl(this.postLoginUrl(authSession));
+        // El personal aterriza en el panel de operaciones; los clientes, en el catálogo.
+        void this.router.navigateByUrl(this.session.isEmployee() ? '/admin/dashboard' : '/products');
       },
       error: (error: AuthApiError) => {
         this.pending.set(false);
@@ -73,13 +73,7 @@ export class AuthPage {
     });
   }
 
-  /** Admins land on the operations dashboard; everyone else goes through the normal home
-   * redirect. Same unverified client-side role read as `adminGuard` — see jwt-roles.ts. */
-  private postLoginUrl(authSession: AuthSession): string {
-    return decodeJwtRoles(authSession.accessToken).includes('Admin') ? '/admin/dashboard' : '/';
-  }
-
   protected continueAfterRegister(): void {
-    void this.router.navigateByUrl('/');
+    void this.router.navigateByUrl('/products');
   }
 }

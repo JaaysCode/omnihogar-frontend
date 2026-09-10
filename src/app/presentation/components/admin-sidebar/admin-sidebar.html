@@ -5,7 +5,7 @@
   </div>
 
   <ul class="admin-sidebar__list">
-    @for (item of navItems; track item.label) {
+    @for (item of navItems(); track item.label) {
       <li>
         @if (item.link) {
           <a

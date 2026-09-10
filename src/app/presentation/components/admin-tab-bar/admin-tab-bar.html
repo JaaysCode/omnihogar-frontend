@@ -1,5 +1,5 @@
 <nav class="tab-bar" aria-label="Admin" i18n-aria-label="@@admin.nav.ariaLabel">
-  @for (item of primaryItems; track item.label) {
+  @for (item of primaryItems(); track item.label) {
     @if (item.link; as link) {
       <a class="tab" [routerLink]="link" routerLinkActive="tab--active" [routerLinkActiveOptions]="{ exact: true }">
         <tui-icon [icon]="item.icon" aria-hidden="true" />
@@ -29,7 +29,7 @@
 
 <ng-template #moreMenu>
   <div class="more-menu">
-    @for (item of overflowItems; track item.label) {
+    @for (item of overflowItems(); track item.label) {
       @if (item.link; as link) {
         <a
           [routerLink]="link"

@@ -1,16 +1,27 @@
 import { Routes } from '@angular/router';
 import { AuthPage } from './presentation/pages/auth-page/auth-page';
-import { adminGuard } from './core/guards/admin.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { permissionGuard } from './core/guards/permission.guard';
+import { rootRedirectGuard } from './core/guards/root-redirect.guard';
+
+// Los nombres de política/permiso coinciden con AppPermissions.cs del backend.
+const P = {
+  usuarios: 'usuarios.gestionar',
+  productos: 'productos.gestionar',
+  inventario: 'inventario.consultar',
+  pos: 'pos.registrar_venta',
+  pedidos: 'pedidos.consultar',
+} as const;
 
 export const routes: Routes = [
-  { path: 'register', component: AuthPage, data: { mode: 'register' }, title: 'Create account · OmniHogar' },
-  { path: 'login', component: AuthPage, data: { mode: 'login' }, title: 'Sign in · OmniHogar' },
+  { path: 'register', component: AuthPage, data: { mode: 'register' }, title: 'Crear cuenta · OmniHogar' },
+  { path: 'login', component: AuthPage, data: { mode: 'login' }, title: 'Iniciar sesión · OmniHogar' },
   {
     path: 'admin/dashboard',
     loadComponent: () =>
       import('./presentation/pages/admin-dashboard-page/admin-dashboard-page').then((m) => m.AdminDashboardPage),
-    title: 'Panel de control · OmniHogar',
-    canActivate: [adminGuard],
+    title: 'Panel de Control · OmniHogar',
+    canActivate: [authGuard],
   },
   {
     // "Agregar Nuevo Usuario" opens create-employee-page as a `?create` query-param-driven modal
@@ -19,7 +30,7 @@ export const routes: Routes = [
     path: 'admin/users',
     loadComponent: () => import('./presentation/pages/admin-users-page/admin-users-page').then((m) => m.AdminUsersPage),
     title: 'Usuarios · OmniHogar',
-    canActivate: [adminGuard],
+    canActivate: [permissionGuard(P.usuarios)],
   },
   {
     path: 'products',
@@ -36,13 +47,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./presentation/pages/admin-products-page/admin-products-page').then((m) => m.AdminProductsPage),
     title: 'Productos · OmniHogar',
-    canActivate: [adminGuard],
+    canActivate: [permissionGuard(P.productos)],
   },
   {
     path: 'admin/pos',
     loadComponent: () => import('./presentation/pages/pos-page/pos-page').then((m) => m.PosPage),
     title: 'Punto de Venta · OmniHogar',
-    canActivate: [adminGuard],
+    canActivate: [permissionGuard(P.pos)],
   },
   {
     // Detail view opens as a `?order` query-param-driven modal on top of this page (see
@@ -51,17 +62,17 @@ export const routes: Routes = [
     path: 'admin/orders',
     loadComponent: () => import('./presentation/pages/orders-page/orders-page').then((m) => m.OrdersPage),
     title: 'Pedidos · OmniHogar',
-    canActivate: [adminGuard],
+    canActivate: [permissionGuard(P.pedidos)],
   },
   {
-    // "Agregar Unidades" opens add-stock-page as a `?addStock` query-param-driven modal on top
-    // of this page (see admin-inventory-page.ts/.html) instead of a separate route — still
-    // deep-linkable/bookmarkable/back-button-safe via /admin/inventory?addStock=1.
-    path: 'admin/inventory',
+    // HU-11 — consulta de stock. Abierta a administrador, jefe de bodega, coordinador de
+    // despacho y asesor de tienda (todos tienen inventario.consultar). "Agregar Unidades"
+    // abre add-stock-page como modal `?addStock` sobre esta página.
+    path: 'inventario',
     loadComponent: () =>
       import('./presentation/pages/admin-inventory-page/admin-inventory-page').then((m) => m.AdminInventoryPage),
     title: 'Inventario · OmniHogar',
-    canActivate: [adminGuard],
+    canActivate: [permissionGuard(P.inventario)],
   },
-  { path: '', redirectTo: 'register', pathMatch: 'full' },
+  { path: '', pathMatch: 'full', canActivate: [rootRedirectGuard], children: [] },
 ];

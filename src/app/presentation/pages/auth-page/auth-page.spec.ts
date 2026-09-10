@@ -92,7 +92,7 @@ describe('AuthPage', () => {
 
     loginFormInstance().submitted.emit({ email: 'jane@example.com', password: 'Passw0rd!' });
 
-    expect(navigateSpy).toHaveBeenCalledWith('/');
+    expect(navigateSpy).toHaveBeenCalledWith('/products');
   });
 
   it('on invalid-credentials login failure: shows the generic error banner', () => {

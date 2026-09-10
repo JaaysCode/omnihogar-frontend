@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TuiDropdown, TuiIcon } from '@taiga-ui/core';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
-import { ADMIN_NAV_ITEMS } from '../admin-nav-items';
+import { visibleNavItems } from '../admin-nav-items';
 
 /**
  * Bottom navigation for the admin panel below the mobile breakpoint (see `AdminSidebar`'s own
@@ -25,8 +25,9 @@ export class AdminTabBar {
   private readonly session = inject(AuthSessionService);
   private readonly router = inject(Router);
 
-  protected readonly primaryItems = ADMIN_NAV_ITEMS.slice(0, 4);
-  protected readonly overflowItems = ADMIN_NAV_ITEMS.slice(4);
+  private readonly items = computed(() => visibleNavItems((p) => this.session.hasPermission(p)));
+  protected readonly primaryItems = computed(() => this.items().slice(0, 4));
+  protected readonly overflowItems = computed(() => this.items().slice(4));
 
   protected readonly menuOpen = signal(false);
 

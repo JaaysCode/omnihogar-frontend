@@ -5,6 +5,11 @@ export interface AdminNavItem {
   readonly compactLabel?: string;
   /** Omitted for sections that don't have a page yet — rendered inert. */
   readonly link?: string;
+  /**
+   * Permiso requerido para ver este ítem (coincide con AppPermissions.cs del backend).
+   * Ausente = visible para cualquier empleado autenticado.
+   */
+  readonly requiredPermission?: string;
 }
 
 /**
@@ -21,11 +26,45 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
     icon: '@tui.layout-dashboard',
     link: '/admin/dashboard',
   },
-  { label: $localize`:@@admin.nav.products:Productos`, icon: '@tui.package', link: '/admin/products' },
-  { label: $localize`:@@admin.nav.inventory:Inventario`, icon: '@tui.warehouse', link: '/admin/inventory' },
-  { label: $localize`:@@admin.nav.sales:Ventas`, icon: '@tui.credit-card', link: '/admin/pos' },
-  { label: $localize`:@@admin.nav.orders:Pedidos`, icon: '@tui.clipboard-list', link: '/admin/orders' },
+  {
+    label: $localize`:@@admin.nav.products:Productos`,
+    icon: '@tui.package',
+    link: '/admin/products',
+    requiredPermission: 'productos.gestionar',
+  },
+  {
+    label: $localize`:@@admin.nav.inventory:Inventario`,
+    icon: '@tui.warehouse',
+    link: '/inventario',
+    requiredPermission: 'inventario.consultar',
+  },
+  {
+    label: $localize`:@@admin.nav.sales:Ventas`,
+    icon: '@tui.credit-card',
+    link: '/admin/pos',
+    requiredPermission: 'pos.registrar_venta',
+  },
+  {
+    label: $localize`:@@admin.nav.orders:Pedidos`,
+    icon: '@tui.clipboard-list',
+    link: '/admin/orders',
+    requiredPermission: 'pedidos.consultar',
+  },
   { label: $localize`:@@admin.nav.logistics:Logística`, icon: '@tui.truck' },
-  { label: $localize`:@@admin.nav.users:Usuarios`, icon: '@tui.users', link: '/admin/users' },
+  {
+    label: $localize`:@@admin.nav.users:Usuarios`,
+    icon: '@tui.users',
+    link: '/admin/users',
+    requiredPermission: 'usuarios.gestionar',
+  },
   { label: $localize`:@@admin.nav.reports:Reportes`, icon: '@tui.bar-chart-3' },
 ];
+
+/** Filtra los ítems que el usuario puede ver según sus permisos (HU-03 crit. 4). */
+export function visibleNavItems(
+  hasPermission: (permission: string) => boolean,
+): readonly AdminNavItem[] {
+  return ADMIN_NAV_ITEMS.filter(
+    (item) => !item.requiredPermission || hasPermission(item.requiredPermission),
+  );
+}

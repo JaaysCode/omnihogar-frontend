@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TuiIcon } from '@taiga-ui/core';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
-import { ADMIN_NAV_ITEMS } from '../admin-nav-items';
+import { visibleNavItems } from '../admin-nav-items';
 
 /**
  * Left navigation for the admin panel — desktop only, see class doc on `AdminTabBar` for the
@@ -20,7 +20,7 @@ export class AdminSidebar {
   private readonly session = inject(AuthSessionService);
   private readonly router = inject(Router);
 
-  protected readonly navItems = ADMIN_NAV_ITEMS;
+  protected readonly navItems = computed(() => visibleNavItems((p) => this.session.hasPermission(p)));
 
   protected onLogout(): void {
     this.session.clearSession();
