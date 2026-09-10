@@ -12,7 +12,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { TuiIcon } from '@taiga-ui/core';
+import { TuiAlertService, TuiIcon } from '@taiga-ui/core';
 import { CreateEmployeeForm } from '../../components/create-employee-form/create-employee-form';
 import { CreateEmployeePayload, EmployeeApiError, FieldErrors, Role } from '../../../domain/models/employee.model';
 import { EmployeeRepository } from '../../../domain/repositories/employee.repository';
@@ -33,6 +33,7 @@ import { EmployeeRepository } from '../../../domain/repositories/employee.reposi
 export class CreateEmployeePage implements OnInit, AfterViewInit, OnDestroy {
   private readonly employeeRepository = inject(EmployeeRepository);
   private readonly document = inject(DOCUMENT);
+  private readonly alerts = inject(TuiAlertService);
 
   @ViewChild('panel') private readonly panel?: ElementRef<HTMLElement>;
 
@@ -77,7 +78,12 @@ export class CreateEmployeePage implements OnInit, AfterViewInit, OnDestroy {
     this.formError.set(null);
 
     this.employeeRepository.createEmployee(payload).subscribe({
-      next: () => this.closed.emit(),
+      next: () => {
+        this.alerts
+          .open($localize`:@@employees.create.success:Cuenta de empleado creada.`, { appearance: 'positive' })
+          .subscribe();
+        this.closed.emit();
+      },
       error: (error: EmployeeApiError) => {
         this.pending.set(false);
         this.fieldErrors.set(error.fieldErrors ?? null);

@@ -12,7 +12,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { TuiAlertService, TuiButton, TuiIcon } from '@taiga-ui/core';
 import { ProductForm } from '../../components/product-form/product-form';
 import {
   Category,
@@ -43,6 +43,7 @@ type EntryMode = 'manual' | 'batch';
 export class CreateProductPage implements OnInit, AfterViewInit, OnDestroy {
   private readonly productRepository = inject(ProductRepository);
   private readonly document = inject(DOCUMENT);
+  private readonly alerts = inject(TuiAlertService);
 
   @ViewChild('panel') private readonly panel?: ElementRef<HTMLElement>;
 
@@ -94,7 +95,12 @@ export class CreateProductPage implements OnInit, AfterViewInit, OnDestroy {
     this.formError.set(null);
 
     this.productRepository.create(payload as CreateProductPayload).subscribe({
-      next: () => this.closed.emit(),
+      next: () => {
+        this.alerts
+          .open($localize`:@@products.create.success:Producto creado.`, { appearance: 'positive' })
+          .subscribe();
+        this.closed.emit();
+      },
       error: (error: ProductApiError) => {
         this.pending.set(false);
         this.fieldErrors.set(error.fieldErrors ?? null);
