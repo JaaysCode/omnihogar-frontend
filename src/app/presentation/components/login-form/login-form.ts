@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { LoginPayload } from '../../../domain/models/auth.model';
-import { firstErrorMessage } from '../../../shared/utils/form-error-messages';
+import { fieldErrorMessage } from '../../../shared/utils/form-error-messages';
 
 @Component({
   selector: 'app-login-form',
@@ -38,11 +38,7 @@ export class LoginForm {
     if (!c || !(c.touched || this.attemptedSubmit)) {
       return null;
     }
-    const label =
-      control === 'email'
-        ? $localize`:@@auth.login.field.email.name:Correo electrónico`
-        : $localize`:@@auth.login.field.password.name:Contraseña`;
-    return firstErrorMessage(label, c.errors);
+    return fieldErrorMessage(c.errors);
   }
 
   protected onSubmit(): void {

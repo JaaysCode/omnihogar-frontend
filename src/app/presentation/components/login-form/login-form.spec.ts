@@ -36,7 +36,7 @@ describe('LoginForm', () => {
     fixture.detectChanges();
 
     expect(emitted).toHaveLength(0);
-    expect(fixture.nativeElement.textContent).toContain('El campo «Correo electrónico» es obligatorio.');
+    expect(fixture.nativeElement.textContent).toContain('Este campo es obligatorio.');
   });
 
   it('emits a trimmed payload when valid', () => {

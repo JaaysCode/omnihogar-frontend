@@ -15,14 +15,14 @@ import { TuiButton, TuiDataList, TuiDropdown, TuiIcon } from '@taiga-ui/core';
 import { TuiChevron } from '@taiga-ui/kit';
 import { CreateEmployeePayload, FieldErrors, Role } from '../../../domain/models/employee.model';
 import { namePatternValidator, passwordStrengthValidator, phonePatternValidator } from '../../../shared/utils/auth-validators';
-import { firstErrorMessage } from '../../../shared/utils/form-error-messages';
+import { fieldErrorMessage, summaryErrorMessage } from '../../../shared/utils/form-error-messages';
 
 interface FieldSpec {
   readonly control: string;
   readonly label: string;
 }
 
-// Bare field names (no required-marker, no markup) — fed into `firstErrorMessage` for the
+// Bare field names (no required-marker, no markup) — fed into `summaryErrorMessage` for the
 // error-summary and per-field error text. Kept as a separate translation unit from the on-screen
 // `<label>` in the template (`employees.create.field.*.label`), since that one also carries the
 // "*" required marker and would otherwise be a same-id/different-content clash.
@@ -122,7 +122,7 @@ export class CreateEmployeeForm {
     if (!c || !(c.touched || this.attemptedSubmit)) {
       return null;
     }
-    return firstErrorMessage(this.fieldLabel(control), c.errors);
+    return fieldErrorMessage(c.errors);
   }
 
   protected get invalidFieldSummary(): { control: string; label: string; message: string }[] {
@@ -130,7 +130,7 @@ export class CreateEmployeeForm {
       control,
       label,
       message:
-        firstErrorMessage(label, this.form.get(control)?.errors) ??
+        summaryErrorMessage(label, this.form.get(control)?.errors) ??
         $localize`:@@employees.create.field.genericInvalid:El campo «${label}:label:» no es válido.`,
     }));
   }

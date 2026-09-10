@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiButton, TuiDataList, TuiDropdown, TuiIcon } from '@taiga-ui/core';
 import { TuiChevron } from '@taiga-ui/kit';
 import { AddStockPayload, FieldErrors, Product } from '../../../domain/models/product.model';
-import { firstErrorMessage } from '../../../shared/utils/form-error-messages';
+import { fieldErrorMessage, summaryErrorMessage } from '../../../shared/utils/form-error-messages';
 
 interface FieldSpec {
   readonly control: string;
@@ -118,7 +118,7 @@ export class AddStockForm {
     if (!c || !(c.touched || this.attemptedSubmit)) {
       return null;
     }
-    return firstErrorMessage(this.fieldLabel(control), c.errors);
+    return fieldErrorMessage(c.errors);
   }
 
   protected get invalidFieldSummary(): { control: string; label: string; message: string }[] {
@@ -126,7 +126,7 @@ export class AddStockForm {
       control,
       label,
       message:
-        firstErrorMessage(label, this.form.get(control)?.errors) ??
+        summaryErrorMessage(label, this.form.get(control)?.errors) ??
         $localize`:@@inventory.addStock.error.summaryFallback:${label}:label: no es válido.`,
     }));
   }
