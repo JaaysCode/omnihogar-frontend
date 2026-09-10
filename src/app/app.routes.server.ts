@@ -12,6 +12,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    // HU-31 — admin-only + live role data. No prerenderizable.
+    path: 'admin/roles',
+    renderMode: RenderMode.Client,
+  },
+  {
     // Live catalog data — prerendering would bake in whatever products exist at build time.
     path: 'products',
     renderMode: RenderMode.Client,

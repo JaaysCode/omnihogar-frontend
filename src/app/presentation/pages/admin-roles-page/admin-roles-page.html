@@ -1,0 +1,99 @@
+<div class="admin-roles-shell">
+  <app-admin-sidebar />
+  <app-admin-tab-bar />
+
+  <main class="admin-roles-main">
+    <header class="admin-roles-main__header">
+      <div class="admin-roles-main__heading">
+        <h1 i18n="@@roles.adminList.title">Roles y Permisos</h1>
+        @if (roles(); as list) {
+          <span class="admin-roles-count">{{ list.length }}</span>
+        }
+      </div>
+      <p class="admin-roles-main__caption" i18n="@@roles.adminList.caption">
+        Consulta los roles y ajusta los permisos que otorga cada uno. Los cambios aplican al personal cuando vuelve a iniciar sesión.
+      </p>
+    </header>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    } @else {
+      <section class="admin-roles-card">
+        @if (!roles()) {
+          <p class="admin-roles-main__caption" i18n="@@roles.adminList.loading">Cargando roles…</p>
+        } @else if (roles()!.length === 0) {
+          <div class="admin-roles-empty" role="status">
+            <tui-icon icon="@tui.shield-x" aria-hidden="true" />
+            <p i18n="@@roles.adminList.empty">No hay roles configurados.</p>
+          </div>
+        } @else {
+          <div style="overflow-x: auto">
+            <table class="admin-roles-table">
+              <thead>
+                <tr>
+                  <th i18n="@@roles.adminList.column.role">Rol</th>
+                  <th i18n="@@roles.adminList.column.description">Descripción</th>
+                  <th i18n="@@roles.adminList.column.permissions">Permisos</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (role of roles()!; track role.id) {
+                  @let isAdmin = role.id === adminRoleId;
+                  <tr>
+                    <td>
+                      <span class="admin-roles-pill" [class.admin-roles-pill--admin]="isAdmin">{{ role.name }}</span>
+                    </td>
+                    <td class="admin-roles-table__muted">{{ role.description }}</td>
+                    <td>
+                      @if (isAdmin) {
+                        <span class="admin-roles-table__muted" i18n="@@roles.adminList.permissions.all"
+                          >Todos los permisos</span
+                        >
+                      } @else if (role.permissions.length === 0) {
+                        <span class="admin-roles-table__muted" i18n="@@roles.adminList.permissions.none">Sin permisos</span>
+                      } @else {
+                        <div class="admin-roles-chips">
+                          @for (permission of role.permissions; track permission) {
+                            <span class="admin-roles-chip">{{ permissionLabelFor()(permission) }}</span>
+                          }
+                        </div>
+                      }
+                    </td>
+                    <td class="admin-roles-table__actions">
+                      @if (isAdmin) {
+                        <button
+                          type="button"
+                          disabled
+                          aria-label="El rol Administrador no se puede editar"
+                          i18n-aria-label="@@roles.adminList.edit.adminDisabled"
+                        >
+                          <tui-icon icon="@tui.pencil" aria-hidden="true" />
+                        </button>
+                      } @else {
+                        <a
+                          routerLink="/admin/roles"
+                          [queryParams]="{ edit: role.id }"
+                          aria-label="Editar permisos"
+                          i18n-aria-label="@@roles.adminList.edit"
+                        >
+                          <tui-icon icon="@tui.pencil" aria-hidden="true" />
+                        </a>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
+  </main>
+
+  @if (edit(); as id) {
+    @defer (on immediate) {
+      <app-edit-role-permissions-page [roleId]="id" (closed)="onModalClosed()" />
+    }
+  }
+</div>

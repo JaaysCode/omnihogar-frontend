@@ -57,6 +57,13 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
     link: '/admin/users',
     requiredPermission: 'usuarios.gestionar',
   },
+  {
+    label: $localize`:@@admin.nav.roles:Roles y Permisos`,
+    compactLabel: $localize`:@@admin.nav.roles.compact:Roles`,
+    icon: '@tui.shield',
+    link: '/admin/roles',
+    requiredPermission: 'usuarios.gestionar',
+  },
   { label: $localize`:@@admin.nav.reports:Reportes`, icon: '@tui.bar-chart-3' },
 ];
 

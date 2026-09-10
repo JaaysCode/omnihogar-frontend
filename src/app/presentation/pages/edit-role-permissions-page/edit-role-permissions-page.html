@@ -1,0 +1,82 @@
+<div class="role-edit-modal">
+  <button
+    type="button"
+    class="role-edit-modal__backdrop"
+    (click)="close()"
+    aria-label="Cerrar"
+    i18n-aria-label="@@roles.edit.close"
+  ></button>
+
+  <div
+    class="role-edit-modal__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="role-edit-modal-title"
+    tabindex="-1"
+    #panel
+  >
+    <header class="role-edit-modal__header">
+      <h1 id="role-edit-modal-title">
+        @if (role(); as r) {
+          <span i18n="@@roles.edit.title">Permisos de {{ r.name }}</span>
+        } @else {
+          <span i18n="@@roles.edit.title.generic">Editar permisos del rol</span>
+        }
+      </h1>
+      <button
+        type="button"
+        class="role-edit-modal__close"
+        (click)="close()"
+        aria-label="Cerrar"
+        i18n-aria-label="@@roles.edit.close"
+      >
+        <tui-icon icon="@tui.x" aria-hidden="true" />
+      </button>
+    </header>
+
+    <div class="role-edit-modal__body">
+      @if (loadError(); as message) {
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      } @else if (!ready()) {
+        <p class="role-edit-modal__caption" i18n="@@roles.edit.loading">Cargando permisos…</p>
+      } @else {
+        <p class="role-edit-modal__caption" i18n="@@roles.edit.caption">
+          Marca los permisos que este rol debe otorgar. Los empleados con este rol deberán volver a iniciar sesión para aplicarlos.
+        </p>
+
+        @if (formError(); as message) {
+          <div class="form-error-banner" role="alert">{{ message }}</div>
+        }
+
+        <form (submit)="$event.preventDefault(); onSubmit()">
+          <fieldset class="role-edit-checklist" [disabled]="pending()">
+            <legend class="role-edit-checklist__legend" i18n="@@roles.edit.checklist.legend">Permisos del rol</legend>
+            @for (permission of permissions(); track permission.id) {
+              <label class="role-edit-checklist__item">
+                <input
+                  type="checkbox"
+                  [checked]="isChecked(permission.name)"
+                  (change)="toggle(permission.name)"
+                />
+                <span class="role-edit-checklist__label">{{ permission.description ?? permission.name }}</span>
+              </label>
+            }
+          </fieldset>
+
+          <div class="role-edit-modal__actions">
+            <button type="button" class="role-edit-modal__cancel" (click)="close()" i18n="@@roles.edit.cancel">
+              Cancelar
+            </button>
+            <button type="submit" tuiButton size="l" [disabled]="pending()">
+              @if (pending()) {
+                <span i18n="@@roles.edit.submit.pending">Guardando…</span>
+              } @else {
+                <span i18n="@@roles.edit.submit.idle">Guardar permisos</span>
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</div>

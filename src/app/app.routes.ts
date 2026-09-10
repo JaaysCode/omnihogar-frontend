@@ -33,6 +33,15 @@ export const routes: Routes = [
     canActivate: [permissionGuard(P.usuarios)],
   },
   {
+    // HU-31 — gestión de roles y permisos. Mismo permiso que Usuarios (usuarios.gestionar).
+    // "Editar" de una fila abre edit-role-permissions-page como modal `?edit=<roleId>` sobre
+    // esta página, igual que admin-products-page.
+    path: 'admin/roles',
+    loadComponent: () => import('./presentation/pages/admin-roles-page/admin-roles-page').then((m) => m.AdminRolesPage),
+    title: 'Roles y Permisos · OmniHogar',
+    canActivate: [permissionGuard(P.usuarios)],
+  },
+  {
     path: 'products',
     loadComponent: () =>
       import('./presentation/pages/product-catalog-page/product-catalog-page').then((m) => m.ProductCatalogPage),
