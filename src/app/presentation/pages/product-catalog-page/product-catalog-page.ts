@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { Product, ProductApiError } from '../../../domain/models/product.model';
 import { ProductRepository } from '../../../domain/repositories/product.repository';
 import { CopCurrencyPipe } from '../../../shared/pipes/cop-currency.pipe';
+import { PublicHeader } from '../../components/public-header/public-header';
 
 /** Public product catalog (HU-4) — every customer, no auth required. */
 @Component({
   selector: 'app-product-catalog-page',
-  imports: [CopCurrencyPipe],
+  imports: [CopCurrencyPipe, PublicHeader],
   templateUrl: './product-catalog-page.html',
   styleUrl: './product-catalog-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

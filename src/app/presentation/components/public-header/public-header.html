@@ -1,0 +1,19 @@
+<header class="public-header">
+  <a routerLink="/products" class="public-header__brand">OmniHogar</a>
+
+  <nav class="public-header__actions" aria-label="Cuenta" i18n-aria-label="@@publicHeader.ariaLabel">
+    @if (isAuthenticated()) {
+      @if (isEmployee()) {
+        <a routerLink="/admin/dashboard" tuiButton size="s" appearance="secondary" i18n="@@publicHeader.adminArea">
+          Panel de administración
+        </a>
+      }
+      <button type="button" tuiButton size="s" appearance="flat" (click)="onLogout()" i18n="@@publicHeader.logout">
+        Cerrar sesión
+      </button>
+    } @else {
+      <a routerLink="/login" tuiButton size="s" appearance="flat" i18n="@@publicHeader.login">Iniciar sesión</a>
+      <a routerLink="/register" tuiButton size="s" appearance="secondary" i18n="@@publicHeader.register">Crear cuenta</a>
+    }
+  </nav>
+</header>
