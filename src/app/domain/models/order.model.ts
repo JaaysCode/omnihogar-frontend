@@ -46,9 +46,34 @@ export interface OrderDetail {
   items: OrderItemLine[];
 }
 
-/** Normalized error thrown by the order data layer. */
+/** One product/quantity pair on a store-sale request (HU-06). */
+export interface StoreSaleItem {
+  productId: string;
+  quantity: number;
+}
+
+/** Receipt returned after successfully registering an in-store sale (HU-06). */
+export interface StoreSaleReceipt {
+  orderId: string;
+  orderNumber: string;
+  subtotal: number;
+  tax: number;
+  total: number;
+  createdAt: string;
+}
+
+/** Per-field validation messages, keyed by camelCase field name (e.g. "items"). */
+export type OrderFieldErrors = Record<string, string[]>;
+
+/**
+ * Normalized error thrown by the order data layer. `fieldErrors` is populated for 400
+ * (validation / insufficient stock) responses from registering a sale; absent otherwise.
+ */
 export class OrderApiError extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    readonly fieldErrors?: OrderFieldErrors,
+  ) {
     super(message);
     this.name = 'OrderApiError';
   }

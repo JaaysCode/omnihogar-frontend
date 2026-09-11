@@ -48,13 +48,43 @@
           }
         </div>
 
+        @if (!searchTerm() && quickPicks().length > 0) {
+          <div class="pos-quickpicks">
+            <p class="pos-quickpicks__heading" i18n="@@pos.quickPicks.heading">PRODUCTOS</p>
+            <div class="pos-quickpicks__grid">
+              @for (product of quickPicks(); track product.id) {
+                <button
+                  type="button"
+                  class="pos-quickpicks__item"
+                  [disabled]="product.inStock === false"
+                  (click)="addToCart(product)"
+                >
+                  @if (product.imageUrl) {
+                    <img [src]="product.imageUrl" [alt]="product.name" />
+                  } @else {
+                    <span class="pos-quickpicks__thumb" aria-hidden="true">
+                      <tui-icon icon="@tui.image" />
+                    </span>
+                  }
+                  <span class="pos-quickpicks__name">{{ product.name }}</span>
+                  @if (product.inStock === false) {
+                    <span class="pos-quickpicks__outOfStock" i18n="@@pos.quickPicks.outOfStock">Agotado</span>
+                  } @else {
+                    <span class="pos-quickpicks__price">{{ product.price | copCurrency }}</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        }
+
         <div class="pos-table-card">
           @if (!catalog()) {
             <p class="pos-main__caption" i18n="@@pos.loading">Cargando catálogo…</p>
           } @else if (cart().length === 0) {
             <div class="pos-empty" role="status">
               <tui-icon icon="@tui.shopping-cart" aria-hidden="true" />
-              <p i18n="@@pos.cart.empty">Busca un producto para agregarlo a la venta.</p>
+              <p i18n="@@pos.cart.empty">Elige un producto arriba o búscalo para agregarlo a la venta.</p>
             </div>
           } @else {
             <div style="overflow-x: auto">
@@ -97,6 +127,7 @@
                           <span>{{ line.quantity }}</span>
                           <button
                             type="button"
+                            [disabled]="atStockLimit(line)"
                             (click)="incrementLine(line.product.id)"
                             aria-label="Aumentar cantidad"
                             i18n-aria-label="@@pos.stepper.increase"
@@ -104,6 +135,9 @@
                             <tui-icon icon="@tui.plus" aria-hidden="true" />
                           </button>
                         </div>
+                        @if (atStockLimit(line)) {
+                          <p class="pos-table__stock-note" i18n="@@pos.stepper.limit">Sin más unidades disponibles</p>
+                        }
                       </td>
                       <td>{{ line.product.price | copCurrency }}</td>
                       <td class="pos-table__subtotal">{{ line.product.price * line.quantity | copCurrency }}</td>
@@ -131,6 +165,7 @@
           <div class="pos-receipt" role="status">
             <tui-icon icon="@tui.circle-check" aria-hidden="true" />
             <p class="pos-receipt__title" i18n="@@pos.receipt.title">Venta registrada</p>
+            <p class="pos-receipt__order" i18n="@@pos.receipt.orderNumber">N.° {{ sale.orderNumber }}</p>
             <p class="pos-receipt__total">{{ sale.total | copCurrency }}</p>
             <button type="button" tuiButton appearance="secondary" size="m" (click)="dismissReceipt()" i18n="@@pos.receipt.newSale">
               Nueva venta
@@ -190,17 +225,24 @@
             </div>
           </div>
 
+          @if (saleError(); as message) {
+            <div class="form-error-banner" role="alert">{{ message }}</div>
+          }
+
           <button
             type="button"
             tuiButton
             size="l"
             iconStart="@tui.receipt"
             class="pos-finalize"
-            [disabled]="cart().length === 0"
+            [disabled]="cart().length === 0 || pending()"
             (click)="finalizeSale()"
-            i18n="@@pos.finalize"
           >
-            Finalizar Venta
+            @if (pending()) {
+              <span i18n="@@pos.finalize.pending">Registrando…</span>
+            } @else {
+              <span i18n="@@pos.finalize">Finalizar Venta</span>
+            }
           </button>
         }
       </aside>

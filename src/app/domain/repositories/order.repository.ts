@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { OrderDetail, OrderSummary } from '../models/order.model';
+import { OrderDetail, OrderSummary, StoreSaleItem, StoreSaleReceipt } from '../models/order.model';
 
 /**
  * Domain-facing contract for cross-channel order consultation. The presentation layer depends
@@ -12,4 +12,9 @@ export abstract class OrderRepository {
   /** Full detail (products, quantities, value, client, channel, status) for one order. 404s
    * when the id isn't registered — surfaced by the caller as OrderApiError. */
   abstract getById(id: string): Observable<OrderDetail>;
+  /**
+   * Register a walk-in sale at the register (HU-06 — POS "Finalizar Venta"). Rejects with a
+   * field error under `items` when a line exceeds the available stock.
+   */
+  abstract registerStoreSale(items: StoreSaleItem[]): Observable<StoreSaleReceipt>;
 }

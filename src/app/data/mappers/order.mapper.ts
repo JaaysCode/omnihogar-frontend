@@ -1,6 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { OrderApiError, OrderChannel, OrderDetail, OrderItemLine, OrderStatus, OrderSummary } from '../../domain/models/order.model';
-import { OrderDetailDto, OrderItemDto, OrderSummaryDto } from '../services/order-api.dto';
+import {
+  OrderApiError,
+  OrderChannel,
+  OrderDetail,
+  OrderFieldErrors,
+  OrderItemLine,
+  OrderStatus,
+  OrderSummary,
+  StoreSaleReceipt,
+} from '../../domain/models/order.model';
+import { ApiProblemDto } from '../services/auth-api.dto';
+import { OrderDetailDto, OrderItemDto, OrderSummaryDto, StoreSaleReceiptDto } from '../services/order-api.dto';
 
 const CHANNELS: readonly OrderChannel[] = ['web', 'store', 'chat'];
 const STATUSES: readonly OrderStatus[] = [
@@ -61,10 +71,42 @@ export function toOrderDetail(dto: OrderDetailDto): OrderDetail {
   };
 }
 
+export function toStoreSaleReceipt(dto: StoreSaleReceiptDto): StoreSaleReceipt {
+  return {
+    orderId: dto.orderId,
+    orderNumber: dto.orderNumber,
+    subtotal: dto.subtotal,
+    tax: dto.tax,
+    total: dto.total,
+    createdAt: dto.createdAt,
+  };
+}
+
+/** Lowercases the backend's PascalCase field-error keys (e.g. "Items" -> "items"). */
+function toFieldErrors(errors: Record<string, string[]>): OrderFieldErrors {
+  const normalized: OrderFieldErrors = {};
+  for (const [key, messages] of Object.entries(errors)) {
+    const fieldName = key.charAt(0).toLowerCase() + key.slice(1);
+    normalized[fieldName] = messages;
+  }
+  return normalized;
+}
+
 /** Translates a failed HTTP call into a domain-level {@link OrderApiError}. */
 export function toOrderApiError(error: unknown): OrderApiError {
   if (!(error instanceof HttpErrorResponse)) {
     return new OrderApiError($localize`:@@orders.error.generic:Ocurrió un error inesperado. Inténtalo de nuevo.`);
+  }
+
+  if (error.status === 400) {
+    const problem = error.error as ApiProblemDto | null;
+    const fieldErrors = problem?.errors ? toFieldErrors(problem.errors) : undefined;
+    return new OrderApiError(
+      fieldErrors
+        ? Object.values(fieldErrors)[0]?.[0] ?? $localize`:@@orders.error.validation:Revisa los datos e inténtalo de nuevo.`
+        : problem?.title ?? $localize`:@@orders.error.validation:Revisa los datos e inténtalo de nuevo.`,
+      fieldErrors,
+    );
   }
 
   if (error.status === 401 || error.status === 403) {
