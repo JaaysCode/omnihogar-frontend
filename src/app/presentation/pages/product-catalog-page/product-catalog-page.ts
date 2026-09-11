@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { TuiButton, TuiIcon, TuiAlertService } from '@taiga-ui/core';
+import { TuiButton, TuiAlertService } from '@taiga-ui/core';
 import { Product, ProductApiError } from '../../../domain/models/product.model';
 import { CartApiError } from '../../../domain/models/cart.model';
 import { ProductRepository } from '../../../domain/repositories/product.repository';
@@ -12,7 +12,7 @@ import { PublicHeader } from '../../components/public-header/public-header';
 /** Public product catalog (HU-4) — every customer, no auth required. "Agregar al carrito" (HU-05). */
 @Component({
   selector: 'app-product-catalog-page',
-  imports: [CopCurrencyPipe, PublicHeader, TuiButton, TuiIcon],
+  imports: [CopCurrencyPipe, PublicHeader, TuiButton],
   templateUrl: './product-catalog-page.html',
   styleUrl: './product-catalog-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,6 +38,14 @@ export class ProductCatalogPage implements OnInit {
   }
 
   protected onAddToCart(product: Product): void {
+    // Belt-and-suspenders against a double-click: the `[disabled]` binding can lag one render
+    // frame behind two clicks fired back-to-back, which used to fire two concurrent POSTs and
+    // occasionally 500 on the backend (both requests read the same cart line before either
+    // saved). Bail out here too, synchronously, before either request goes out.
+    if (this.adding().has(product.id)) {
+      return;
+    }
+
     if (!this.session.isAuthenticated()) {
       this.alerts
         .open($localize`:@@cart.add.loginRequired:Inicia sesión para agregar productos al carrito.`, {
