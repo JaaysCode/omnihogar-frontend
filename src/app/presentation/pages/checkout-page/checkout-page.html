@@ -1,0 +1,157 @@
+<app-public-header />
+
+<div class="checkout__viewport">
+  <div class="checkout">
+    <h1 i18n="@@checkout.page.title">Finalizar compra</h1>
+
+    @if (items().length === 0) {
+      <div class="checkout__empty" role="status">
+        <tui-icon icon="@tui.shopping-cart" aria-hidden="true" />
+        <p i18n="@@checkout.page.emptyCart">Tu carrito está vacío.</p>
+        <a routerLink="/products" tuiButton size="m" i18n="@@checkout.page.goToCatalog">Ir al catálogo</a>
+      </div>
+    } @else {
+      <div class="checkout__layout">
+        <form class="checkout__form" (ngSubmit)="onSubmit()" [formGroup]="form" novalidate>
+          @if (attemptedSubmit && form.invalid && invalidFieldSummary.length > 0) {
+            <div class="error-summary" role="alert" tabindex="-1" #errorSummary aria-labelledby="checkout-error-title">
+              <h2 id="checkout-error-title" i18n="@@checkout.errorSummary.title">Corrige lo siguiente</h2>
+              <ul>
+                @for (item of invalidFieldSummary; track item.control) {
+                  <li>
+                    <button type="button" class="error-summary__link" (click)="focusField(item.control)">
+                      {{ item.message }}
+                    </button>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+
+          @if (formError(); as message) {
+            <div class="form-error-banner" role="alert">{{ message }}</div>
+          }
+
+          <section class="checkout__section">
+            <h2 i18n="@@checkout.section.address">Dirección de entrega</h2>
+
+            <div class="auth-form__field">
+              <label for="checkout-address" i18n="@@checkout.field.address.label">Dirección <span aria-hidden="true">*</span></label>
+              <div class="auth-form__input">
+                <tui-icon icon="@tui.map-pin" aria-hidden="true" />
+                <input
+                  id="checkout-address"
+                  type="text"
+                  formControlName="address"
+                  autocomplete="street-address"
+                  [attr.aria-invalid]="!!errorFor('address')"
+                  [attr.aria-describedby]="errorFor('address') ? 'checkout-address-error' : null"
+                />
+              </div>
+              @if (errorFor('address'); as message) {
+                <p class="auth-form__error" id="checkout-address-error">{{ message }}</p>
+              }
+            </div>
+
+            <div class="auth-form__field">
+              <label for="checkout-city" i18n="@@checkout.field.city.label">Ciudad <span aria-hidden="true">*</span></label>
+              <div class="auth-form__input">
+                <tui-icon icon="@tui.building-2" aria-hidden="true" />
+                <input
+                  id="checkout-city"
+                  type="text"
+                  formControlName="city"
+                  autocomplete="address-level2"
+                  [attr.aria-invalid]="!!errorFor('city')"
+                  [attr.aria-describedby]="errorFor('city') ? 'checkout-city-error' : null"
+                />
+              </div>
+              @if (errorFor('city'); as message) {
+                <p class="auth-form__error" id="checkout-city-error">{{ message }}</p>
+              }
+            </div>
+
+            <div class="auth-form__row">
+              <div class="auth-form__field">
+                <label for="checkout-neighborhood" i18n="@@checkout.field.neighborhood.label"
+                  >Barrio <span class="auth-form__optional">(opcional)</span></label
+                >
+                <div class="auth-form__input">
+                  <tui-icon icon="@tui.map" aria-hidden="true" />
+                  <input id="checkout-neighborhood" type="text" formControlName="neighborhood" />
+                </div>
+                @if (errorFor('neighborhood'); as message) {
+                  <p class="auth-form__error">{{ message }}</p>
+                }
+              </div>
+
+              <div class="auth-form__field">
+                <label for="checkout-reference" i18n="@@checkout.field.reference.label"
+                  >Referencia <span class="auth-form__optional">(opcional)</span></label
+                >
+                <div class="auth-form__input">
+                  <tui-icon icon="@tui.signpost" aria-hidden="true" />
+                  <input id="checkout-reference" type="text" formControlName="reference" />
+                </div>
+                @if (errorFor('reference'); as message) {
+                  <p class="auth-form__error">{{ message }}</p>
+                }
+              </div>
+            </div>
+          </section>
+
+          <section class="checkout__section">
+            <h2 i18n="@@checkout.section.paymentMethod">Método de pago</h2>
+            <div
+              id="checkout-payment-methods"
+              class="checkout-payment-methods"
+              tabindex="-1"
+              [attr.aria-invalid]="!!errorFor('paymentMethod')"
+              [attr.aria-describedby]="errorFor('paymentMethod') ? 'checkout-paymentMethod-error' : null"
+            >
+              @for (method of paymentMethods; track method) {
+                <button
+                  type="button"
+                  class="checkout-payment-methods__option"
+                  [class.checkout-payment-methods__option--active]="selectedPaymentMethod() === method"
+                  (click)="onSelectPaymentMethod(method)"
+                >
+                  {{ paymentMethodLabel(method) }}
+                </button>
+              }
+            </div>
+            @if (errorFor('paymentMethod'); as message) {
+              <p class="auth-form__error" id="checkout-paymentMethod-error">{{ message }}</p>
+            }
+          </section>
+
+          <button tuiButton type="submit" size="l" [disabled]="pending()" class="checkout__submit">
+            @if (pending()) {
+              <span i18n="@@checkout.submit.pending">Conectando con Mercado Pago…</span>
+            } @else {
+              <span i18n="@@checkout.submit.idle">Pagar con Mercado Pago</span>
+            }
+          </button>
+        </form>
+
+        <aside class="checkout__summary">
+          <h2 i18n="@@checkout.summary.title">Resumen</h2>
+          @for (item of items(); track item.productId) {
+            <div class="checkout__summary-line">
+              <span>{{ item.name }} × {{ item.quantity }}</span>
+              <span>{{ item.subtotal | copCurrency }}</span>
+            </div>
+          }
+          <div class="checkout__summary-row">
+            <span i18n="@@checkout.summary.subtotal">Subtotal ({{ itemCount() }} artículos)</span>
+            <span>{{ subtotal() | copCurrency }}</span>
+          </div>
+          <div class="checkout__summary-row checkout__summary-row--total">
+            <span i18n="@@checkout.summary.total">Total</span>
+            <span>{{ total() | copCurrency }}</span>
+          </div>
+        </aside>
+      </div>
+    }
+  </div>
+</div>

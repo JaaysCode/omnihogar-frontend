@@ -55,6 +55,21 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    // HU-08/HU-09 — dirección + método de pago, luego redirige a Mercado Pago Checkout Pro.
+    path: 'checkout',
+    loadComponent: () => import('./presentation/pages/checkout-page/checkout-page').then((m) => m.CheckoutPage),
+    title: 'Finalizar compra · OmniHogar',
+    canActivate: [authGuard],
+  },
+  {
+    // A donde Mercado Pago redirige de vuelta tras el pago (éxito/fallo/pendiente).
+    path: 'checkout/result',
+    loadComponent: () =>
+      import('./presentation/pages/checkout-result-page/checkout-result-page').then((m) => m.CheckoutResultPage),
+    title: 'Resultado del pago · OmniHogar',
+    canActivate: [authGuard],
+  },
+  {
     // "Nuevo Producto" / row "Editar" open create-product-page / edit-product-page as
     // `?create` / `?edit` query-param-driven modals on top of this page (see
     // admin-products-page.ts/.html) instead of separate routes — still

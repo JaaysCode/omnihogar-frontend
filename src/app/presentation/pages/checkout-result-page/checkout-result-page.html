@@ -1,0 +1,88 @@
+<app-public-header />
+
+<div class="checkout-result__viewport">
+  <div class="checkout-result">
+    @if (loadError(); as message) {
+      <div class="checkout-result__card" role="alert">
+        <tui-icon icon="@tui.circle-alert" aria-hidden="true" />
+        <p>{{ message }}</p>
+        <a routerLink="/cart" tuiButton size="m" appearance="secondary" i18n="@@checkout.result.backToCart">
+          Volver al carrito
+        </a>
+      </div>
+    } @else if (!status()) {
+      <div class="checkout-result__card" role="status">
+        <tui-icon icon="@tui.loader" aria-hidden="true" />
+        <p i18n="@@checkout.result.checking">Verificando el estado de tu pago…</p>
+      </div>
+    } @else {
+      @let sale = status()!;
+
+      @if (sale.orderStatus === 'payment_approved') {
+        <div class="checkout-result__card checkout-result__card--positive" role="status">
+          <tui-icon icon="@tui.circle-check" aria-hidden="true" />
+          <h1 i18n="@@checkout.result.approved.title">¡Pago aprobado!</h1>
+          <p i18n="@@checkout.result.approved.orderNumber">Pedido N.° {{ sale.orderNumber }}</p>
+          <p class="checkout-result__total">{{ sale.total | copCurrency }}</p>
+          <a routerLink="/products" tuiButton size="m" i18n="@@checkout.result.continueShopping">Seguir comprando</a>
+        </div>
+      } @else if (sale.orderStatus === 'payment_rejected') {
+        <div class="checkout-result__card checkout-result__card--negative" role="alert">
+          <tui-icon icon="@tui.circle-x" aria-hidden="true" />
+          <h1 i18n="@@checkout.result.rejected.title">Pago rechazado</h1>
+          <p i18n="@@checkout.result.rejected.body">
+            Mercado Pago rechazó el pago. Tu pedido N.° {{ sale.orderNumber }} sigue guardado.
+          </p>
+          <button
+            type="button"
+            tuiButton
+            size="m"
+            [disabled]="retrying()"
+            (click)="retryPayment()"
+            i18n="@@checkout.result.retry"
+          >
+            Reintentar pago
+          </button>
+        </div>
+      } @else {
+        <div class="checkout-result__card" role="status">
+          <tui-icon icon="@tui.clock" aria-hidden="true" />
+          <h1 i18n="@@checkout.result.pending.title">Tu pedido está guardado</h1>
+          <p i18n="@@checkout.result.pending.orderNumber">Pedido N.° {{ sale.orderNumber }}</p>
+          @if (sale.gatewayUnavailable) {
+            <p class="checkout-result__note" i18n="@@checkout.result.pending.gatewayUnavailable">
+              Todavía no pudimos confirmar tu pago con Mercado Pago. Inténtalo de nuevo en unos minutos.
+            </p>
+          } @else {
+            <p class="checkout-result__note" i18n="@@checkout.result.pending.body">
+              Estamos esperando la confirmación de Mercado Pago.
+            </p>
+          }
+          <div class="checkout-result__actions">
+            <button
+              type="button"
+              tuiButton
+              size="m"
+              appearance="secondary"
+              [disabled]="checking()"
+              (click)="refresh()"
+              i18n="@@checkout.result.refresh"
+            >
+              Actualizar estado
+            </button>
+            <button
+              type="button"
+              tuiButton
+              size="m"
+              [disabled]="retrying()"
+              (click)="retryPayment()"
+              i18n="@@checkout.result.retry"
+            >
+              Reintentar pago
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

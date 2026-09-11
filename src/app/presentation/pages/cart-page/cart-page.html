@@ -75,19 +75,9 @@
             <span i18n="@@cart.summary.total">Total</span>
             <span>{{ total() | copCurrency }}</span>
           </div>
-          <button
-            type="button"
-            tuiButton
-            size="l"
-            class="cart__checkout"
-            disabled
-            i18n="@@cart.summary.checkout"
-          >
+          <a routerLink="/checkout" tuiButton size="l" class="cart__checkout" i18n="@@cart.summary.checkout">
             Realizar pedido
-          </button>
-          <p class="cart__checkout-note" i18n="@@cart.summary.checkoutPending">
-            El pago estará disponible próximamente.
-          </p>
+          </a>
         </aside>
       </div>
     }

@@ -27,6 +27,16 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    // HU-08/HU-09 — checkout, requiere sesión. No prerenderizable.
+    path: 'checkout',
+    renderMode: RenderMode.Client,
+  },
+  {
+    // Vuelta desde Mercado Pago con datos de la transacción en la URL. No prerenderizable.
+    path: 'checkout/result',
+    renderMode: RenderMode.Client,
+  },
+  {
     // Admin-only + live data (list) — not prerenderable.
     path: 'admin/products',
     renderMode: RenderMode.Client,

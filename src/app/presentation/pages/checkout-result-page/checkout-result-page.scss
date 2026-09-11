@@ -1,0 +1,70 @@
+:host {
+  display: block;
+}
+
+.checkout-result__viewport {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: var(--oh-color-neutral, #f5f7f9);
+}
+
+.checkout-result {
+  width: 100%;
+  max-width: 28rem;
+}
+
+.checkout-result__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 2.5rem 1.5rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base, #fff);
+  box-shadow: var(--oh-shadow-card);
+  text-align: center;
+
+  tui-icon {
+    font-size: 2.5rem;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.375rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--tui-text-secondary, #6b6b6b);
+  }
+
+  &--positive tui-icon {
+    color: var(--tui-status-positive, #16a34a);
+  }
+
+  &--negative tui-icon {
+    color: var(--tui-status-negative, #d92d20);
+  }
+}
+
+.checkout-result__total {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--tui-text-primary, #1a1a1a) !important;
+}
+
+.checkout-result__note {
+  font-size: 0.875rem;
+}
+
+.checkout-result__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}

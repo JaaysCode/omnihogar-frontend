@@ -8,7 +8,7 @@ import { PublicHeader } from '../../components/public-header/public-header';
 
 /**
  * The client's shopping cart (HU-05). Reachable at `/cart` (auth required). Reads/writes
- * through `CartStore`; the checkout button is inert until HU-08 (pago) lands.
+ * through `CartStore`; "Realizar pedido" moves on to `/checkout` (HU-08/HU-09).
  */
 @Component({
   selector: 'app-cart-page',
