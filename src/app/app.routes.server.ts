@@ -22,6 +22,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    // HU-18 — detalle de producto, datos en vivo (disponibilidad). No prerenderizable.
+    path: 'products/:id',
+    renderMode: RenderMode.Client,
+  },
+  {
     // HU-05 — carrito por usuario, requiere sesión. No prerenderizable.
     path: 'cart',
     renderMode: RenderMode.Client,

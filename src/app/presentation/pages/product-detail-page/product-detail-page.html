@@ -1,0 +1,49 @@
+<app-public-header />
+
+<div class="detail__viewport">
+  <div class="detail">
+    <a routerLink="/products" class="detail__back" i18n="@@productDetail.back">&larr; Volver al catálogo</a>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    } @else if (!product()) {
+      <p class="detail__caption" i18n="@@productDetail.loading">Cargando producto…</p>
+    } @else {
+      @let p = product()!;
+      <article class="detail__card">
+        @if (p.imageUrl) {
+          <img [src]="p.imageUrl" [alt]="p.name" class="detail__image" />
+        } @else {
+          <div class="detail__image detail__image--placeholder" aria-hidden="true"></div>
+        }
+
+        <div class="detail__info">
+          <h1 class="detail__name">{{ p.name }}</h1>
+          @if (p.description) {
+            <p class="detail__description">{{ p.description }}</p>
+          }
+          <p class="detail__price">{{ p.price | copCurrency }}</p>
+
+          @if (p.inStock === false) {
+            <p class="detail__out-of-stock" role="status" i18n="@@productDetail.notAvailable">
+              Este producto no está disponible para compra.
+            </p>
+          } @else {
+            <button
+              type="button"
+              tuiButton
+              size="m"
+              iconStart="@tui.shopping-cart"
+              class="detail__add"
+              [disabled]="adding()"
+              (click)="onAddToCart()"
+              i18n="@@products.catalog.addToCart"
+            >
+              Agregar al carrito
+            </button>
+          }
+        </div>
+      </article>
+    }
+  </div>
+</div>

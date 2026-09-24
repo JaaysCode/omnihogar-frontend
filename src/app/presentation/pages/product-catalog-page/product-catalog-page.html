@@ -16,12 +16,14 @@
       <div class="catalog__grid">
         @for (product of products()!; track product.id) {
           <article class="catalog__card">
-            @if (product.imageUrl) {
-              <img [src]="product.imageUrl" [alt]="product.name" class="catalog__image" />
-            } @else {
-              <div class="catalog__image catalog__image--placeholder" aria-hidden="true"></div>
-            }
-            <h2 class="catalog__name">{{ product.name }}</h2>
+            <a [routerLink]="['/products', product.id]" class="catalog__link">
+              @if (product.imageUrl) {
+                <img [src]="product.imageUrl" [alt]="product.name" class="catalog__image" />
+              } @else {
+                <div class="catalog__image catalog__image--placeholder" aria-hidden="true"></div>
+              }
+              <h2 class="catalog__name">{{ product.name }}</h2>
+            </a>
             @if (product.description) {
               <p class="catalog__description">{{ product.description }}</p>
             }

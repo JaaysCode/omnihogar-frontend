@@ -48,6 +48,13 @@ export const routes: Routes = [
     title: 'Catálogo · OmniHogar',
   },
   {
+    // HU-18 — detalle de producto, público como el catálogo.
+    path: 'products/:id',
+    loadComponent: () =>
+      import('./presentation/pages/product-detail-page/product-detail-page').then((m) => m.ProductDetailPage),
+    title: 'Producto · OmniHogar',
+  },
+  {
     // HU-05 — carrito del cliente. Requiere sesión (el carrito vive en el servidor por usuario).
     path: 'cart',
     loadComponent: () => import('./presentation/pages/cart-page/cart-page').then((m) => m.CartPage),

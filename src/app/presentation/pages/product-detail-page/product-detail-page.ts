@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TuiButton, TuiAlertService } from '@taiga-ui/core';
 import { Product, ProductApiError } from '../../../domain/models/product.model';
@@ -9,40 +9,38 @@ import { AuthSessionService } from '../../../core/services/auth-session.service'
 import { CopCurrencyPipe } from '../../../shared/pipes/cop-currency.pipe';
 import { PublicHeader } from '../../components/public-header/public-header';
 
-/** Public product catalog (HU-4) — every customer, no auth required. "Agregar al carrito" (HU-05). */
+/** Product detail (HU-18) — public, no auth required. "Agregar al carrito" reuses HU-05. */
 @Component({
-  selector: 'app-product-catalog-page',
+  selector: 'app-product-detail-page',
   imports: [CopCurrencyPipe, PublicHeader, TuiButton, RouterLink],
-  templateUrl: './product-catalog-page.html',
-  styleUrl: './product-catalog-page.scss',
+  templateUrl: './product-detail-page.html',
+  styleUrl: './product-detail-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductCatalogPage implements OnInit {
+export class ProductDetailPage implements OnInit {
   private readonly productRepository = inject(ProductRepository);
   private readonly cartStore = inject(CartStore);
   private readonly session = inject(AuthSessionService);
   private readonly router = inject(Router);
   private readonly alerts = inject(TuiAlertService);
 
-  protected readonly products = signal<Product[] | null>(null);
+  /** Product id — bound from the `:id` path param by withComponentInputBinding(). */
+  readonly id = input.required<string>();
+
+  protected readonly product = signal<Product | null>(null);
   protected readonly loadError = signal<string | null>(null);
-  /** Product ids with an in-flight add request, to disable the button meanwhile. */
-  protected readonly adding = signal<ReadonlySet<string>>(new Set());
+  protected readonly adding = signal(false);
 
   ngOnInit(): void {
-    this.productRepository.getCatalog().subscribe({
-      next: (products) => this.products.set(products),
+    this.productRepository.getById(this.id()).subscribe({
+      next: (product) => this.product.set(product),
       error: (error: ProductApiError) => this.loadError.set(error.message),
     });
-    this.cartStore.load();
   }
 
-  protected onAddToCart(product: Product): void {
-    // Belt-and-suspenders against a double-click: the `[disabled]` binding can lag one render
-    // frame behind two clicks fired back-to-back, which used to fire two concurrent POSTs and
-    // occasionally 500 on the backend (both requests read the same cart line before either
-    // saved). Bail out here too, synchronously, before either request goes out.
-    if (this.adding().has(product.id)) {
+  protected onAddToCart(): void {
+    const product = this.product();
+    if (!product || this.adding()) {
       return;
     }
 
@@ -56,24 +54,16 @@ export class ProductCatalogPage implements OnInit {
       return;
     }
 
-    this.adding.update((set) => new Set(set).add(product.id));
+    this.adding.set(true);
     this.cartStore.add(product.id, 1).subscribe({
       next: () => {
-        this.adding.update((set) => {
-          const next = new Set(set);
-          next.delete(product.id);
-          return next;
-        });
+        this.adding.set(false);
         this.alerts
           .open($localize`:@@cart.add.success:Producto agregado al carrito.`, { appearance: 'positive' })
           .subscribe();
       },
       error: (error: CartApiError) => {
-        this.adding.update((set) => {
-          const next = new Set(set);
-          next.delete(product.id);
-          return next;
-        });
+        this.adding.set(false);
         this.alerts.open(error.message, { appearance: 'negative' }).subscribe();
       },
     });
