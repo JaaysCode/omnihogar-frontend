@@ -27,6 +27,10 @@
   </ul>
 
   <div class="admin-sidebar__footer">
+    <a routerLink="/profile" routerLinkActive="admin-sidebar__item--active" class="admin-sidebar__item">
+      <tui-icon icon="@tui.user" aria-hidden="true" />
+      <span i18n="@@admin.nav.profile">Mi Perfil</span>
+    </a>
     <button type="button" class="admin-sidebar__item" (click)="onLogout()">
       <tui-icon icon="@tui.log-out" aria-hidden="true" />
       <span i18n="@@admin.nav.logout">Cerrar Sesión</span>

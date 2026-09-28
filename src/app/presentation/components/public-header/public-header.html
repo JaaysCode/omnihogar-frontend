@@ -14,6 +14,15 @@
           Panel de administración
         </a>
       }
+      <a
+        routerLink="/profile"
+        tuiButton
+        size="s"
+        appearance="flat"
+        iconStart="@tui.user"
+        aria-label="Mi perfil"
+        i18n-aria-label="@@publicHeader.profile"
+      ></a>
       <button type="button" tuiButton size="s" appearance="flat" (click)="onLogout()" i18n="@@publicHeader.logout">
         Cerrar sesión
       </button>

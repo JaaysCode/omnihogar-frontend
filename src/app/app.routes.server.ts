@@ -27,6 +27,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    // HU-16 — perfil propio del usuario autenticado. No prerenderizable.
+    path: 'profile',
+    renderMode: RenderMode.Client,
+  },
+  {
     // HU-05 — carrito por usuario, requiere sesión. No prerenderizable.
     path: 'cart',
     renderMode: RenderMode.Client,

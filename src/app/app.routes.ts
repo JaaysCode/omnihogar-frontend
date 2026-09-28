@@ -55,6 +55,14 @@ export const routes: Routes = [
     title: 'Producto · OmniHogar',
   },
   {
+    // HU-16 — "Mi perfil", abierta a cualquier rol autenticado (cliente, administrador, jefe de
+    // bodega, coordinador de despacho, asesor de tienda). Solo requiere sesión, ningún permiso.
+    path: 'profile',
+    loadComponent: () => import('./presentation/pages/profile-page/profile-page').then((m) => m.ProfilePage),
+    title: 'Mi perfil · OmniHogar',
+    canActivate: [authGuard],
+  },
+  {
     // HU-05 — carrito del cliente. Requiere sesión (el carrito vive en el servidor por usuario).
     path: 'cart',
     loadComponent: () => import('./presentation/pages/cart-page/cart-page').then((m) => m.CartPage),

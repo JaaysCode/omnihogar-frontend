@@ -1,0 +1,139 @@
+<app-public-header />
+
+<div class="profile__viewport">
+  <div class="profile">
+    <h1 i18n="@@profile.page.title">Mi perfil</h1>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    } @else if (!profile()) {
+      <p class="profile__loading" i18n="@@profile.page.loading">Cargando tu perfil…</p>
+    } @else {
+      @if (attemptedSubmit && form.invalid && invalidFieldSummary.length > 0) {
+        <div class="error-summary" role="alert" tabindex="-1" #errorSummary aria-labelledby="profile-form-error-title">
+          <h2 id="profile-form-error-title" i18n="@@profile.form.errorSummary.title">Corrige lo siguiente</h2>
+          <ul>
+            @for (item of invalidFieldSummary; track item.control) {
+              <li>
+                <button type="button" class="error-summary__link" (click)="focusField(item.control)">
+                  {{ item.message }}
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (formError(); as message) {
+        <div class="form-error-banner" role="alert">{{ message }}</div>
+      }
+
+      <form class="profile-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <section class="profile-form__card">
+          <h2 i18n="@@profile.form.section.identity">Datos personales</h2>
+
+          <div class="profile-form__row">
+            <div class="profile-form__field">
+              <label for="profile-form-firstName" i18n="@@profile.form.field.firstName.label"
+                >Nombre <span aria-hidden="true">*</span></label
+              >
+              <div class="profile-form__input">
+                <tui-icon icon="@tui.user" aria-hidden="true" />
+                <input
+                  id="profile-form-firstName"
+                  type="text"
+                  formControlName="firstName"
+                  [attr.aria-invalid]="!!errorFor('firstName')"
+                  [attr.aria-describedby]="errorFor('firstName') ? 'profile-form-firstName-error' : null"
+                />
+              </div>
+              @if (errorFor('firstName'); as message) {
+                <p class="profile-form__error" id="profile-form-firstName-error">{{ message }}</p>
+              }
+            </div>
+
+            <div class="profile-form__field">
+              <label for="profile-form-lastName" i18n="@@profile.form.field.lastName.label"
+                >Apellido <span aria-hidden="true">*</span></label
+              >
+              <div class="profile-form__input">
+                <tui-icon icon="@tui.user" aria-hidden="true" />
+                <input
+                  id="profile-form-lastName"
+                  type="text"
+                  formControlName="lastName"
+                  [attr.aria-invalid]="!!errorFor('lastName')"
+                  [attr.aria-describedby]="errorFor('lastName') ? 'profile-form-lastName-error' : null"
+                />
+              </div>
+              @if (errorFor('lastName'); as message) {
+                <p class="profile-form__error" id="profile-form-lastName-error">{{ message }}</p>
+              }
+            </div>
+          </div>
+
+          <div class="profile-form__row">
+            <div class="profile-form__field">
+              <label for="profile-form-email" i18n="@@profile.form.field.email.label"
+                >Correo electrónico <span aria-hidden="true">*</span></label
+              >
+              <div class="profile-form__input">
+                <tui-icon icon="@tui.mail" aria-hidden="true" />
+                <input
+                  id="profile-form-email"
+                  type="email"
+                  formControlName="email"
+                  [attr.aria-invalid]="!!errorFor('email')"
+                  [attr.aria-describedby]="errorFor('email') ? 'profile-form-email-error' : null"
+                />
+              </div>
+              @if (errorFor('email'); as message) {
+                <p class="profile-form__error" id="profile-form-email-error">{{ message }}</p>
+              } @else {
+                <p class="profile-form__hint" i18n="@@profile.form.field.email.hint">
+                  Es tu correo de inicio de sesión — si lo cambias, úsalo la próxima vez.
+                </p>
+              }
+            </div>
+
+            <div class="profile-form__field">
+              <label for="profile-form-phone" i18n="@@profile.form.field.phone.label"
+                >Teléfono <span class="profile-form__optional">(opcional)</span></label
+              >
+              <div class="profile-form__input">
+                <tui-icon icon="@tui.phone" aria-hidden="true" />
+                <input
+                  id="profile-form-phone"
+                  type="tel"
+                  formControlName="phone"
+                  placeholder="+57 300 1234567"
+                  [attr.aria-invalid]="!!errorFor('phone')"
+                  [attr.aria-describedby]="errorFor('phone') ? 'profile-form-phone-error' : null"
+                />
+              </div>
+              @if (errorFor('phone'); as message) {
+                <p class="profile-form__error" id="profile-form-phone-error">{{ message }}</p>
+              }
+            </div>
+          </div>
+
+          @if (profile(); as p) {
+            <p class="profile-form__member-since" i18n="@@profile.form.memberSince">
+              Miembro desde {{ p.createdAt | date: 'longDate' }}
+            </p>
+          }
+        </section>
+
+        <div class="profile-form__actions">
+          <button tuiButton type="submit" size="l" iconStart="@tui.save" [disabled]="pending()">
+            @if (pending()) {
+              <span i18n="@@profile.form.submit.pending">Guardando…</span>
+            } @else {
+              <span i18n="@@profile.form.submit.idle">Guardar cambios</span>
+            }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>
