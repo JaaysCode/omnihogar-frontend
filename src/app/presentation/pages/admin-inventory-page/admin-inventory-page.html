@@ -76,7 +76,7 @@
                   @for (product of filteredProducts(); track product.id) {
                     @let isOpen = selectedProduct()?.id === product.id;
                     @let productStock = rowStock().get(product.id);
-                    @let rowErr = rowError().get(product.id);
+                    @let rowErr = rowError();
                     @let lowStock = !!productStock && productStock.inStock && productStock.totalAvailable < lowStockThreshold;
                     <tr
                       class="inventory-table__row"

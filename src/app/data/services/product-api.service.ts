@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { AddStockPayload, CreateProductPayload, UpdateProductPayload } from '../../domain/models/product.model';
 import {
@@ -25,6 +25,17 @@ export class ProductApiService {
     return this.http.get<ProductDto[]>(`${this.baseUrl}/products`);
   }
 
+  search(name: string | null, categoryId: string | null): Observable<ProductDto[]> {
+    let params = new HttpParams();
+    if (name) {
+      params = params.set('name', name);
+    }
+    if (categoryId) {
+      params = params.set('categoryId', categoryId);
+    }
+    return this.http.get<ProductDto[]>(`${this.baseUrl}/products/search`, { params });
+  }
+
   getAdminList(): Observable<ProductDto[]> {
     return this.http.get<ProductDto[]>(`${this.baseUrl}/products/admin`);
   }
@@ -35,6 +46,17 @@ export class ProductApiService {
 
   getStock(id: string): Observable<ProductStockDto> {
     return this.http.get<ProductStockDto>(`${this.baseUrl}/products/${id}/stock`);
+  }
+
+  getStockBatch(ids: readonly string[]): Observable<ProductStockDto[]> {
+    if (ids.length === 0) {
+      return of([]);
+    }
+    let params = new HttpParams();
+    for (const id of ids) {
+      params = params.append('ids', id);
+    }
+    return this.http.get<ProductStockDto[]>(`${this.baseUrl}/products/stock`, { params });
   }
 
   getCategories(): Observable<CategoryDto[]> {

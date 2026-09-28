@@ -79,7 +79,6 @@
               <tbody>
                 @for (product of products()!; track product.id) {
                   @let productStock = rowStock().get(product.id);
-                  @let stockErr = rowStockError().get(product.id);
                   @let lowStock = !!productStock && productStock.inStock && productStock.totalAvailable < lowStockThreshold;
                   <tr>
                     <td>
@@ -93,7 +92,11 @@
                     </td>
                     <td>{{ product.sku }}</td>
                     <td>{{ product.name }}</td>
-                    <td class="admin-products-table__muted" i18n="@@products.adminList.category.none">Sin categorizar</td>
+                    @if (product.categoryId && categoryNameById().get(product.categoryId); as categoryName) {
+                      <td>{{ categoryName }}</td>
+                    } @else {
+                      <td class="admin-products-table__muted" i18n="@@products.adminList.category.none">Sin categorizar</td>
+                    }
                     <td>{{ product.price | copCurrency }}</td>
                     <td>
                       @if (productStock) {
@@ -110,7 +113,7 @@
                           }
                         </span>
                       } @else {
-                        <span class="admin-products-pill tone-neutral" [attr.title]="stockErr ?? null">—</span>
+                        <span class="admin-products-pill tone-neutral" [attr.title]="rowStockError()">—</span>
                       }
                     </td>
                     <td>

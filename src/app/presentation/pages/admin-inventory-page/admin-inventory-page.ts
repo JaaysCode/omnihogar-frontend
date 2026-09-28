@@ -14,12 +14,11 @@ import { ProductRepository } from '../../../domain/repositories/product.reposito
  * round trip needed, we already hold the full catalog).
  *
  * The Estado column needs every row's status up front (not just the one being inspected), so as
- * soon as the catalog loads we fan out one GET /products/{id}/stock per product in parallel and
- * cache each result in `rowStock` as it resolves — there's no bulk-stock endpoint, so this is
- * the only way to fill every pill without waiting on a row click. Expanding a row (AC "Consulta
- * de stock" / "Producto por tienda") reads the same cache for the per-facility breakdown rather
- * than firing a second request; a 0-total response renders the "Producto sin stock" state (AC
- * "Producto sin stock").
+ * soon as the catalog loads we fetch every product's stock in one GET /products/stock?ids=...
+ * batch call and cache the results in `rowStock`. Expanding a row (AC "Consulta de stock" /
+ * "Producto por tienda") reads the same cache for the per-facility breakdown rather than firing
+ * a second request; a 0-total response renders the "Producto sin stock" state (AC "Producto sin
+ * stock").
  *
  * "Agregar Unidades" opens add-stock-page as a `?addStock` query-param-driven modal on top of
  * this page — same pattern as create-employee-page over admin-users-page — and reloads the
@@ -52,9 +51,9 @@ export class AdminInventoryPage implements OnInit {
   protected readonly searchTerm = signal('');
   protected readonly selectedProduct = signal<Product | null>(null);
 
-  /** Per-product stock, filled in as each row's request resolves — see class doc. */
+  /** Per-product stock, filled in by one batch request — see class doc. */
   protected readonly rowStock = signal<ReadonlyMap<string, ProductStock>>(new Map());
-  protected readonly rowError = signal<ReadonlyMap<string, string>>(new Map());
+  protected readonly rowError = signal<string | null>(null);
 
   protected readonly filteredProducts = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
@@ -84,9 +83,7 @@ export class AdminInventoryPage implements OnInit {
     this.productRepository.getAdminList().subscribe({
       next: (products) => {
         this.allProducts.set(products);
-        for (const product of products) {
-          this.loadRowStock(product.id);
-        }
+        this.loadRowStock(products.map((product) => product.id));
       },
       error: (error: ProductApiError) => this.loadError.set(error.message),
     });
@@ -107,11 +104,13 @@ export class AdminInventoryPage implements OnInit {
     this.loadProducts();
   }
 
-  private loadRowStock(productId: string): void {
-    this.productRepository.getStock(productId).subscribe({
-      next: (stock) => this.rowStock.update((cache) => new Map(cache).set(productId, stock)),
-      error: (error: ProductApiError) =>
-        this.rowError.update((cache) => new Map(cache).set(productId, error.message)),
+  private loadRowStock(productIds: readonly string[]): void {
+    this.productRepository.getStockBatch(productIds).subscribe({
+      next: (stocks) => {
+        this.rowStock.set(new Map(stocks.map((stock) => [stock.productId, stock])));
+        this.rowError.set(null);
+      },
+      error: (error: ProductApiError) => this.rowError.set(error.message),
     });
   }
 }

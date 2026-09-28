@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { TuiButton, TuiAlertService } from '@taiga-ui/core';
-import { Product, ProductApiError } from '../../../domain/models/product.model';
+import { TuiButton, TuiAlertService, TuiIcon } from '@taiga-ui/core';
+import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { Category, Product, ProductApiError } from '../../../domain/models/product.model';
 import { CartApiError } from '../../../domain/models/cart.model';
 import { ProductRepository } from '../../../domain/repositories/product.repository';
 import { CartStore } from '../../../core/services/cart-store.service';
@@ -9,10 +10,22 @@ import { AuthSessionService } from '../../../core/services/auth-session.service'
 import { CopCurrencyPipe } from '../../../shared/pipes/cop-currency.pipe';
 import { PublicHeader } from '../../components/public-header/public-header';
 
-/** Public product catalog (HU-4) — every customer, no auth required. "Agregar al carrito" (HU-05). */
+/** Debounce for the name search box, so we don't fire a request on every keystroke. */
+const SEARCH_DEBOUNCE_MS = 300;
+
+interface SearchCriteria {
+  readonly name: string | null;
+  readonly categoryId: string | null;
+}
+
+/**
+ * Public product catalog (HU-4) — every customer, no auth required. "Agregar al carrito" (HU-05).
+ * Search by name and/or category filters the catalog via the backend's `/products/search`
+ * endpoint (HU-17).
+ */
 @Component({
   selector: 'app-product-catalog-page',
-  imports: [CopCurrencyPipe, PublicHeader, TuiButton, RouterLink],
+  imports: [CopCurrencyPipe, PublicHeader, TuiButton, RouterLink, TuiIcon],
   templateUrl: './product-catalog-page.html',
   styleUrl: './product-catalog-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,15 +39,51 @@ export class ProductCatalogPage implements OnInit {
 
   protected readonly products = signal<Product[] | null>(null);
   protected readonly loadError = signal<string | null>(null);
+  protected readonly categories = signal<Category[]>([]);
+  protected readonly searchTerm = signal('');
+  protected readonly selectedCategoryId = signal<string | null>(null);
   /** Product ids with an in-flight add request, to disable the button meanwhile. */
   protected readonly adding = signal<ReadonlySet<string>>(new Set());
 
+  private readonly criteria$ = new Subject<SearchCriteria>();
+
   ngOnInit(): void {
-    this.productRepository.getCatalog().subscribe({
-      next: (products) => this.products.set(products),
-      error: (error: ProductApiError) => this.loadError.set(error.message),
+    this.criteria$
+      .pipe(
+        debounceTime(SEARCH_DEBOUNCE_MS),
+        distinctUntilChanged((a, b) => a.name === b.name && a.categoryId === b.categoryId),
+        switchMap(({ name, categoryId }) => this.productRepository.search(name, categoryId)),
+      )
+      .subscribe({
+        next: (products) => {
+          this.products.set(products);
+          this.loadError.set(null);
+        },
+        error: (error: ProductApiError) => this.loadError.set(error.message),
+      });
+
+    this.criteria$.next({ name: null, categoryId: null });
+    this.productRepository.getCategories().subscribe({
+      next: (categories) => this.categories.set(categories),
+      // Category catalog is a nice-to-have filter; if it fails to load, search by name still works.
+      error: () => this.categories.set([]),
     });
     this.cartStore.load();
+  }
+
+  protected onSearchInput(value: string): void {
+    this.searchTerm.set(value);
+    this.emitCriteria();
+  }
+
+  protected onCategoryChange(categoryId: string): void {
+    this.selectedCategoryId.set(categoryId || null);
+    this.emitCriteria();
+  }
+
+  private emitCriteria(): void {
+    const name = this.searchTerm().trim();
+    this.criteria$.next({ name: name || null, categoryId: this.selectedCategoryId() });
   }
 
   protected onAddToCart(product: Product): void {

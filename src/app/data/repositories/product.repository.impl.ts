@@ -23,6 +23,13 @@ export class ProductRepositoryImpl implements ProductRepository {
     );
   }
 
+  search(name: string | null, categoryId: string | null): Observable<Product[]> {
+    return this.api.search(name, categoryId).pipe(
+      map((dtos) => dtos.map(toProduct)),
+      catchError((error) => throwError(() => toProductApiError(error))),
+    );
+  }
+
   getAdminList(): Observable<Product[]> {
     return this.api.getAdminList().pipe(
       map((dtos) => dtos.map(toProduct)),
@@ -40,6 +47,13 @@ export class ProductRepositoryImpl implements ProductRepository {
   getStock(id: string): Observable<ProductStock> {
     return this.api.getStock(id).pipe(
       map(toProductStock),
+      catchError((error) => throwError(() => toProductApiError(error))),
+    );
+  }
+
+  getStockBatch(ids: readonly string[]): Observable<ProductStock[]> {
+    return this.api.getStockBatch(ids).pipe(
+      map((dtos) => dtos.map(toProductStock)),
       catchError((error) => throwError(() => toProductApiError(error))),
     );
   }

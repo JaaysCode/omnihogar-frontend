@@ -4,13 +4,42 @@
   <div class="catalog">
     <h1 i18n="@@products.catalog.title">Catálogo</h1>
 
+    <div class="catalog__search">
+      <tui-icon icon="@tui.search" aria-hidden="true" />
+      <input
+        type="search"
+        [value]="searchTerm()"
+        (input)="onSearchInput($any($event.target).value)"
+        placeholder="Buscar producto por nombre…"
+        i18n-placeholder="@@products.catalog.search.placeholder"
+        aria-label="Buscar producto por nombre"
+        i18n-aria-label="@@products.catalog.search.ariaLabel"
+      />
+      <select
+        class="catalog__category-select"
+        [value]="selectedCategoryId() ?? ''"
+        (change)="onCategoryChange($any($event.target).value)"
+        aria-label="Filtrar por categoría"
+        i18n-aria-label="@@products.catalog.category.ariaLabel"
+      >
+        <option value="" i18n="@@products.catalog.category.all">Todas las categorías</option>
+        @for (category of categories(); track category.id) {
+          <option [value]="category.id">{{ category.name }}</option>
+        }
+      </select>
+    </div>
+
     @if (loadError(); as message) {
       <div class="form-error-banner" role="alert">{{ message }}</div>
     } @else if (!products()) {
       <p class="catalog__caption" i18n="@@products.catalog.loading">Cargando productos…</p>
     } @else if (products()!.length === 0) {
-      <p class="catalog__empty" role="status" i18n="@@products.catalog.empty">
-        No hay productos disponibles por el momento.
+      <p class="catalog__empty" role="status">
+        @if (searchTerm() || selectedCategoryId()) {
+          <span i18n="@@products.catalog.noResults">No se encontraron productos con esos criterios de búsqueda.</span>
+        } @else {
+          <span i18n="@@products.catalog.empty">No hay productos disponibles por el momento.</span>
+        }
       </p>
     } @else {
       <div class="catalog__grid">

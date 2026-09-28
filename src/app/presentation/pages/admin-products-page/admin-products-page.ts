@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { AdminSidebar } from '../../components/admin-sidebar/admin-sidebar';
@@ -6,7 +6,7 @@ import { AdminTabBar } from '../../components/admin-tab-bar/admin-tab-bar';
 import { CopCurrencyPipe } from '../../../shared/pipes/cop-currency.pipe';
 import { CreateProductPage } from '../create-product-page/create-product-page';
 import { EditProductPage } from '../edit-product-page/edit-product-page';
-import { Product, ProductApiError, ProductStock } from '../../../domain/models/product.model';
+import { Category, Product, ProductApiError, ProductStock } from '../../../domain/models/product.model';
 import { ProductRepository } from '../../../domain/repositories/product.repository';
 
 /**
@@ -34,18 +34,26 @@ export class AdminProductsPage implements OnInit {
 
   protected readonly products = signal<Product[] | null>(null);
   protected readonly loadError = signal<string | null>(null);
+  protected readonly categories = signal<Category[]>([]);
+  /** categoryId -> name, for the table's "Categoría" column (the admin list DTO only carries
+   * `categoryId`, not the name — see `ProductDto` on the backend). */
+  protected readonly categoryNameById = computed(() => new Map(this.categories().map((c) => [c.id, c.name])));
 
   /** Same placeholder cutoff as admin-inventory-page — no real "low stock" business rule yet. */
   protected readonly lowStockThreshold = 15;
 
-  /** Per-product stock, filled in as each row's GET /products/{id}/stock resolves — there's no
-   * bulk-stock endpoint, so the Stock column fans out one request per row on load, same pattern
-   * as admin-inventory-page. A row stays "—" (title carries the error) if its request fails. */
+  /** Per-product stock, filled in with one GET /products/stock?ids=... batch call once the
+   * catalog loads, keyed by product id. `rowStockError` carries a page-level message if that
+   * single request fails — rows just render "—" rather than each row erroring separately. */
   protected readonly rowStock = signal<ReadonlyMap<string, ProductStock>>(new Map());
-  protected readonly rowStockError = signal<ReadonlyMap<string, string>>(new Map());
+  protected readonly rowStockError = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loadProducts();
+    this.productRepository.getCategories().subscribe({
+      next: (categories) => this.categories.set(categories),
+      error: () => this.categories.set([]),
+    });
   }
 
   /** Also re-run when the create/edit modal closes, so a just-created/-edited product shows up. */
@@ -53,19 +61,19 @@ export class AdminProductsPage implements OnInit {
     this.productRepository.getAdminList().subscribe({
       next: (products) => {
         this.products.set(products);
-        for (const product of products) {
-          this.loadRowStock(product.id);
-        }
+        this.loadRowStock(products.map((product) => product.id));
       },
       error: (error: ProductApiError) => this.loadError.set(error.message),
     });
   }
 
-  private loadRowStock(productId: string): void {
-    this.productRepository.getStock(productId).subscribe({
-      next: (stock) => this.rowStock.update((cache) => new Map(cache).set(productId, stock)),
-      error: (error: ProductApiError) =>
-        this.rowStockError.update((cache) => new Map(cache).set(productId, error.message)),
+  private loadRowStock(productIds: readonly string[]): void {
+    this.productRepository.getStockBatch(productIds).subscribe({
+      next: (stocks) => {
+        this.rowStock.set(new Map(stocks.map((stock) => [stock.productId, stock])));
+        this.rowStockError.set(null);
+      },
+      error: (error: ProductApiError) => this.rowStockError.set(error.message),
     });
   }
 
