@@ -4,5 +4,5 @@
 // point this at your real backend origin before deploying elsewhere.
 export const environment = {
   production: true,
-  apiBaseUrl: 'http://localhost:5244/api',
+  apiBaseUrl: 'https://omnihogar-backend.thankfulhill-b2d9b6fa.westus2.azurecontainerapps.io/api',
 };
