@@ -29,8 +29,15 @@ export class CheckoutApiService {
     return this.http.post<CheckoutDto>(`${this.baseUrl}/checkout/${orderId}/retry`, {});
   }
 
-  getStatus(orderId: string, paymentId?: string): Observable<CheckoutStatusDto> {
-    const query = paymentId ? `?paymentId=${encodeURIComponent(paymentId)}` : '';
+  getStatus(orderId: string, paymentId?: string, cancelled?: boolean): Observable<CheckoutStatusDto> {
+    const params = new URLSearchParams();
+    if (paymentId) {
+      params.set('paymentId', paymentId);
+    }
+    if (cancelled) {
+      params.set('cancelled', 'true');
+    }
+    const query = params.size > 0 ? `?${params.toString()}` : '';
     return this.http.get<CheckoutStatusDto>(`${this.baseUrl}/checkout/${orderId}/status${query}`);
   }
 }

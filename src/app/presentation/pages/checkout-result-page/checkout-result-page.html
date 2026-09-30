@@ -31,7 +31,7 @@
           <tui-icon icon="@tui.circle-x" aria-hidden="true" />
           <h1 i18n="@@checkout.result.rejected.title">Pago rechazado</h1>
           <p i18n="@@checkout.result.rejected.body">
-            Mercado Pago rechazó el pago. Tu pedido N.° {{ sale.orderNumber }} sigue guardado.
+            El pago no fue exitoso. Tu pedido N.° {{ sale.orderNumber }} sigue guardado.
           </p>
           <button
             type="button"
@@ -51,11 +51,11 @@
           <p i18n="@@checkout.result.pending.orderNumber">Pedido N.° {{ sale.orderNumber }}</p>
           @if (sale.gatewayUnavailable) {
             <p class="checkout-result__note" i18n="@@checkout.result.pending.gatewayUnavailable">
-              Todavía no pudimos confirmar tu pago con Mercado Pago. Inténtalo de nuevo en unos minutos.
+              Todavía no pudimos confirmar tu pago. Inténtalo de nuevo en unos minutos.
             </p>
           } @else {
             <p class="checkout-result__note" i18n="@@checkout.result.pending.body">
-              Estamos esperando la confirmación de Mercado Pago.
+              Estamos esperando la confirmación del pago.
             </p>
           }
           <div class="checkout-result__actions">

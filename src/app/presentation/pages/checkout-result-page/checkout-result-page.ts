@@ -4,13 +4,17 @@ import { TuiAlertService, TuiButton, TuiIcon } from '@taiga-ui/core';
 import { CheckoutApiError, CheckoutStatus } from '../../../domain/models/checkout.model';
 import { CheckoutRepository } from '../../../domain/repositories/checkout.repository';
 import { CopCurrencyPipe } from '../../../shared/pipes/cop-currency.pipe';
+import { rememberPendingCheckout, takePendingCheckout } from '../../../shared/utils/pending-checkout';
 import { PublicHeader } from '../../components/public-header/public-header';
 
 /**
- * Where Mercado Pago's Checkout Pro sends the buyer back (HU-09). Reads `order` (ours) and
- * `payment_id` (Mercado Pago's) straight off the URL — not through `withComponentInputBinding`,
- * since `payment_id` isn't a name we control. `getStatus` verifies against Mercado Pago itself;
- * the query params are only a hint of what to check, never trusted at face value.
+ * Where Stripe Checkout sends the buyer back (HU-09). Reads `order` (ours), `session_id`
+ * (Stripe's `{CHECKOUT_SESSION_ID}` placeholder, on the success path) and `cancelled` (set on the
+ * cancel path — see `StripeCheckoutClient.CreatePreferenceAsync`) straight off the URL — not
+ * through `withComponentInputBinding`, since we don't control those names. `getStatus` verifies
+ * against Stripe itself (except when `cancelled`, which the backend trusts outright since Stripe
+ * would still report an abandoned session as pending); the query params are only a hint of what
+ * to check, never trusted at face value on the frontend.
  */
 @Component({
   selector: 'app-checkout-result-page',
@@ -34,13 +38,14 @@ export class CheckoutResultPage implements OnInit {
   ngOnInit(): void {
     const params = this.route.snapshot.queryParamMap;
     this.orderId = params.get('order') ?? '';
+    takePendingCheckout();
 
     if (!this.orderId) {
       this.loadError.set($localize`:@@checkout.result.error.missingOrder:No se encontró el pedido.`);
       return;
     }
 
-    this.fetchStatus(params.get('payment_id') ?? undefined);
+    this.fetchStatus(params.get('session_id') ?? undefined, params.get('cancelled') === '1');
   }
 
   protected refresh(): void {
@@ -51,6 +56,7 @@ export class CheckoutResultPage implements OnInit {
     this.retrying.set(true);
     this.checkoutRepository.retry(this.orderId).subscribe({
       next: (preference) => {
+        rememberPendingCheckout(preference.orderId);
         window.location.href = preference.initPoint;
       },
       error: (error: CheckoutApiError) => {
@@ -60,9 +66,9 @@ export class CheckoutResultPage implements OnInit {
     });
   }
 
-  private fetchStatus(paymentId: string | undefined): void {
+  private fetchStatus(paymentId: string | undefined, cancelled = false): void {
     this.checking.set(true);
-    this.checkoutRepository.getStatus(this.orderId, paymentId).subscribe({
+    this.checkoutRepository.getStatus(this.orderId, paymentId, cancelled).subscribe({
       next: (status) => {
         this.checking.set(false);
         this.status.set(status);

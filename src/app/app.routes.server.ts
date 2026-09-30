@@ -42,7 +42,7 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
-    // Vuelta desde Mercado Pago con datos de la transacción en la URL. No prerenderizable.
+    // Vuelta desde Stripe con datos de la transacción en la URL. No prerenderizable.
     path: 'checkout/result',
     renderMode: RenderMode.Client,
   },

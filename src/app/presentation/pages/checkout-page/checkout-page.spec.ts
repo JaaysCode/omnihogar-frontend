@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { provideTaiga } from '@taiga-ui/core';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
@@ -25,6 +25,8 @@ const LINE: CartItem = {
 describe('CheckoutPage', () => {
   let fixture: ComponentFixture<CheckoutPage>;
   let checkoutRepository: { createPreference: ReturnType<typeof vi.fn>; retry: ReturnType<typeof vi.fn>; getStatus: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => sessionStorage.clear());
 
   function build(items: CartItem[]) {
     checkoutRepository = { createPreference: vi.fn(), retry: vi.fn(), getStatus: vi.fn() };
@@ -69,7 +71,7 @@ describe('CheckoutPage', () => {
   it('submits the address and payment method mapped from the form', () => {
     build([LINE]);
     checkoutRepository.createPreference.mockReturnValue(
-      of({ orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://mercadopago.com/checkout/1' }),
+      of({ orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://checkout.stripe.com/c/pay/cs_test_1' }),
     );
     fillValidForm();
 
@@ -79,6 +81,29 @@ describe('CheckoutPage', () => {
       { address: 'Calle 123', city: 'Bogotá', neighborhood: null, reference: null },
       'card',
     );
+  });
+
+  it('remembers the order before redirecting to Stripe', () => {
+    build([LINE]);
+    checkoutRepository.createPreference.mockReturnValue(
+      of({ orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://checkout.stripe.com/c/pay/cs_test_1' }),
+    );
+    fillValidForm();
+
+    fixture.debugElement.query(By.css('form')).triggerEventHandler('ngSubmit');
+
+    expect(sessionStorage.getItem('omnihogar.pendingCheckoutOrderId')).toBe('o1');
+  });
+
+  it('sends the buyer to the result page when coming back from Stripe', () => {
+    sessionStorage.setItem('omnihogar.pendingCheckoutOrderId', 'o1');
+    const navigate = vi.spyOn(Router.prototype, 'navigate').mockResolvedValue(true);
+
+    build([LINE]);
+
+    expect(navigate).toHaveBeenCalledWith(['/checkout/result'], { queryParams: { order: 'o1' }, replaceUrl: true });
+    expect(sessionStorage.getItem('omnihogar.pendingCheckoutOrderId')).toBeNull();
+    navigate.mockRestore();
   });
 
   it('shows a field-level error returned by the backend', () => {

@@ -4,12 +4,12 @@ import { CheckoutDto, CheckoutStatusDto } from '../services/checkout-api.dto';
 
 describe('toCheckoutPreference', () => {
   it('maps the DTO 1:1', () => {
-    const dto: CheckoutDto = { orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://mercadopago.com/checkout/1' };
+    const dto: CheckoutDto = { orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://checkout.stripe.com/c/pay/cs_test_1' };
 
     expect(toCheckoutPreference(dto)).toEqual({
       orderId: 'o1',
       orderNumber: 'WEB-1',
-      initPoint: 'https://mercadopago.com/checkout/1',
+      initPoint: 'https://checkout.stripe.com/c/pay/cs_test_1',
     });
   });
 });

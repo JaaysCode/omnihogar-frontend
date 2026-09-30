@@ -23,8 +23,8 @@ export class CheckoutRepositoryImpl implements CheckoutRepository {
     );
   }
 
-  getStatus(orderId: string, paymentId?: string): Observable<CheckoutStatus> {
-    return this.api.getStatus(orderId, paymentId).pipe(
+  getStatus(orderId: string, paymentId?: string, cancelled?: boolean): Observable<CheckoutStatus> {
+    return this.api.getStatus(orderId, paymentId, cancelled).pipe(
       map(toCheckoutStatus),
       catchError((error) => throwError(() => toCheckoutApiError(error))),
     );

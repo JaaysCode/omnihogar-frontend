@@ -127,9 +127,9 @@
 
           <button tuiButton type="submit" size="l" [disabled]="pending()" class="checkout__submit">
             @if (pending()) {
-              <span i18n="@@checkout.submit.pending">Conectando con Mercado Pago…</span>
+              <span i18n="@@checkout.submit.pending">Conectando con la pasarela de pago…</span>
             } @else {
-              <span i18n="@@checkout.submit.idle">Pagar con Mercado Pago</span>
+              <span i18n="@@checkout.submit.idle">Pagar</span>
             }
           </button>
         </form>

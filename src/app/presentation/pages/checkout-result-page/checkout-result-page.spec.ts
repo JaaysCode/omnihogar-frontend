@@ -57,13 +57,23 @@ describe('CheckoutResultPage', () => {
     expect(checkoutRepository.getStatus).not.toHaveBeenCalled();
   });
 
-  it('queries the status with the order and payment id from the URL', () => {
-    build({ order: 'o1', payment_id: 'pay-1' });
+  it('queries the status with the order and session id from the URL', () => {
+    build({ order: 'o1', session_id: 'cs_test_1' });
     checkoutRepository.getStatus.mockReturnValue(of(statusOf({})));
 
     fixture.detectChanges();
 
-    expect(checkoutRepository.getStatus).toHaveBeenCalledWith('o1', 'pay-1');
+    expect(checkoutRepository.getStatus).toHaveBeenCalledWith('o1', 'cs_test_1', false);
+  });
+
+  it('flags the payment as cancelled when Stripe redirects to the cancel_url', () => {
+    build({ order: 'o1', cancelled: '1' });
+    checkoutRepository.getStatus.mockReturnValue(of(statusOf({ orderStatus: 'payment_rejected', paymentStatus: 'rejected' })));
+
+    fixture.detectChanges();
+
+    expect(checkoutRepository.getStatus).toHaveBeenCalledWith('o1', undefined, true);
+    expect(fixture.nativeElement.textContent).toContain('Pago rechazado');
   });
 
   it('shows the approved state', () => {
@@ -79,7 +89,7 @@ describe('CheckoutResultPage', () => {
   it('shows the rejected state with a retry button', () => {
     build({ order: 'o1' });
     checkoutRepository.getStatus.mockReturnValue(of(statusOf({ orderStatus: 'payment_rejected', paymentStatus: 'rejected' })));
-    checkoutRepository.retry.mockReturnValue(of({ orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://mercadopago.com/x' }));
+    checkoutRepository.retry.mockReturnValue(of({ orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://checkout.stripe.com/c/pay/cs_test_x' }));
 
     fixture.detectChanges();
 

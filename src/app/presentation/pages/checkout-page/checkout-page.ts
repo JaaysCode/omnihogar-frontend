@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  HostListener,
   OnInit,
   computed,
   inject,
@@ -9,13 +10,14 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { CheckoutApiError, PaymentMethodPreference } from '../../../domain/models/checkout.model';
 import { CheckoutRepository } from '../../../domain/repositories/checkout.repository';
 import { CartStore } from '../../../core/services/cart-store.service';
 import { CopCurrencyPipe } from '../../../shared/pipes/cop-currency.pipe';
 import { fieldErrorMessage, summaryErrorMessage } from '../../../shared/utils/form-error-messages';
+import { rememberPendingCheckout, takePendingCheckout } from '../../../shared/utils/pending-checkout';
 import { PublicHeader } from '../../components/public-header/public-header';
 
 interface FieldSpec {
@@ -31,16 +33,19 @@ const FIELDS: readonly FieldSpec[] = [
   { control: 'paymentMethod', label: $localize`:@@checkout.field.paymentMethod.name:Método de pago` },
 ];
 
+// PSE/billetera dropped from the picker: Stripe Checkout only supports card for this account, so
+// offering them was a choice with no effect on the actual gateway. The backend and DB still
+// accept "pse"/"wallet" as payment_method values, so this narrows the UI, not the data model.
 const PAYMENT_METHOD_LABELS: Record<PaymentMethodPreference, string> = {
   card: $localize`:@@checkout.paymentMethod.card:Tarjeta de crédito o débito`,
   pse: $localize`:@@checkout.paymentMethod.pse:PSE`,
-  wallet: $localize`:@@checkout.paymentMethod.wallet:Cuenta de Mercado Pago`,
+  wallet: $localize`:@@checkout.paymentMethod.wallet:Billetera digital`,
 };
 
 /**
  * Checkout (HU-08 dirección + método de pago, HU-09 pago). One submit both creates the order
- * from the cart and starts a Mercado Pago Checkout Pro payment; on success the whole page
- * redirects to Mercado Pago's hosted checkout (`window.location.href`, not a router navigation).
+ * from the cart and starts a Stripe Checkout payment; on success the whole page redirects to
+ * Stripe's hosted checkout (`window.location.href`, not a router navigation).
  */
 @Component({
   selector: 'app-checkout-page',
@@ -52,6 +57,7 @@ const PAYMENT_METHOD_LABELS: Record<PaymentMethodPreference, string> = {
 export class CheckoutPage implements OnInit {
   private readonly checkoutRepository = inject(CheckoutRepository);
   private readonly cartStore = inject(CartStore);
+  private readonly router = inject(Router);
   private readonly fb = new FormBuilder().nonNullable;
 
   protected readonly items = this.cartStore.items;
@@ -59,7 +65,7 @@ export class CheckoutPage implements OnInit {
   protected readonly subtotal = this.cartStore.subtotal;
   protected readonly total = this.cartStore.total;
 
-  protected readonly paymentMethods: readonly PaymentMethodPreference[] = ['card', 'pse', 'wallet'];
+  protected readonly paymentMethods: readonly PaymentMethodPreference[] = ['card'];
 
   private readonly errorSummary = viewChild<ElementRef<HTMLElement>>('errorSummary');
 
@@ -72,13 +78,34 @@ export class CheckoutPage implements OnInit {
     city: this.fb.control('', [Validators.required, Validators.maxLength(100)]),
     neighborhood: this.fb.control('', [Validators.maxLength(100)]),
     reference: this.fb.control('', [Validators.maxLength(255)]),
-    paymentMethod: this.fb.control<PaymentMethodPreference | null>(null, [Validators.required]),
+    paymentMethod: this.fb.control<PaymentMethodPreference | null>('card', [Validators.required]),
   });
 
   protected readonly selectedPaymentMethod = computed(() => this.form.controls.paymentMethod.value);
 
   ngOnInit(): void {
+    if (this.resumePendingCheckout()) {
+      return;
+    }
     this.cartStore.load();
+  }
+
+  // "Back" from Stripe may restore this page from the bfcache without re-running ngOnInit.
+  @HostListener('window:pageshow', ['$event'])
+  protected onPageShow(event: PageTransitionEvent): void {
+    if (event.persisted) {
+      this.pending.set(false);
+      this.resumePendingCheckout();
+    }
+  }
+
+  private resumePendingCheckout(): boolean {
+    const orderId = takePendingCheckout();
+    if (!orderId) {
+      return false;
+    }
+    void this.router.navigate(['/checkout/result'], { queryParams: { order: orderId }, replaceUrl: true });
+    return true;
   }
 
   protected paymentMethodLabel(method: PaymentMethodPreference): string {
@@ -149,6 +176,7 @@ export class CheckoutPage implements OnInit {
       )
       .subscribe({
         next: (preference) => {
+          rememberPendingCheckout(preference.orderId);
           window.location.href = preference.initPoint;
         },
         error: (error: CheckoutApiError) => {
@@ -176,7 +204,7 @@ export class CheckoutPage implements OnInit {
     }
 
     // "cart" / "gateway" / "order" field errors have no matching control — surface them as the
-    // page-level banner instead (e.g. insufficient stock, Mercado Pago unreachable).
+    // page-level banner instead (e.g. insufficient stock, Stripe unreachable).
     if (!matchedAControl) {
       this.formError.set(Object.values(fieldErrors)[0]?.[0] ?? error.message);
     }

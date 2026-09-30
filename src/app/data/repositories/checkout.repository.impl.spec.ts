@@ -7,7 +7,7 @@ import { CheckoutApiService } from '../services/checkout-api.service';
 import { CheckoutApiError } from '../../domain/models/checkout.model';
 import { CheckoutDto } from '../services/checkout-api.dto';
 
-const PREFERENCE_DTO: CheckoutDto = { orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://mercadopago.com/checkout/1' };
+const PREFERENCE_DTO: CheckoutDto = { orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://checkout.stripe.com/c/pay/cs_test_1' };
 
 describe('CheckoutRepositoryImpl', () => {
   let repository: CheckoutRepositoryImpl;
@@ -29,7 +29,7 @@ describe('CheckoutRepositoryImpl', () => {
       .createPreference({ address: 'Calle 1', city: 'Bogotá', neighborhood: null, reference: null }, 'card')
       .subscribe((p) => (preference = p));
 
-    expect(preference).toEqual({ orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://mercadopago.com/checkout/1' });
+    expect(preference).toEqual({ orderId: 'o1', orderNumber: 'WEB-1', initPoint: 'https://checkout.stripe.com/c/pay/cs_test_1' });
   });
 
   it('passes the address and payment method through to the API', () => {
@@ -69,7 +69,7 @@ describe('CheckoutRepositoryImpl', () => {
     let status;
     repository.getStatus('o1', 'pay-1').subscribe((s) => (status = s));
 
-    expect(api.getStatus).toHaveBeenCalledWith('o1', 'pay-1');
+    expect(api.getStatus).toHaveBeenCalledWith('o1', 'pay-1', undefined);
     expect(status).toEqual({
       orderId: 'o1',
       orderNumber: 'WEB-1',

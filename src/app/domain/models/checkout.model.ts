@@ -11,11 +11,11 @@ export interface CheckoutAddressInput {
 /** Matches the values `Payment.PaymentMethod` already accepts on the backend. */
 export type PaymentMethodPreference = 'card' | 'pse' | 'wallet';
 
-/** Response of starting (or retrying) a Mercado Pago Checkout Pro payment. */
+/** Response of starting (or retrying) a Stripe Checkout session. */
 export interface CheckoutPreference {
   orderId: string;
   orderNumber: string;
-  /** Mercado Pago's hosted checkout URL — redirect the whole page here, not a router link. */
+  /** Stripe's hosted checkout URL — redirect the whole page here, not a router link. */
   initPoint: string;
 }
 
@@ -28,7 +28,7 @@ export interface CheckoutStatus {
   orderStatus: OrderStatus;
   paymentStatus: PaymentStatus;
   total: number;
-  /** True when the last check against Mercado Pago failed — the order is preserved (HU-09
+  /** True when the last check against the payment gateway failed — the order is preserved (HU-09
    * crit. 3); the UI should offer to refresh the status or retry the payment. */
   gatewayUnavailable: boolean;
 }

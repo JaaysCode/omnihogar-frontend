@@ -70,14 +70,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    // HU-08/HU-09 — dirección + método de pago, luego redirige a Mercado Pago Checkout Pro.
+    // HU-08/HU-09 — dirección + método de pago, luego redirige a Stripe Checkout.
     path: 'checkout',
     loadComponent: () => import('./presentation/pages/checkout-page/checkout-page').then((m) => m.CheckoutPage),
     title: 'Finalizar compra · OmniHogar',
     canActivate: [authGuard],
   },
   {
-    // A donde Mercado Pago redirige de vuelta tras el pago (éxito/fallo/pendiente).
+    // A donde Stripe redirige de vuelta tras el pago (éxito/fallo/pendiente).
     path: 'checkout/result',
     loadComponent: () =>
       import('./presentation/pages/checkout-result-page/checkout-result-page').then((m) => m.CheckoutResultPage),
