@@ -1,0 +1,6 @@
+[build]
+  command = "pnpm install --frozen-lockfile && pnpm run build"
+  publish = "dist/omnihogar-frontend/browser"
+
+[[plugins]]
+  package = "@netlify/angular-runtime"
