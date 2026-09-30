@@ -16,7 +16,9 @@ interface CartLine {
 
 type PaymentMethod = 'cash' | 'card' | 'transfer';
 
-/** Colombia's IVA general rate — the only tax this register applies for now. */
+/** Colombia's IVA general rate. Product prices already include it (retail prices shown to the
+ * public must), so this is only used to back the tax figure OUT of the price for the receipt —
+ * never added on top of what the customer pays. */
 const TAX_RATE = 0.19;
 
 /**
@@ -72,8 +74,8 @@ export class PosPage implements OnInit {
   protected readonly subtotal = computed(() =>
     this.cart().reduce((sum, line) => sum + line.product.price * line.quantity, 0),
   );
-  protected readonly tax = computed(() => this.subtotal() * TAX_RATE);
-  protected readonly total = computed(() => this.subtotal() + this.tax());
+  protected readonly tax = computed(() => this.subtotal() - this.subtotal() / (1 + TAX_RATE));
+  protected readonly total = computed(() => this.subtotal());
 
   constructor() {
     const id = setInterval(() => this.elapsed.update((s) => s + 1), 1000);
