@@ -11,6 +11,7 @@ const P = {
   inventario: 'inventario.consultar',
   pos: 'pos.registrar_venta',
   pedidos: 'pedidos.consultar',
+  pedidosActualizar: 'pedidos.actualizar_estado',
 } as const;
 
 export const routes: Routes = [
@@ -109,6 +110,15 @@ export const routes: Routes = [
     loadComponent: () => import('./presentation/pages/orders-page/orders-page').then((m) => m.OrdersPage),
     title: 'Pedidos · OmniHogar',
     canActivate: [permissionGuard(P.pedidos)],
+  },
+  {
+    // HU-14 crit. 2 — "mis pedidos", el cliente consulta el estado de sus propios pedidos.
+    // Detail view opens as a `?order` query-param-driven modal on top of this page, igual que
+    // admin/orders. Solo requiere sesión (sin permiso — Cliente no tiene ninguno).
+    path: 'my-orders',
+    loadComponent: () => import('./presentation/pages/my-orders-page/my-orders-page').then((m) => m.MyOrdersPage),
+    title: 'Mis pedidos · OmniHogar',
+    canActivate: [authGuard],
   },
   {
     // HU-11 — consulta de stock. Abierta a administrador, jefe de bodega, coordinador de

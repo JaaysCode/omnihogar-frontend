@@ -38,6 +38,12 @@ export interface RegisterStoreSaleRequestDto {
   items: { productId: string; quantity: number }[];
 }
 
+/** Body for PUT /orders/{id}/status (HU-14 crit. 1). */
+export interface UpdateOrderStatusRequestDto {
+  status: string;
+  comment?: string;
+}
+
 export interface StoreSaleReceiptDto {
   orderId: string;
   orderNumber: string;

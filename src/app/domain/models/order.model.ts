@@ -46,6 +46,12 @@ export interface OrderDetail {
   items: OrderItemLine[];
 }
 
+/** Body for advancing an order's status (HU-14 crit. 1). `comment` is optional context for the audit trail. */
+export interface UpdateOrderStatusPayload {
+  status: OrderStatus;
+  comment?: string;
+}
+
 /** One product/quantity pair on a store-sale request (HU-06). */
 export interface StoreSaleItem {
   productId: string;
@@ -78,3 +84,46 @@ export class OrderApiError extends Error {
     this.name = 'OrderApiError';
   }
 }
+
+/** Human-readable channel label — shared by every page/component that renders an order's channel. */
+export const ORDER_CHANNEL_LABELS: Record<OrderChannel, string> = {
+  web: $localize`:@@orders.channel.web:Web`,
+  store: $localize`:@@orders.channel.store:Tienda`,
+  chat: $localize`:@@orders.channel.chat:Chat`,
+};
+
+/** Human-readable status label — shared by every page/component that renders an order's status. */
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  pending_payment: $localize`:@@orders.status.pendingPayment:Pago pendiente`,
+  payment_approved: $localize`:@@orders.status.paymentApproved:Pago aprobado`,
+  preparing: $localize`:@@orders.status.preparing:Preparando`,
+  packed: $localize`:@@orders.status.packed:Empacado`,
+  shipped: $localize`:@@orders.status.shipped:Enviado`,
+  delivered: $localize`:@@orders.status.delivered:Entregado`,
+  cancelled: $localize`:@@orders.status.cancelled:Cancelado`,
+  payment_rejected: $localize`:@@orders.status.paymentRejected:Pago rechazado`,
+};
+
+/** Visual tone per status — matches the pill classes used across the admin panel and customer pages. */
+export const ORDER_STATUS_TONES: Record<OrderStatus, 'positive' | 'neutral' | 'warning' | 'negative'> = {
+  pending_payment: 'warning',
+  payment_approved: 'neutral',
+  preparing: 'neutral',
+  packed: 'neutral',
+  shipped: 'neutral',
+  delivered: 'positive',
+  cancelled: 'negative',
+  payment_rejected: 'negative',
+};
+
+/** All order statuses, in the order shown in status-change dropdowns. */
+export const ORDER_STATUSES: readonly OrderStatus[] = [
+  'pending_payment',
+  'payment_approved',
+  'preparing',
+  'packed',
+  'shipped',
+  'delivered',
+  'cancelled',
+  'payment_rejected',
+];

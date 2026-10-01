@@ -3,6 +3,7 @@
 <div class="profile__viewport">
   <div class="profile">
     <h1 i18n="@@profile.page.title">Mi perfil</h1>
+    <a class="profile__orders-link" routerLink="/my-orders" i18n="@@profile.page.myOrdersLink">Ver mis pedidos</a>
 
     @if (loadError(); as message) {
       <div class="form-error-banner" role="alert">{{ message }}</div>

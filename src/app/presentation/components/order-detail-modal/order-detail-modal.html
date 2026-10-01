@@ -36,9 +36,40 @@
             </dd>
           </div>
           <div class="order-meta__item">
-            <dt i18n="@@orders.detail.status">Estado</dt>
+            <dt id="order-status-label" i18n="@@orders.detail.status">Estado</dt>
             <dd>
-              <span class="order-pill tone-neutral">{{ statusLabel(order.status) }}</span>
+              @if (canUpdateStatus()) {
+                <button
+                  type="button"
+                  tuiButton
+                  tuiChevron
+                  appearance="outline"
+                  size="s"
+                  [tuiDropdown]="statusDropdown"
+                  [(tuiDropdownOpen)]="menuOpen"
+                  [attr.aria-expanded]="menuOpen()"
+                  aria-labelledby="order-status-label"
+                >
+                  {{ statusLabel(selectedStatus() ?? order.status) }}
+                </button>
+                <ng-template #statusDropdown>
+                  <tui-data-list>
+                    @for (status of statusOptions; track status) {
+                      <button tuiOption type="button" (click)="onSelectStatus(status)">{{ statusLabel(status) }}</button>
+                    }
+                  </tui-data-list>
+                </ng-template>
+              } @else {
+                <span
+                  class="order-pill"
+                  [class.tone-positive]="statusTone(order.status) === 'positive'"
+                  [class.tone-neutral]="statusTone(order.status) === 'neutral'"
+                  [class.tone-warning]="statusTone(order.status) === 'warning'"
+                  [class.tone-negative]="statusTone(order.status) === 'negative'"
+                >
+                  {{ statusLabel(order.status) }}
+                </span>
+              }
             </dd>
           </div>
           <div class="order-meta__item">
@@ -83,6 +114,21 @@
             <span>{{ order.total | copCurrency }}</span>
           </div>
         </div>
+
+        @if (canUpdateStatus()) {
+          @if (formError(); as message) {
+            <div class="form-error-banner" role="alert">{{ message }}</div>
+          }
+          <div class="order-modal__actions">
+            <button type="button" tuiButton size="l" [disabled]="pending() || !dirty()" (click)="onSubmit()">
+              @if (pending()) {
+                <span i18n="@@orders.detail.save.pending">Guardando…</span>
+              } @else {
+                <span i18n="@@orders.detail.save.idle">Guardar estado</span>
+              }
+            </button>
+          </div>
+        }
       </div>
     } @else if (loadError(); as message) {
       <header class="order-modal__header">

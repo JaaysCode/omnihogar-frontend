@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { TuiAlertService, TuiButton, TuiIcon } from '@taiga-ui/core';
 import { PublicHeader } from '../../components/public-header/public-header';
@@ -29,7 +30,7 @@ const FIELDS: readonly FieldSpec[] = [
  */
 @Component({
   selector: 'app-profile-page',
-  imports: [ReactiveFormsModule, PublicHeader, TuiButton, TuiIcon, DatePipe],
+  imports: [ReactiveFormsModule, RouterLink, PublicHeader, TuiButton, TuiIcon, DatePipe],
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

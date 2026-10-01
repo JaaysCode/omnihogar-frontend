@@ -3,7 +3,13 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { StoreSaleItem } from '../../domain/models/order.model';
-import { OrderDetailDto, OrderSummaryDto, RegisterStoreSaleRequestDto, StoreSaleReceiptDto } from './order-api.dto';
+import {
+  OrderDetailDto,
+  OrderSummaryDto,
+  RegisterStoreSaleRequestDto,
+  StoreSaleReceiptDto,
+  UpdateOrderStatusRequestDto,
+} from './order-api.dto';
 
 /**
  * Raw HTTP client for the `/orders` endpoints. Transport-only: no error translation,
@@ -25,5 +31,17 @@ export class OrderApiService {
   registerStoreSale(items: StoreSaleItem[]): Observable<StoreSaleReceiptDto> {
     const body: RegisterStoreSaleRequestDto = { items };
     return this.http.post<StoreSaleReceiptDto>(`${this.baseUrl}/orders`, body);
+  }
+
+  updateStatus(id: string, body: UpdateOrderStatusRequestDto): Observable<OrderDetailDto> {
+    return this.http.put<OrderDetailDto>(`${this.baseUrl}/orders/${id}/status`, body);
+  }
+
+  getMine(): Observable<OrderSummaryDto[]> {
+    return this.http.get<OrderSummaryDto[]>(`${this.baseUrl}/orders/mine`);
+  }
+
+  getMineById(id: string): Observable<OrderDetailDto> {
+    return this.http.get<OrderDetailDto>(`${this.baseUrl}/orders/mine/${id}`);
   }
 }

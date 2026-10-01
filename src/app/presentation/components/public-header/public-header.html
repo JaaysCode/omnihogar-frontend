@@ -14,18 +14,34 @@
           Panel de administración
         </a>
       }
-      <a
-        routerLink="/profile"
+      <button
+        type="button"
         tuiButton
         size="s"
         appearance="flat"
         iconStart="@tui.user"
-        aria-label="Mi perfil"
-        i18n-aria-label="@@publicHeader.profile"
-      ></a>
-      <button type="button" tuiButton size="s" appearance="flat" (click)="onLogout()" i18n="@@publicHeader.logout">
-        Cerrar sesión
-      </button>
+        [tuiDropdown]="accountMenu"
+        [(tuiDropdownOpen)]="menuOpen"
+        [attr.aria-expanded]="menuOpen()"
+        aria-label="Mi cuenta"
+        i18n-aria-label="@@publicHeader.account"
+      ></button>
+      <ng-template #accountMenu>
+        <tui-data-list>
+          <a tuiOption routerLink="/profile" (click)="menuOpen.set(false)">
+            <tui-icon icon="@tui.user" aria-hidden="true" />
+            <span i18n="@@publicHeader.profile">Mi perfil</span>
+          </a>
+          <a tuiOption routerLink="/my-orders" (click)="menuOpen.set(false)">
+            <tui-icon icon="@tui.clipboard-list" aria-hidden="true" />
+            <span i18n="@@publicHeader.myOrders">Mis Compras</span>
+          </a>
+          <button tuiOption type="button" (click)="onLogout()">
+            <tui-icon icon="@tui.log-out" aria-hidden="true" />
+            <span i18n="@@publicHeader.logout">Cerrar sesión</span>
+          </button>
+        </tui-data-list>
+      </ng-template>
     } @else {
       <a routerLink="/login" tuiButton size="s" appearance="flat" i18n="@@publicHeader.login">Iniciar sesión</a>
       <a routerLink="/register" tuiButton size="s" appearance="secondary" i18n="@@publicHeader.register">Crear cuenta</a>

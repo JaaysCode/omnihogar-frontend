@@ -14,8 +14,20 @@
   margin: 0 auto;
 
   h1 {
-    margin: 0 0 1.5rem;
+    margin: 0 0 0.5rem;
     font-size: 1.75rem;
+  }
+
+  &__orders-link {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    color: var(--tui-text-action);
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 

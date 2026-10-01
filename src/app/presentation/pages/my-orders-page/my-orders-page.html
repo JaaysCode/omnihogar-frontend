@@ -1,0 +1,68 @@
+<app-public-header />
+
+<div class="my-orders__viewport">
+  <div class="my-orders">
+    <h1 i18n="@@myOrders.title">Mis pedidos</h1>
+    <p class="my-orders__caption" i18n="@@myOrders.subtitle">Consulta el estado de tus pedidos.</p>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    } @else if (!orders()) {
+      <p class="my-orders__caption" i18n="@@myOrders.loading">Cargando tus pedidos…</p>
+    } @else if (orders()!.length === 0) {
+      <div class="my-orders__empty" role="status">
+        <tui-icon icon="@tui.inbox" aria-hidden="true" />
+        <p i18n="@@myOrders.empty">Todavía no tienes pedidos.</p>
+      </div>
+    } @else {
+      <div style="overflow-x: auto">
+        <table class="my-orders-table">
+          <thead>
+            <tr>
+              <th i18n="@@myOrders.column.orderNumber">PEDIDO</th>
+              <th i18n="@@myOrders.column.channel">CANAL</th>
+              <th i18n="@@myOrders.column.status">ESTADO</th>
+              <th i18n="@@myOrders.column.items">ARTÍCULOS</th>
+              <th i18n="@@myOrders.column.total">TOTAL</th>
+              <th i18n="@@myOrders.column.date">FECHA</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (o of orders()!; track o.id) {
+              <tr>
+                <td class="my-orders-table__number">{{ o.orderNumber }}</td>
+                <td>
+                  <span class="my-orders-pill tone-neutral">{{ channelLabel(o.channel) }}</span>
+                </td>
+                <td>
+                  <span
+                    class="my-orders-pill"
+                    [class.tone-positive]="statusTone(o.status) === 'positive'"
+                    [class.tone-neutral]="statusTone(o.status) === 'neutral'"
+                    [class.tone-warning]="statusTone(o.status) === 'warning'"
+                    [class.tone-negative]="statusTone(o.status) === 'negative'"
+                  >
+                    {{ statusLabel(o.status) }}
+                  </span>
+                </td>
+                <td>{{ o.itemCount }}</td>
+                <td class="my-orders-table__total">{{ o.total | copCurrency }}</td>
+                <td class="my-orders-table__muted">{{ o.createdAt | date: 'shortDate' }}</td>
+                <td class="my-orders-table__actions">
+                  <a routerLink="/my-orders" [queryParams]="{ order: o.id }" i18n="@@myOrders.viewDetail">Ver detalle</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+@if (order(); as id) {
+  @defer (on immediate) {
+    <app-order-detail-modal [orderId]="id" scope="mine" (closed)="onModalClosed()" />
+  }
+}

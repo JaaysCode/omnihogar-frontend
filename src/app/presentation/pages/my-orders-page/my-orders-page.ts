@@ -2,8 +2,7 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TuiIcon } from '@taiga-ui/core';
-import { AdminSidebar } from '../../components/admin-sidebar/admin-sidebar';
-import { AdminTabBar } from '../../components/admin-tab-bar/admin-tab-bar';
+import { PublicHeader } from '../../components/public-header/public-header';
 import { OrderDetailModal } from '../../components/order-detail-modal/order-detail-modal';
 import { CopCurrencyPipe } from '../../../shared/pipes/cop-currency.pipe';
 import {
@@ -18,18 +17,19 @@ import {
 import { OrderRepository } from '../../../domain/repositories/order.repository';
 
 /**
- * Cross-channel order consultation (advisor role): lists every registered order regardless of
- * the channel it came in through (web/store/chat), and opens a detail view for one order via the
- * `?order` query param — same modal-over-list pattern as "Nuevo Producto" in admin-products-page.
+ * "Mis pedidos" (HU-14 crit. 2) — lets an authenticated customer check the current status of
+ * their own orders. Read-only: the status dropdown in order-detail-modal only renders for staff
+ * holding `pedidos.actualizar_estado`, which Cliente never has. Same `?order` modal-over-list
+ * pattern as the staff orders-page, scoped to `getMine()`/`scope="mine"` instead.
  */
 @Component({
-  selector: 'app-orders-page',
-  imports: [RouterLink, AdminSidebar, AdminTabBar, OrderDetailModal, TuiIcon, DatePipe, CopCurrencyPipe],
-  templateUrl: './orders-page.html',
-  styleUrl: './orders-page.scss',
+  selector: 'app-my-orders-page',
+  imports: [RouterLink, PublicHeader, OrderDetailModal, TuiIcon, DatePipe, CopCurrencyPipe],
+  templateUrl: './my-orders-page.html',
+  styleUrl: './my-orders-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrdersPage implements OnInit {
+export class MyOrdersPage implements OnInit {
   private readonly orderRepository = inject(OrderRepository);
   private readonly router = inject(Router);
 
@@ -40,21 +40,14 @@ export class OrdersPage implements OnInit {
   protected readonly loadError = signal<string | null>(null);
 
   ngOnInit(): void {
-    this.loadOrders();
-  }
-
-  private loadOrders(): void {
-    this.orderRepository.getAll().subscribe({
+    this.orderRepository.getMine().subscribe({
       next: (orders) => this.orders.set(orders),
       error: (error: OrderApiError) => this.loadError.set(error.message),
     });
   }
 
   protected onModalClosed(): void {
-    // Plain absolute navigate with no queryParams — same rationale as admin-products-page's
-    // onModalClosed(): queryParamsHandling 'merge' + `{ order: null }` isn't reliable for
-    // stripping a param, and the router's onSameUrlNavigation:'ignore' would then silently no-op.
-    void this.router.navigate(['/admin/orders']);
+    void this.router.navigate(['/my-orders']);
   }
 
   protected channelLabel(channel: OrderChannel): string {
