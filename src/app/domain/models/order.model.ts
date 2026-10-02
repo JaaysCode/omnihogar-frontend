@@ -44,6 +44,9 @@ export interface OrderDetail {
   customerName: string;
   customerEmail: string;
   items: OrderItemLine[];
+  /** HU-13 — set only right after a call that moved this order into "preparing": whether the
+   * despacho team was notified. Null/absent on every other load. */
+  dispatchNotified?: boolean | null;
 }
 
 /** Body for advancing an order's status (HU-14 crit. 1). `comment` is optional context for the audit trail. */

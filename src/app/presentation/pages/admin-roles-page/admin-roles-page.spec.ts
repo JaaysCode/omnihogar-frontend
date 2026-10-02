@@ -7,6 +7,7 @@ import { vi } from 'vitest';
 import { AdminRolesPage } from './admin-roles-page';
 import { ADMINISTRADOR_ROLE_ID, Permission, Role } from '../../../domain/models/role.model';
 import { RoleRepository } from '../../../domain/repositories/role.repository';
+import { NotificationRepository } from '../../../domain/repositories/notification.repository';
 
 const ROLES: Role[] = [
   { id: ADMINISTRADOR_ROLE_ID, name: 'Administrador', description: 'Acceso total', permissions: [] },
@@ -32,7 +33,12 @@ describe('AdminRolesPage', () => {
 
     await TestBed.configureTestingModule({
       imports: [AdminRolesPage],
-      providers: [provideRouter([]), provideTaiga(), { provide: RoleRepository, useValue: roleRepository }],
+      providers: [
+        provideRouter([]),
+        provideTaiga(),
+        { provide: RoleRepository, useValue: roleRepository },
+        { provide: NotificationRepository, useValue: { getMine: vi.fn().mockReturnValue(of([])) } },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminRolesPage);

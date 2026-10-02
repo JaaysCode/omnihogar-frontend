@@ -1,0 +1,52 @@
+<button
+  type="button"
+  class="bell"
+  [tuiDropdown]="panel"
+  [(tuiDropdownOpen)]="open"
+  aria-haspopup="true"
+  i18n-aria-label="@@notifications.bell.ariaLabel"
+  aria-label="Notificaciones"
+>
+  <tui-icon icon="@tui.bell" aria-hidden="true" />
+  @if (unreadCount() > 0) {
+    <span class="bell__badge">{{ badgeLabel() }}</span>
+  }
+</button>
+
+<ng-template #panel>
+  <div class="notif-panel">
+    <header class="notif-panel__header">
+      <span class="notif-panel__title" i18n="@@notifications.panel.title">Notificaciones</span>
+      @if (unreadCount() > 0) {
+        <button type="button" class="notif-panel__markAll" (click)="onMarkAllRead()" i18n="@@notifications.panel.markAllRead">
+          Marcar todas como leídas
+        </button>
+      }
+    </header>
+
+    @if (notifications().length === 0) {
+      <p class="notif-panel__empty" i18n="@@notifications.panel.empty">No hay notificaciones para mostrar.</p>
+    } @else {
+      <ul class="notif-panel__list">
+        @for (notification of notifications(); track notification.id) {
+          <li>
+            <button
+              type="button"
+              class="notif-item"
+              [class.notif-item--unread]="!notification.isRead"
+              (click)="onSelect(notification)"
+            >
+              @if (!notification.isRead) {
+                <span class="notif-item__dot" aria-hidden="true"></span>
+              }
+              <span class="notif-item__body">
+                <span class="notif-item__content">{{ notification.content }}</span>
+                <span class="notif-item__time">{{ notification.createdAt | date: 'short' }}</span>
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</ng-template>

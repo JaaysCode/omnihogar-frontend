@@ -31,6 +31,8 @@ export interface OrderDetailDto {
   customerName: string;
   customerEmail: string;
   items: OrderItemDto[];
+  /** HU-13 — set only on the response that moved the order into "preparing". */
+  dispatchNotified?: boolean | null;
 }
 
 /** Body for POST /orders (HU-06 — register a store sale). */

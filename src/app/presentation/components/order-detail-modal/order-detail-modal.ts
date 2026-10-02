@@ -144,9 +144,21 @@ export class OrderDetailModal implements OnInit, AfterViewInit, OnDestroy {
         this.pending.set(false);
         this.detail.set(updated);
         this.selectedStatus.set(updated.status);
-        this.alerts
-          .open($localize`:@@orders.detail.statusUpdated:Estado del pedido actualizado.`, { appearance: 'positive' })
-          .subscribe();
+
+        // HU-13 crit. 3: entering "preparing" notifies despacho — tell the caller if it failed
+        // so they know the order is pending of notification, without blocking the status change.
+        if (updated.dispatchNotified === false) {
+          this.alerts
+            .open(
+              $localize`:@@orders.detail.dispatchNotifyFailed:Estado actualizado, pero no se pudo notificar al área de despacho.`,
+              { appearance: 'warning' },
+            )
+            .subscribe();
+        } else {
+          this.alerts
+            .open($localize`:@@orders.detail.statusUpdated:Estado del pedido actualizado.`, { appearance: 'positive' })
+            .subscribe();
+        }
       },
       error: (error: OrderApiError) => {
         this.pending.set(false);

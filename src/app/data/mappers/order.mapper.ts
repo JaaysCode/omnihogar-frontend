@@ -68,6 +68,7 @@ export function toOrderDetail(dto: OrderDetailDto): OrderDetail {
     customerName: dto.customerName,
     customerEmail: dto.customerEmail,
     items: dto.items.map(toOrderItemLine),
+    dispatchNotified: dto.dispatchNotified ?? null,
   };
 }
 

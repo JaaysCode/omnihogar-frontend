@@ -9,6 +9,7 @@ import { Product } from '../../../domain/models/product.model';
 import { OrderApiError } from '../../../domain/models/order.model';
 import { ProductRepository } from '../../../domain/repositories/product.repository';
 import { OrderRepository } from '../../../domain/repositories/order.repository';
+import { NotificationRepository } from '../../../domain/repositories/notification.repository';
 
 const PRODUCT: Product = {
   id: 'p1',
@@ -40,6 +41,7 @@ describe('PosPage', () => {
         { provide: TuiAlertService, useValue: { open: () => EMPTY } },
         { provide: ProductRepository, useValue: productRepository },
         { provide: OrderRepository, useValue: orderRepository },
+        { provide: NotificationRepository, useValue: { getMine: vi.fn().mockReturnValue(of([])) } },
       ],
     }).compileComponents();
 

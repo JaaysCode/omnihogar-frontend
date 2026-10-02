@@ -3,6 +3,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TuiIcon } from '@taiga-ui/core';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { visibleNavItems } from '../admin-nav-items';
+import { NotificationBell } from '../notification-bell/notification-bell';
 
 /**
  * Left navigation for the admin panel — desktop only, see class doc on `AdminTabBar` for the
@@ -11,7 +12,7 @@ import { visibleNavItems } from '../admin-nav-items';
  */
 @Component({
   selector: 'app-admin-sidebar',
-  imports: [RouterLink, RouterLinkActive, TuiIcon],
+  imports: [RouterLink, RouterLinkActive, TuiIcon, NotificationBell],
   templateUrl: './admin-sidebar.html',
   styleUrl: './admin-sidebar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

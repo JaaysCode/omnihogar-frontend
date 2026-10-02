@@ -3,6 +3,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TuiDropdown, TuiIcon } from '@taiga-ui/core';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { visibleNavItems } from '../admin-nav-items';
+import { NotificationBell } from '../notification-bell/notification-bell';
 
 /**
  * Bottom navigation for the admin panel below the mobile breakpoint (see `AdminSidebar`'s own
@@ -16,7 +17,7 @@ import { visibleNavItems } from '../admin-nav-items';
  */
 @Component({
   selector: 'app-admin-tab-bar',
-  imports: [RouterLink, RouterLinkActive, TuiDropdown, TuiIcon],
+  imports: [RouterLink, RouterLinkActive, TuiDropdown, TuiIcon, NotificationBell],
   templateUrl: './admin-tab-bar.html',
   styleUrl: './admin-tab-bar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

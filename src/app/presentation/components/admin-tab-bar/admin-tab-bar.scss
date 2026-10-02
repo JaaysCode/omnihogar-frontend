@@ -20,6 +20,18 @@
   }
 }
 
+// Only visible when the host itself is (the mobile breakpoint, see :host above) — floated
+// top-right so it doesn't have to fight the bottom bar's fixed 5-column grid for a slot.
+.tab-bar__bell {
+  position: fixed;
+  z-index: 21;
+  inset-block-start: calc(env(safe-area-inset-top) + 0.5rem);
+  inset-inline-end: 0.5rem;
+  background: var(--tui-background-base, #fff);
+  border-radius: 999px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+}
+
 .tab-bar {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
