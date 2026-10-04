@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { provideTaiga } from '@taiga-ui/core';
 import { LoginForm } from './login-form';
 import { LoginPayload } from '../../../domain/models/auth.model';
@@ -10,7 +11,7 @@ describe('LoginForm', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LoginForm],
-      providers: [provideTaiga()],
+      providers: [provideRouter([]), provideTaiga()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginForm);
