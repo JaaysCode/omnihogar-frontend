@@ -1,0 +1,106 @@
+<app-public-header />
+
+<div class="chat-page__viewport">
+  <div class="chat-page">
+    <h1 i18n="@@chat.title">Asistente de compras</h1>
+    <p class="chat-page__caption" i18n="@@chat.subtitle">
+      Cuéntame qué producto buscas. Cuando tengas tu pedido listo, confírmalo.
+    </p>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    }
+
+    <div class="chat-page__messages" role="log" aria-live="polite">
+      @if (messages().length === 0) {
+        <p class="chat-page__empty" i18n="@@chat.empty">Escribe un mensaje para empezar, por ejemplo "busco un taladro".</p>
+      }
+      @for (message of messages(); track $index) {
+        <div
+          class="chat-bubble"
+          [class.chat-bubble--bot]="message.sender === 'bot'"
+          [class.chat-bubble--customer]="message.sender === 'customer'"
+        >
+          {{ message.content }}
+        </div>
+      }
+      @if (pending()) {
+        <div class="chat-bubble chat-bubble--bot chat-bubble--typing" aria-hidden="true">…</div>
+      }
+    </div>
+
+    @if (matchedProducts(); as products) {
+      @if (products.length > 0) {
+        <div class="chat-page__matches">
+          @for (product of products; track product.id) {
+            <div class="chat-match">
+              <div class="chat-match__info">
+                <span class="chat-match__name">{{ product.name }}</span>
+                <span class="chat-match__price">{{ product.price | copCurrency }}</span>
+                @if (product.inStock === false) {
+                  <span class="chat-match__out-of-stock" i18n="@@chat.outOfStock">Sin disponibilidad</span>
+                }
+              </div>
+              <input #qty type="number" min="1" value="1" class="chat-match__qty" aria-label="Cantidad" i18n-aria-label="@@chat.quantity" />
+              <button
+                tuiButton
+                size="xs"
+                type="button"
+                [disabled]="product.inStock === false"
+                (click)="addToDraft(product, qty.valueAsNumber)"
+                i18n="@@chat.add"
+              >
+                Agregar
+              </button>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    @if (draft().length > 0) {
+      <div class="chat-page__draft">
+        <h2 i18n="@@chat.draft.title">Tu pedido</h2>
+        @for (item of draft(); track item.productId) {
+          <div class="chat-draft-row">
+            <span class="chat-draft-row__name">{{ item.productName }} × {{ item.quantity }}</span>
+            <span class="chat-draft-row__subtotal">{{ item.subtotal | copCurrency }}</span>
+            <button tuiButton size="xs" appearance="flat" type="button" (click)="removeFromDraft(item.productId)" i18n="@@chat.remove">
+              Quitar
+            </button>
+          </div>
+        }
+        <div class="chat-page__draft-total">
+          <span i18n="@@chat.draft.total">Total</span>
+          <span>{{ draftTotal() | copCurrency }}</span>
+        </div>
+        <button tuiButton type="button" [disabled]="pending()" (click)="onConfirm()" i18n="@@chat.confirm">Confirmar pedido</button>
+      </div>
+    }
+
+    @if (orderCreated(); as order) {
+      <div class="chat-page__order-created" role="status">
+        <tui-icon icon="@tui.circle-check" aria-hidden="true" />
+        <span i18n="@@chat.orderCreated">
+          ¡Listo! Tu pedido {{ order.orderNumber }} quedó registrado por {{ order.total | copCurrency }}.
+        </span>
+      </div>
+    }
+
+    <div class="chat-page__input-row">
+      <input
+        type="text"
+        [value]="messageText()"
+        (input)="messageText.set($any($event.target).value)"
+        (keydown.enter)="onSend()"
+        placeholder="Escribe tu mensaje…"
+        i18n-placeholder="@@chat.input.placeholder"
+        aria-label="Mensaje"
+        i18n-aria-label="@@chat.input.ariaLabel"
+      />
+      <button tuiButton type="button" [disabled]="pending() || !messageText().trim()" (click)="onSend()" i18n="@@chat.input.send">
+        Enviar
+      </button>
+    </div>
+  </div>
+</div>

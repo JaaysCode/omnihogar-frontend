@@ -136,6 +136,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    // HU-19 — asistente de compras por chat. Solo requiere sesión (sin permiso, como my-orders).
+    path: 'chat',
+    loadComponent: () => import('./presentation/pages/chat-page/chat-page').then((m) => m.ChatPage),
+    title: 'Asistente de compras · OmniHogar',
+    canActivate: [authGuard],
+  },
+  {
     // HU-11 — consulta de stock. Abierta a administrador, jefe de bodega, coordinador de
     // despacho y asesor de tienda (todos tienen inventario.consultar). "Agregar Unidades"
     // abre add-stock-page como modal `?addStock` sobre esta página.

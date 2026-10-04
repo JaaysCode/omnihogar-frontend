@@ -23,6 +23,8 @@ import { ProfileRepository } from './domain/repositories/profile.repository';
 import { ProfileRepositoryImpl } from './data/repositories/profile.repository.impl';
 import { NotificationRepository } from './domain/repositories/notification.repository';
 import { NotificationRepositoryImpl } from './data/repositories/notification.repository.impl';
+import { ChatbotRepository } from './domain/repositories/chatbot.repository';
+import { ChatbotRepositoryImpl } from './data/repositories/chatbot.repository.impl';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -44,6 +46,7 @@ export const appConfig: ApplicationConfig = {
     { provide: CheckoutRepository, useClass: CheckoutRepositoryImpl },
     { provide: ProfileRepository, useClass: ProfileRepositoryImpl },
     { provide: NotificationRepository, useClass: NotificationRepositoryImpl },
+    { provide: ChatbotRepository, useClass: ChatbotRepositoryImpl },
     // Lets the register <-> login switch animate with a CSS `transform` transition instead of
     // a hard cut — see auth-route-reuse-strategy.ts and auth-page.scss.
     { provide: RouteReuseStrategy, useClass: AuthRouteReuseStrategy },

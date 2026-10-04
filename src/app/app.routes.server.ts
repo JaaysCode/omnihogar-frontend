@@ -72,6 +72,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    // HU-19 — conversación en vivo. No prerenderizable.
+    path: 'chat',
+    renderMode: RenderMode.Client,
+  },
+  {
     // HU-11 — live stock data, permiso inventario.consultar. No prerenderizable.
     path: 'inventario',
     renderMode: RenderMode.Client,

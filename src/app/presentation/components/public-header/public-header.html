@@ -36,6 +36,10 @@
             <tui-icon icon="@tui.clipboard-list" aria-hidden="true" />
             <span i18n="@@publicHeader.myOrders">Mis Compras</span>
           </a>
+          <a tuiOption routerLink="/chat" (click)="menuOpen.set(false)">
+            <tui-icon icon="@tui.message-circle" aria-hidden="true" />
+            <span i18n="@@publicHeader.chat">Asistente de compras</span>
+          </a>
           <button tuiOption type="button" (click)="onLogout()">
             <tui-icon icon="@tui.log-out" aria-hidden="true" />
             <span i18n="@@publicHeader.logout">Cerrar sesión</span>
