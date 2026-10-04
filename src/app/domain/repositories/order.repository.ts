@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import {
   OrderDetail,
+  OrderStatus,
   OrderSummary,
   StoreSaleItem,
   StoreSaleReceipt,
@@ -13,8 +14,10 @@ import {
  * in `data/`.
  */
 export abstract class OrderRepository {
-  /** Every registered order, across channels — newest first. Staff only (pedidos.consultar). */
-  abstract getAll(): Observable<OrderSummary[]>;
+  /** Every registered order, across channels — newest first. Staff only (pedidos.consultar).
+   * Optionally filtered to a single `status` (HU-12 — e.g. the dispatch coordinator's
+   * pending-preparation view). */
+  abstract getAll(status?: OrderStatus): Observable<OrderSummary[]>;
   /** Full detail (products, quantities, value, client, channel, status) for one order. 404s
    * when the id isn't registered — surfaced by the caller as OrderApiError. Staff only. */
   abstract getById(id: string): Observable<OrderDetail>;

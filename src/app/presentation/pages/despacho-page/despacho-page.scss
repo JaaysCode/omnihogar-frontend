@@ -1,0 +1,144 @@
+:host {
+  display: block;
+}
+
+.despacho-shell {
+  display: flex;
+  min-height: 100dvh;
+  background: var(--oh-color-neutral);
+}
+
+.despacho-main {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem 2.5rem;
+
+  &__header {
+    margin-bottom: 1.5rem;
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 800;
+    }
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__caption {
+    margin: 0.25rem 0 0;
+    color: var(--tui-text-secondary);
+  }
+}
+
+.despacho-count {
+  padding: 0.125rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  background: var(--tui-background-neutral-1);
+  color: var(--tui-text-secondary);
+}
+
+.form-error-banner {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--tui-status-negative, #d92d20);
+  background: var(--tui-status-negative-pale, #fee2e2);
+  color: var(--tui-status-negative, #d92d20);
+  font-size: 0.9375rem;
+}
+
+.despacho-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: var(--tui-background-base);
+  box-shadow: var(--oh-shadow-card);
+}
+
+.despacho-table {
+  width: 100%;
+  min-width: 44rem;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--tui-border-normal);
+  }
+
+  th {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--tui-text-secondary);
+  }
+
+  &__number {
+    font-weight: 700;
+  }
+
+  &__muted {
+    color: var(--tui-text-secondary);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    a {
+      color: var(--tui-text-action);
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.despacho-pill {
+  display: inline-block;
+  padding: 0.125rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.tone-neutral {
+  background: var(--tui-background-neutral-1);
+  color: var(--tui-text-secondary);
+}
+
+.despacho-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem;
+  border-radius: 0.75rem;
+  background: var(--tui-background-neutral-1);
+  color: var(--tui-text-secondary);
+
+  tui-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .despacho-main {
+    // Extra bottom padding clears AdminTabBar, fixed to the bottom edge at this width.
+    padding: 1.5rem 1.25rem calc(1.5rem + var(--oh-layout-tabbar-height));
+  }
+}

@@ -143,6 +143,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    // HU-12 — "pedidos por preparar", el encargado de despacho consulta y marca como
+    // preparados los pedidos en estado "preparing". Mismo permiso que admin/orders.
+    path: 'despacho',
+    loadComponent: () => import('./presentation/pages/despacho-page/despacho-page').then((m) => m.DespachoPage),
+    title: 'Pedidos por preparar · OmniHogar',
+    canActivate: [permissionGuard(P.pedidos)],
+  },
+  {
     // HU-11 — consulta de stock. Abierta a administrador, jefe de bodega, coordinador de
     // despacho y asesor de tienda (todos tienen inventario.consultar). "Agregar Unidades"
     // abre add-stock-page como modal `?addStock` sobre esta página.

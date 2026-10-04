@@ -3,6 +3,7 @@ import { Observable, catchError, map, throwError } from 'rxjs';
 import { OrderRepository } from '../../domain/repositories/order.repository';
 import {
   OrderDetail,
+  OrderStatus,
   OrderSummary,
   StoreSaleItem,
   StoreSaleReceipt,
@@ -15,8 +16,8 @@ import { OrderApiService } from '../services/order-api.service';
 export class OrderRepositoryImpl implements OrderRepository {
   private readonly api = inject(OrderApiService);
 
-  getAll(): Observable<OrderSummary[]> {
-    return this.api.getAll().pipe(
+  getAll(status?: OrderStatus): Observable<OrderSummary[]> {
+    return this.api.getAll(status).pipe(
       map((dtos) => dtos.map(toOrderSummary)),
       catchError((error) => throwError(() => toOrderApiError(error))),
     );

@@ -15,9 +15,9 @@ export interface AdminNavItem {
 /**
  * Single source of truth for the admin panel's destinations (mock: OmniHogar Admin / "Centro
  * Logístico"). Shared by `AdminSidebar` (desktop column) and `AdminTabBar` (mobile bottom bar) so
- * both stay in lockstep — only `Panel de Control`, `Productos`, `Inventario`, `Ventas`, `Pedidos`
- * and `Usuarios` route anywhere today; `Logística`/`Reportes` render as inert placeholders so the
- * shell matches the design without claiming pages that don't exist yet.
+ * both stay in lockstep — only `Panel de Control`, `Productos`, `Inventario`, `Ventas`, `Pedidos`,
+ * `Logística` and `Usuarios` route anywhere today; `Reportes` renders as an inert placeholder so
+ * the shell matches the design without claiming a page that doesn't exist yet.
  */
 export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
   {
@@ -50,7 +50,12 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
     link: '/admin/orders',
     requiredPermission: 'pedidos.consultar',
   },
-  { label: $localize`:@@admin.nav.logistics:Logística`, icon: '@tui.truck' },
+  {
+    label: $localize`:@@admin.nav.logistics:Logística`,
+    icon: '@tui.truck',
+    link: '/despacho',
+    requiredPermission: 'pedidos.consultar',
+  },
   {
     label: $localize`:@@admin.nav.users:Usuarios`,
     icon: '@tui.users',

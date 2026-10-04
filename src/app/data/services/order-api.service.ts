@@ -20,8 +20,10 @@ export class OrderApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(API_BASE_URL);
 
-  getAll(): Observable<OrderSummaryDto[]> {
-    return this.http.get<OrderSummaryDto[]>(`${this.baseUrl}/orders`);
+  getAll(status?: string): Observable<OrderSummaryDto[]> {
+    return this.http.get<OrderSummaryDto[]>(`${this.baseUrl}/orders`, {
+      params: status ? { status } : {},
+    });
   }
 
   getById(id: string): Observable<OrderDetailDto> {

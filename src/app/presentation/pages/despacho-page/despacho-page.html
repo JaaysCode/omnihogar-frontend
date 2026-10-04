@@ -1,0 +1,80 @@
+<div class="despacho-shell">
+  <app-admin-sidebar />
+  <app-admin-tab-bar />
+
+  <main class="despacho-main">
+    <header class="despacho-main__header">
+      <div class="despacho-main__heading">
+        <h1 i18n="@@despacho.list.title">Pedidos por preparar</h1>
+        @if (orders(); as list) {
+          <span class="despacho-count">{{ list.length }}</span>
+        }
+      </div>
+      <p class="despacho-main__caption" i18n="@@despacho.list.subtitle">
+        Pedidos pendientes de preparación en bodega.
+      </p>
+    </header>
+
+    @if (loadError(); as message) {
+      <div class="form-error-banner" role="alert">{{ message }}</div>
+    }
+
+    <section class="despacho-card">
+      @if (!orders()) {
+        <p class="despacho-main__caption" i18n="@@despacho.list.loading">Cargando pedidos…</p>
+      } @else if (orders()!.length === 0) {
+        <div class="despacho-empty" role="status">
+          <tui-icon icon="@tui.inbox" aria-hidden="true" />
+          <p i18n="@@despacho.list.empty">No hay pedidos pendientes de preparación.</p>
+        </div>
+      } @else {
+        <div style="overflow-x: auto">
+          <table class="despacho-table">
+            <thead>
+              <tr>
+                <th i18n="@@despacho.list.column.orderNumber">PEDIDO</th>
+                <th i18n="@@despacho.list.column.customer">CLIENTE</th>
+                <th i18n="@@despacho.list.column.channel">CANAL</th>
+                <th i18n="@@despacho.list.column.items">ARTÍCULOS</th>
+                <th i18n="@@despacho.list.column.date">FECHA</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (o of orders()!; track o.id) {
+                <tr>
+                  <td class="despacho-table__number">{{ o.orderNumber }}</td>
+                  <td>{{ o.customerName }}</td>
+                  <td>
+                    <span class="despacho-pill tone-neutral">{{ channelLabel(o.channel) }}</span>
+                  </td>
+                  <td>{{ o.itemCount }}</td>
+                  <td class="despacho-table__muted">{{ o.createdAt | date: 'shortDate' }}</td>
+                  <td class="despacho-table__actions">
+                    <a routerLink="/despacho" [queryParams]="{ order: o.id }" i18n="@@despacho.list.viewDetail">Ver detalle</a>
+                    <button
+                      tuiButton
+                      size="xs"
+                      type="button"
+                      [disabled]="markingId() === o.id"
+                      (click)="markPrepared(o)"
+                      i18n="@@despacho.list.markPrepared"
+                    >
+                      Marcar como preparado
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  </main>
+
+  @if (order(); as id) {
+    @defer (on immediate) {
+      <app-order-detail-modal [orderId]="id" (closed)="onModalClosed()" />
+    }
+  }
+</div>
