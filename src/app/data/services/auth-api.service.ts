@@ -2,8 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../core/config/api.config';
-import { LoginPayload, RegisterPayload } from '../../domain/models/auth.model';
-import { AuthResponseDto, LoginRequestDto, RefreshRequestDto, RegisterRequestDto } from './auth-api.dto';
+import {
+  LoginPayload,
+  RegisterPayload,
+  RequestPasswordResetPayload,
+  ResetPasswordPayload,
+} from '../../domain/models/auth.model';
+import {
+  AuthResponseDto,
+  ForgotPasswordRequestDto,
+  LoginRequestDto,
+  RefreshRequestDto,
+  RegisterRequestDto,
+  ResetPasswordRequestDto,
+} from './auth-api.dto';
 
 /**
  * Raw HTTP client for the `/auth` endpoints. Transport-only: no error translation,
@@ -33,5 +45,15 @@ export class AuthApiService {
   refresh(refreshToken: string): Observable<AuthResponseDto> {
     const body: RefreshRequestDto = { refreshToken };
     return this.http.post<AuthResponseDto>(`${this.baseUrl}/auth/refresh`, body);
+  }
+
+  requestPasswordReset(payload: RequestPasswordResetPayload): Observable<void> {
+    const body: ForgotPasswordRequestDto = { email: payload.email };
+    return this.http.post<void>(`${this.baseUrl}/auth/forgot-password`, body);
+  }
+
+  resetPassword(payload: ResetPasswordPayload): Observable<void> {
+    const body: ResetPasswordRequestDto = { token: payload.token, newPassword: payload.newPassword };
+    return this.http.post<void>(`${this.baseUrl}/auth/reset-password`, body);
   }
 }

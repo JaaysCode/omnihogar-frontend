@@ -43,6 +43,10 @@
     }
   </div>
 
+  <a routerLink="/forgot-password" class="auth-form__link" i18n="@@auth.login.forgotPassword.link"
+    >¿Olvidaste tu contraseña?</a
+  >
+
   <button tuiButton type="submit" size="l" [disabled]="pending()" class="auth-form__submit">
     {{ submitLabel() }}
   </button>

@@ -18,6 +18,21 @@ export const routes: Routes = [
   { path: 'register', component: AuthPage, data: { mode: 'register' }, title: 'Crear cuenta · OmniHogar' },
   { path: 'login', component: AuthPage, data: { mode: 'login' }, title: 'Iniciar sesión · OmniHogar' },
   {
+    // HU-15 crit. 1/2 — solicitar enlace de recuperación. Llegada desde login-form, no desde el
+    // toggle login/register, por eso es una página propia y no un AuthMode más.
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./presentation/pages/forgot-password-page/forgot-password-page').then((m) => m.ForgotPasswordPage),
+    title: 'Recuperar contraseña · OmniHogar',
+  },
+  {
+    // HU-15 crit. 3 — consumir el token del enlace de correo. Lee ?token=&email= al construirse.
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./presentation/pages/reset-password-page/reset-password-page').then((m) => m.ResetPasswordPage),
+    title: 'Restablecer contraseña · OmniHogar',
+  },
+  {
     path: 'admin/dashboard',
     loadComponent: () =>
       import('./presentation/pages/admin-dashboard-page/admin-dashboard-page').then((m) => m.AdminDashboardPage),

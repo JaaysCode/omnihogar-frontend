@@ -67,6 +67,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    // HU-15 crit. 3 — lee ?token=&email= de la query string al construirse. No prerenderizable.
+    path: 'reset-password',
+    renderMode: RenderMode.Client,
+  },
+  {
     // HU-11 — live stock data, permiso inventario.consultar. No prerenderizable.
     path: 'inventario',
     renderMode: RenderMode.Client,

@@ -113,6 +113,19 @@
     text-transform: uppercase;
     letter-spacing: 0.02em;
   }
+
+  &__link {
+    align-self: flex-end;
+    margin-top: -0.5rem;
+    color: var(--tui-text-action);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .error-summary {

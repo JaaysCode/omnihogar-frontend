@@ -1,37 +1,34 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
-import { LoginPayload } from '../../../domain/models/auth.model';
+import { RequestPasswordResetPayload } from '../../../domain/models/auth.model';
 import { fieldErrorMessage } from '../../../shared/utils/form-error-messages';
 
 @Component({
-  selector: 'app-login-form',
-  imports: [ReactiveFormsModule, RouterLink, TuiButton, TuiIcon],
-  templateUrl: './login-form.html',
-  styleUrl: './login-form.scss',
+  selector: 'app-forgot-password-form',
+  imports: [ReactiveFormsModule, TuiButton, TuiIcon],
+  templateUrl: './forgot-password-form.html',
+  styleUrl: './forgot-password-form.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginForm {
-  /** Generic error from the backend (e.g. "Invalid credentials.") — not field-specific. */
+export class ForgotPasswordForm {
+  /** Generic/field error from the backend (e.g. "no existe una cuenta asociada"). */
   readonly formError = input<string | null>(null);
   readonly pending = input(false);
 
-  readonly submitted = output<LoginPayload>();
+  readonly submitted = output<RequestPasswordResetPayload>();
 
   private readonly fb = new FormBuilder().nonNullable;
   protected attemptedSubmit = false;
 
   protected readonly form = this.fb.group({
     email: this.fb.control('', [Validators.required, Validators.email]),
-    password: this.fb.control('', [Validators.required]),
   });
 
-  // See RegisterForm.submitLabel: same reason this isn't a ternary in the template.
   protected readonly submitLabel = computed(() =>
     this.pending()
-      ? $localize`:@@auth.login.submit.pending:Iniciando sesión…`
-      : $localize`:@@auth.login.submit.idle:Iniciar sesión`,
+      ? $localize`:@@auth.forgotPassword.submit.pending:Enviando…`
+      : $localize`:@@auth.forgotPassword.submit.idle:Enviar enlace de recuperación`,
   );
 
   protected errorFor(control: string): string | null {
@@ -49,6 +46,6 @@ export class LoginForm {
       return;
     }
     const value = this.form.getRawValue();
-    this.submitted.emit({ email: value.email.trim(), password: value.password });
+    this.submitted.emit({ email: value.email.trim() });
   }
 }

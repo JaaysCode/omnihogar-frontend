@@ -20,6 +20,19 @@ export interface AuthSession {
   expiresAtUtc: string;
 }
 
+/** Payload for POST /auth/forgot-password (HU-15 crit. 1/2). */
+export interface RequestPasswordResetPayload {
+  email: string;
+}
+
+/** Payload for POST /auth/reset-password (HU-15 crit. 3). `email` isn't sent to the backend
+ * (only the token identifies the account) — kept here so the UI can display who's resetting. */
+export interface ResetPasswordPayload {
+  token: string;
+  email: string;
+  newPassword: string;
+}
+
 /** Per-field validation messages, keyed by camelCase field name (e.g. "email"). */
 export type FieldErrors = Record<string, string[]>;
 

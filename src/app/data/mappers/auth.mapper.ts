@@ -41,6 +41,12 @@ export function toAuthApiError(error: unknown): AuthApiError {
     return new AuthApiError($localize`:@@auth.error.invalidCredentials:Correo o contraseña incorrectos.`);
   }
 
+  if (error.status === 404) {
+    return new AuthApiError(
+      $localize`:@@auth.error.invalidResetToken:El enlace de recuperación no es válido o ya expiró. Solicita uno nuevo.`,
+    );
+  }
+
   if (error.status === 0) {
     return new AuthApiError(
       $localize`:@@auth.error.offline:No se pudo conectar con el servidor. Verifica tu conexión e inténtalo de nuevo.`,

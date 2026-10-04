@@ -1,7 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { AuthRepository } from '../../domain/repositories/auth.repository';
-import { AuthSession, LoginPayload, RegisterPayload } from '../../domain/models/auth.model';
+import {
+  AuthSession,
+  LoginPayload,
+  RegisterPayload,
+  RequestPasswordResetPayload,
+  ResetPasswordPayload,
+} from '../../domain/models/auth.model';
 import { toAuthApiError, toAuthSession } from '../mappers/auth.mapper';
 import { AuthApiService } from '../services/auth-api.service';
 
@@ -26,6 +32,18 @@ export class AuthRepositoryImpl implements AuthRepository {
   refresh(refreshToken: string): Observable<AuthSession> {
     return this.api.refresh(refreshToken).pipe(
       map(toAuthSession),
+      catchError((error) => throwError(() => toAuthApiError(error))),
+    );
+  }
+
+  requestPasswordReset(payload: RequestPasswordResetPayload): Observable<void> {
+    return this.api.requestPasswordReset(payload).pipe(
+      catchError((error) => throwError(() => toAuthApiError(error))),
+    );
+  }
+
+  resetPassword(payload: ResetPasswordPayload): Observable<void> {
+    return this.api.resetPassword(payload).pipe(
       catchError((error) => throwError(() => toAuthApiError(error))),
     );
   }
