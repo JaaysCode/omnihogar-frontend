@@ -15,48 +15,109 @@
         <p i18n="@@myOrders.empty">Todavía no tienes pedidos.</p>
       </div>
     } @else {
-      <div style="overflow-x: auto">
-        <table class="my-orders-table">
-          <thead>
-            <tr>
-              <th i18n="@@myOrders.column.orderNumber">PEDIDO</th>
-              <th i18n="@@myOrders.column.channel">CANAL</th>
-              <th i18n="@@myOrders.column.status">ESTADO</th>
-              <th i18n="@@myOrders.column.items">ARTÍCULOS</th>
-              <th i18n="@@myOrders.column.total">TOTAL</th>
-              <th i18n="@@myOrders.column.date">FECHA</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (o of orders()!; track o.id) {
-              <tr>
-                <td class="my-orders-table__number">{{ o.orderNumber }}</td>
-                <td>
-                  <span class="my-orders-pill tone-neutral">{{ channelLabel(o.channel) }}</span>
-                </td>
-                <td>
-                  <span
-                    class="my-orders-pill"
-                    [class.tone-positive]="statusTone(o.status) === 'positive'"
-                    [class.tone-neutral]="statusTone(o.status) === 'neutral'"
-                    [class.tone-warning]="statusTone(o.status) === 'warning'"
-                    [class.tone-negative]="statusTone(o.status) === 'negative'"
-                  >
-                    {{ statusLabel(o.status) }}
-                  </span>
-                </td>
-                <td>{{ o.itemCount }}</td>
-                <td class="my-orders-table__total">{{ o.total | copCurrency }}</td>
-                <td class="my-orders-table__muted">{{ o.createdAt | date: 'shortDate' }}</td>
-                <td class="my-orders-table__actions">
-                  <a routerLink="/my-orders" [queryParams]="{ order: o.id }" i18n="@@myOrders.viewDetail">Ver detalle</a>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+      <!-- Filtros por estado con conteo, como las pestañas de "Tus pedidos" en Amazon. -->
+      <div class="my-orders__tabs" role="tablist" aria-label="Filtrar pedidos" i18n-aria-label="@@myOrders.filter.ariaLabel">
+        @for (tab of tabs(); track tab.id) {
+          <button
+            type="button"
+            role="tab"
+            class="my-orders__tab"
+            [attr.aria-selected]="filter() === tab.id"
+            [class.my-orders__tab--active]="filter() === tab.id"
+            (click)="filter.set(tab.id)"
+          >
+            {{ tab.label }} <span class="my-orders__tab-count">{{ tab.count }}</span>
+          </button>
+        }
       </div>
+
+      @if (visibleOrders().length === 0) {
+        <p class="my-orders__caption" role="status" i18n="@@myOrders.filter.empty">No hay pedidos en esta categoría.</p>
+      }
+
+      <ul class="my-orders__list">
+        @for (o of visibleOrders(); track o.id) {
+          <li class="order-card">
+            <header class="order-card__header">
+              <dl class="order-card__meta">
+                <div>
+                  <dt i18n="@@myOrders.card.placed">Pedido realizado</dt>
+                  <dd>{{ o.createdAt | date: 'longDate' }}</dd>
+                </div>
+                <div>
+                  <dt i18n="@@myOrders.card.total">Total</dt>
+                  <dd>{{ o.total | copCurrency }}</dd>
+                </div>
+                <div>
+                  <dt i18n="@@myOrders.card.channel">Canal</dt>
+                  <dd>{{ channelLabel(o.channel) }}</dd>
+                </div>
+              </dl>
+              <div class="order-card__number">
+                <span i18n="@@myOrders.column.orderNumber">Pedido</span>
+                <span class="order-card__number-value">{{ o.orderNumber }}</span>
+              </div>
+            </header>
+
+            <div class="order-card__body">
+              <div class="order-card__visual" aria-hidden="true">
+                <span class="order-card__stack">
+                  <tui-icon icon="@tui.package" />
+                </span>
+                <span class="order-card__count">{{ o.itemCount }}</span>
+              </div>
+
+              <div class="order-card__main">
+                <p
+                  class="order-card__status"
+                  [class.order-card__status--positive]="statusTone(o.status) === 'positive'"
+                  [class.order-card__status--warning]="statusTone(o.status) === 'warning'"
+                  [class.order-card__status--negative]="statusTone(o.status) === 'negative'"
+                >
+                  {{ statusLabel(o.status) }}
+                </p>
+
+                @if (progressFor(o.status); as progress) {
+                  <ol class="progress" [attr.aria-label]="'Progreso del pedido: ' + statusLabel(o.status)">
+                    @for (step of progressSteps; track step.key; let i = $index) {
+                      <li
+                        class="progress__step"
+                        [class.progress__step--done]="i < progress.current"
+                        [class.progress__step--current]="i === progress.current"
+                        [attr.aria-current]="i === progress.current ? 'step' : null"
+                      >
+                        <span class="progress__dot" aria-hidden="true">
+                          @if (i < progress.current) {
+                            <tui-icon icon="@tui.circle-check" />
+                          }
+                        </span>
+                        <span class="progress__label">{{ step.label }}</span>
+                      </li>
+                    }
+                  </ol>
+                } @else {
+                  <p class="order-card__closed" [class.order-card__closed--negative]="statusTone(o.status) === 'negative'">
+                    <tui-icon icon="@tui.circle-x" aria-hidden="true" />
+                    <span>{{ closedHint(o.status) }}</span>
+                  </p>
+                }
+              </div>
+
+              <div class="order-card__actions">
+                <a
+                  routerLink="/my-orders"
+                  [queryParams]="{ order: o.id }"
+                  class="order-card__primary"
+                  [attr.aria-label]="'Ver detalle del pedido ' + o.orderNumber"
+                  i18n-aria-label="@@myOrders.viewDetailAria"
+                >
+                  <span i18n="@@myOrders.viewDetail">Ver detalle</span>
+                </a>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
     }
   </div>
 </div>

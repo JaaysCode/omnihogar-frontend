@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
@@ -47,6 +49,15 @@ export class ProfilePage implements OnInit {
   protected readonly formError = signal<string | null>(null);
 
   protected attemptedSubmit = false;
+
+  /** Iniciales para el avatar de la columna de resumen. */
+  protected readonly initials = computed(() => {
+    const p = this.profile();
+    if (!p) {
+      return '';
+    }
+    return `${p.firstName.charAt(0)}${p.lastName.charAt(0)}`.toUpperCase();
+  });
   private readonly errorSummary = viewChild<ElementRef<HTMLElement>>('errorSummary');
 
   protected readonly form = this.fb.group({
@@ -54,6 +65,26 @@ export class ProfilePage implements OnInit {
     lastName: this.fb.control('', [Validators.required, Validators.maxLength(100), namePatternValidator()]),
     email: this.fb.control('', [Validators.required, Validators.email, Validators.maxLength(150)]),
     phone: this.fb.control('', [phonePatternValidator()]),
+  });
+
+  private readonly formValue = toSignal(
+    this.form.valueChanges.pipe(map(() => this.form.getRawValue())),
+    { initialValue: this.form.getRawValue() },
+  );
+
+  /** True cuando hay algo distinto a lo último guardado: habilita "Guardar" y avisa al usuario. */
+  protected readonly hasChanges = computed(() => {
+    const saved = this.profile();
+    const current = this.formValue();
+    if (!saved) {
+      return false;
+    }
+    return (
+      current.firstName.trim() !== saved.firstName ||
+      current.lastName.trim() !== saved.lastName ||
+      current.email.trim() !== saved.email ||
+      current.phone.trim() !== (saved.phone ?? '')
+    );
   });
 
   constructor() {

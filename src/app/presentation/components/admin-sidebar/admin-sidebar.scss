@@ -58,6 +58,12 @@
     }
   }
 
+  &__tools {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
   &__list {
     flex: 1;
     min-height: 0;
@@ -107,16 +113,19 @@
       outline-offset: 2px;
     }
 
+    // Activo: tinte del acento + barra lateral. El texto conserva el color de primer plano, así
+    // el contraste pasa en modo claro y oscuro (un bloque sólido de acento no lo garantizaba).
     &--active {
-      background: var(--tui-background-accent-2, #58c8e6);
-      color: #0a2b33;
+      background: color-mix(in srgb, var(--tui-background-accent-1) 16%, transparent);
+      box-shadow: inset 3px 0 0 var(--tui-background-accent-1);
+      color: var(--tui-text-primary);
 
       tui-icon {
-        color: #0a2b33;
+        color: var(--tui-background-accent-1);
       }
 
       &:hover {
-        background: var(--tui-background-accent-2-hover, #74d3ec);
+        background: color-mix(in srgb, var(--tui-background-accent-1) 24%, transparent);
       }
     }
 

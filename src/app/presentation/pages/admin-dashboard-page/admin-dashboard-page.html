@@ -45,13 +45,13 @@
         <header class="chart-card__header">
           <h2 i18n="@@dashboard.chart.title">Ventas por Canal</h2>
           <ul class="chart-card__legend muted">
-            <li class="flex-c"><span class="chart-card__swatch" style="background: var(--tui-background-accent-1)"></span>Web</li>
-            <li class="flex-c"><span class="chart-card__swatch" style="background: var(--oh-color-secondary)"></span>Tienda</li>
-            <li class="flex-c"><span class="chart-card__swatch" style="background: var(--tui-background-accent-2)"></span>Chatbot</li>
+            <li class="flex-c"><span class="chart-card__swatch chart-card__swatch--web" aria-hidden="true"></span>Web</li>
+            <li class="flex-c"><span class="chart-card__swatch chart-card__swatch--store" aria-hidden="true"></span>Tienda</li>
+            <li class="flex-c"><span class="chart-card__swatch chart-card__swatch--chatbot" aria-hidden="true"></span>Chatbot</li>
           </ul>
         </header>
 
-        <div class="chart" role="img" i18n-aria-label="@@dashboard.chart.ariaLabel" aria-label="Ventas por canal, últimos 5 días">
+        <div class="chart" aria-hidden="true">
           <div class="chart__axis muted">
             <span>100k</span>
             <span>75k</span>
@@ -63,21 +63,52 @@
             @for (sample of chartSeries; track sample.label) {
               <div class="chart__group">
                 <div class="chart__bars">
-                  <span class="chart__bar" style="background: var(--tui-background-accent-1)" [style.height]="barHeight(sample.web)"></span>
-                  <span class="chart__bar" style="background: var(--oh-color-secondary)" [style.height]="barHeight(sample.store)"></span>
-                  <span class="chart__bar" style="background: var(--tui-background-accent-2)" [style.height]="barHeight(sample.chatbot)"></span>
+                  <span class="chart__bar chart__bar--web" [style.height]="barHeight(sample.web)"></span>
+                  <span class="chart__bar chart__bar--store" [style.height]="barHeight(sample.store)"></span>
+                  <span class="chart__bar chart__bar--chatbot" [style.height]="barHeight(sample.chatbot)"></span>
                 </div>
                 <span class="chart__group-label muted">{{ sample.label }}</span>
               </div>
             }
           </div>
         </div>
+
+        <!-- Equivalente textual del gráfico para lectores de pantalla. -->
+        <table class="sr-only">
+          <caption i18n="@@dashboard.chart.caption">Ventas por Canal, últimos 5 días</caption>
+          <thead>
+            <tr>
+              <th scope="col" i18n="@@dashboard.chart.table.day">Día</th>
+              <th scope="col" i18n="@@dashboard.chart.legend.web">Web</th>
+              <th scope="col" i18n="@@dashboard.chart.legend.store">Tienda</th>
+              <th scope="col" i18n="@@dashboard.chart.legend.chatbot">Chatbot</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (sample of chartSeries; track sample.label) {
+              <tr>
+                <th scope="row">{{ sample.label }}</th>
+                <td>{{ sample.web | copCurrency }}</td>
+                <td>{{ sample.store | copCurrency }}</td>
+                <td>{{ sample.chatbot | copCurrency }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </article>
 
       <article class="panel-card team-card">
         <header class="team-card__header">
           <h2 i18n="@@dashboard.team.title">Roles de Equipo</h2>
-          <tui-icon icon="@tui.plus" aria-hidden="true" />
+          <a
+            routerLink="/admin/users"
+            [queryParams]="{ create: '1' }"
+            class="team-card__add center-flex"
+            aria-label="Agregar usuario"
+            i18n-aria-label="@@dashboard.team.add"
+          >
+            <tui-icon icon="@tui.plus" aria-hidden="true" />
+          </a>
         </header>
 
         <ul class="team-list">
@@ -88,7 +119,14 @@
                 <span class="team-list__name semibold">{{ member.name }}</span>
                 <span class="team-list__role semibold">{{ member.role }}</span>
               </div>
-              <tui-icon icon="@tui.square-pen" class="muted" aria-hidden="true" />
+              <a
+                routerLink="/admin/users"
+                class="team-list__edit center-flex"
+                [attr.aria-label]="'Editar ' + member.name"
+                i18n-aria-label="@@dashboard.team.edit"
+              >
+                <tui-icon icon="@tui.square-pen" aria-hidden="true" />
+              </a>
             </li>
           }
         </ul>
@@ -162,13 +200,15 @@
                 </td>
                 <td>
                   <div class="recent-products__actions flex-c">
+                    <!-- Mismo patrón que la tabla de productos: ícono con etiqueta, sin botón con borde. -->
                     <a
                       routerLink="/admin/products"
                       [queryParams]="{ edit: product.id }"
-                      class="recent-products__quick-edit semibold"
-                      i18n="@@dashboard.recent.quickEdit"
+                      class="recent-products__quick-edit center-flex"
+                      [attr.aria-label]="'Edición rápida de ' + product.name"
+                      title="Edición rápida"
                     >
-                      Edición Rápida
+                      <tui-icon icon="@tui.square-pen" aria-hidden="true" />
                     </a>
                     <!-- No delete endpoint on ProductRepository yet — inert, shell ahead of backend. -->
                     <button
@@ -177,6 +217,8 @@
                       disabled
                       aria-label="Eliminar producto"
                       i18n-aria-label="@@dashboard.recent.delete.ariaLabel"
+                      title="Próximamente: aún no hay eliminación de productos"
+                      i18n-title="@@dashboard.recent.delete.unavailable"
                     >
                       <tui-icon icon="@tui.trash-2" aria-hidden="true" />
                     </button>

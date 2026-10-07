@@ -2,8 +2,9 @@
   <a routerLink="/products" class="public-header__brand">OmniHogar</a>
 
   <nav class="public-header__actions" aria-label="Cuenta" i18n-aria-label="@@publicHeader.ariaLabel">
+    <app-accessibility-menu />
     @if (isAuthenticated()) {
-      <a routerLink="/cart" class="public-header__cart" aria-label="Carrito" i18n-aria-label="@@publicHeader.cart">
+      <a routerLink="/cart" class="public-header__cart" aria-label="Carrito" title="Carrito" i18n-aria-label="@@publicHeader.cart" i18n-title="@@publicHeader.cart">
         <tui-icon icon="@tui.shopping-cart" aria-hidden="true" />
         @if (cartCount() > 0) {
           <span class="public-header__cart-badge">{{ cartCount() }}</span>
@@ -24,6 +25,8 @@
         [(tuiDropdownOpen)]="menuOpen"
         [attr.aria-expanded]="menuOpen()"
         aria-label="Mi cuenta"
+        title="Mi cuenta"
+        i18n-title="@@publicHeader.account"
         i18n-aria-label="@@publicHeader.account"
       ></button>
       <ng-template #accountMenu>

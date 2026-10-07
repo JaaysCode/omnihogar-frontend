@@ -32,6 +32,17 @@
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 }
 
+// Sits just left of the bell in the same top-right corner (mobile only, like the bell).
+.tab-bar__a11y {
+  position: fixed;
+  z-index: 21;
+  inset-block-start: calc(env(safe-area-inset-top) + 0.5rem);
+  inset-inline-end: 3.5rem;
+  background: var(--tui-background-base, #fff);
+  border-radius: 999px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+}
+
 .tab-bar {
   display: grid;
   grid-template-columns: repeat(5, 1fr);

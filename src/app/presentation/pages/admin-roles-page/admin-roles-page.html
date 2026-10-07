@@ -7,17 +7,45 @@
       <div class="admin-roles-main__heading">
         <h1 i18n="@@roles.adminList.title">Roles y Permisos</h1>
         @if (roles(); as list) {
-          <span class="admin-roles-count">{{ list.length }}</span>
+          <span class="admin-roles-count" [attr.aria-label]="list.length + ' roles'">{{ list.length }}</span>
         }
       </div>
-      <p class="admin-roles-main__caption" i18n="@@roles.adminList.caption">
-        Consulta los roles y ajusta los permisos que otorga cada uno. Los cambios aplican al personal cuando vuelve a iniciar sesión.
-      </p>
     </header>
+
+    <!-- Aviso una sola vez, junto a las pestañas, en vez de un párrafo en el encabezado. -->
+    <p class="admin-roles-notice" role="note">
+      <tui-icon icon="@tui.circle-alert" aria-hidden="true" />
+      <span i18n="@@roles.adminList.caption">
+        Los cambios de permisos aplican al personal cuando vuelve a iniciar sesión.
+      </span>
+    </p>
 
     @if (loadError(); as message) {
       <div class="form-error-banner" role="alert">{{ message }}</div>
     } @else {
+      <div class="admin-roles-tabs" role="group" aria-label="Vista" i18n-aria-label="@@roles.view.ariaLabel">
+        <button
+          type="button"
+          class="admin-roles-tab"
+          [class.admin-roles-tab--active]="view() === 'roles'"
+          [attr.aria-pressed]="view() === 'roles'"
+          (click)="view.set('roles')"
+          i18n="@@roles.view.roles"
+        >
+          Roles
+        </button>
+        <button
+          type="button"
+          class="admin-roles-tab"
+          [class.admin-roles-tab--active]="view() === 'matrix'"
+          [attr.aria-pressed]="view() === 'matrix'"
+          (click)="view.set('matrix')"
+          i18n="@@roles.view.matrix"
+        >
+          Matriz de permisos
+        </button>
+      </div>
+
       <section class="admin-roles-card">
         @if (!roles()) {
           <p class="admin-roles-main__caption" i18n="@@roles.adminList.loading">Cargando roles…</p>
@@ -26,38 +54,32 @@
             <tui-icon icon="@tui.shield-x" aria-hidden="true" />
             <p i18n="@@roles.adminList.empty">No hay roles configurados.</p>
           </div>
-        } @else {
-          <div style="overflow-x: auto">
+        } @else if (view() === 'roles') {
+          <div class="admin-roles-scroll">
             <table class="admin-roles-table">
               <thead>
                 <tr>
-                  <th i18n="@@roles.adminList.column.role">Rol</th>
-                  <th i18n="@@roles.adminList.column.description">Descripción</th>
-                  <th i18n="@@roles.adminList.column.permissions">Permisos</th>
-                  <th></th>
+                  <th scope="col" i18n="@@roles.adminList.column.role">Rol</th>
+                  <th scope="col" i18n="@@roles.adminList.column.description">Descripción</th>
+                  <th scope="col" i18n="@@roles.adminList.column.permissions">Permisos</th>
+                  <th scope="col"><span class="sr-only" i18n="@@roles.adminList.column.actions">Acciones</span></th>
                 </tr>
               </thead>
               <tbody>
                 @for (role of roles()!; track role.id) {
                   @let isAdmin = role.id === adminRoleId;
                   <tr>
-                    <td>
-                      <span class="admin-roles-pill" [class.admin-roles-pill--admin]="isAdmin">{{ role.name }}</span>
-                    </td>
+                    <th scope="row" class="admin-roles-table__role">{{ role.name }}</th>
                     <td class="admin-roles-table__muted">{{ role.description }}</td>
                     <td>
                       @if (isAdmin) {
-                        <span class="admin-roles-table__muted" i18n="@@roles.adminList.permissions.all"
-                          >Todos los permisos</span
-                        >
+                        <span i18n="@@roles.adminList.permissions.all">Todos los permisos</span>
                       } @else if (role.permissions.length === 0) {
                         <span class="admin-roles-table__muted" i18n="@@roles.adminList.permissions.none">Sin permisos</span>
                       } @else {
-                        <div class="admin-roles-chips">
-                          @for (permission of role.permissions; track permission) {
-                            <span class="admin-roles-chip">{{ permissionLabelFor()(permission) }}</span>
-                          }
-                        </div>
+                        <span i18n="@@roles.adminList.permissions.count"
+                          >{{ role.permissions.length }} de {{ permissionCatalog().length }} permisos</span
+                        >
                       }
                     </td>
                     <td class="admin-roles-table__actions">
@@ -86,6 +108,50 @@
               </tbody>
             </table>
           </div>
+        } @else {
+          <!-- Matriz de solo lectura, agrupada por módulo. Columna y encabezado quedan fijos al hacer scroll. -->
+          <div class="admin-roles-scroll admin-roles-matrix">
+            <table class="admin-roles-table admin-roles-matrix__table">
+              <caption class="sr-only" i18n="@@roles.matrix.caption">Permisos por rol</caption>
+              <thead>
+                <tr>
+                  <th scope="col" class="admin-roles-matrix__corner" i18n="@@roles.matrix.permission">Permiso</th>
+                  @for (role of roles()!; track role.id) {
+                    <th scope="col" class="admin-roles-matrix__role">{{ role.name }}</th>
+                  }
+                </tr>
+              </thead>
+              @for (group of permissionGroups(); track group.key) {
+                <tbody>
+                  <tr class="admin-roles-matrix__group">
+                    <th scope="rowgroup" colspan="1" class="admin-roles-matrix__group-label">{{ group.label }}</th>
+                    <td [attr.colspan]="roles()!.length" class="admin-roles-matrix__group-count">
+                      {{ group.items.length }} permisos
+                    </td>
+                  </tr>
+                  @for (permission of group.items; track permission.name) {
+                    <tr>
+                      <th scope="row" class="admin-roles-matrix__label">{{ permission.label }}</th>
+                      @for (role of roles()!; track role.id) {
+                        <td class="admin-roles-matrix__cell">
+                          @if (hasPermission(role, permission.name)) {
+                            <tui-icon icon="@tui.circle-check" class="admin-roles-matrix__yes" aria-hidden="true" />
+                            <span class="sr-only" i18n="@@roles.matrix.granted">Incluido</span>
+                          } @else {
+                            <span class="admin-roles-matrix__no" aria-hidden="true">—</span>
+                            <span class="sr-only" i18n="@@roles.matrix.denied">No incluido</span>
+                          }
+                        </td>
+                      }
+                    </tr>
+                  }
+                </tbody>
+              }
+            </table>
+          </div>
+          <p class="admin-roles-matrix__hint" i18n="@@roles.matrix.readOnly">
+            Vista de solo lectura. Para cambiar permisos, edita el rol desde la pestaña Roles.
+          </p>
         }
       </section>
     }

@@ -29,6 +29,29 @@
       </select>
     </div>
 
+    @if (products() && !loadError()) {
+      <div class="catalog__toolbar">
+        <p class="catalog__count" role="status" aria-live="polite">
+          <span i18n="@@products.catalog.count">{{ products()!.length }} productos</span>
+        </p>
+        <div class="catalog__toolbar-actions">
+          @if (hasFilters()) {
+            <button type="button" tuiButton appearance="flat" size="s" (click)="onClearFilters()" i18n="@@products.catalog.clear">
+              Limpiar filtros
+            </button>
+          }
+          <label class="catalog__sort">
+            <span i18n="@@products.catalog.sort.label">Ordenar por</span>
+            <select [value]="sortOrder()" (change)="onSortChange($any($event.target).value)">
+              <option value="name" i18n="@@products.catalog.sort.name">Nombre</option>
+              <option value="price-asc" i18n="@@products.catalog.sort.priceAsc">Precio: menor a mayor</option>
+              <option value="price-desc" i18n="@@products.catalog.sort.priceDesc">Precio: mayor a menor</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    }
+
     @if (loadError(); as message) {
       <div class="form-error-banner" role="alert">{{ message }}</div>
     } @else if (!products()) {
@@ -43,8 +66,8 @@
       </p>
     } @else {
       <div class="catalog__grid">
-        @for (product of products()!; track product.id) {
-          <article class="catalog__card">
+        @for (product of sortedProducts(); track product.id) {
+          <article class="catalog__card" [class.catalog__card--out]="product.inStock === false">
             <a [routerLink]="['/products', product.id]" class="catalog__link">
               @if (product.imageUrl) {
                 <img [src]="product.imageUrl" [alt]="product.name" class="catalog__image" />
@@ -56,24 +79,31 @@
             @if (product.description) {
               <p class="catalog__description">{{ product.description }}</p>
             }
-            <p class="catalog__price">{{ product.price | copCurrency }}</p>
+            <!-- Precio y acción van al fondo de la tarjeta para que todas las tarjetas de la fila
+                 queden alineadas, tengan o no descripción. -->
+            <div class="catalog__footer">
+              <p class="catalog__price">{{ product.price | copCurrency }}</p>
 
-            @if (product.inStock === false) {
-              <p class="catalog__out-of-stock" role="status" i18n="@@products.catalog.outOfStock">Agotado</p>
-            } @else {
-              <button
-                type="button"
-                tuiButton
-                size="s"
-                iconStart="@tui.shopping-cart"
-                class="catalog__add"
-                [disabled]="adding().has(product.id)"
-                (click)="onAddToCart(product)"
-                i18n="@@products.catalog.addToCart"
-              >
-                Agregar al carrito
-              </button>
-            }
+              @if (product.inStock === false) {
+                <p class="catalog__out-of-stock" role="status">
+                  <tui-icon icon="@tui.package-x" aria-hidden="true" />
+                  <span i18n="@@products.catalog.outOfStock">Agotado</span>
+                </p>
+              } @else {
+                <button
+                  type="button"
+                  tuiButton
+                  size="s"
+                  iconStart="@tui.shopping-cart"
+                  class="catalog__add"
+                  [disabled]="adding().has(product.id)"
+                  (click)="onAddToCart(product)"
+                  i18n="@@products.catalog.addToCart"
+                >
+                  Agregar al carrito
+                </button>
+              }
+            </div>
           </article>
         }
       </div>

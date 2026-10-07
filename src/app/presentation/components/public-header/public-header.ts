@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TuiButton, TuiDataList, TuiDropdown, TuiIcon } from '@taiga-ui/core';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { CartStore } from '../../../core/services/cart-store.service';
+import { AccessibilityMenu } from '../accessibility-menu/accessibility-menu';
 
 /**
  * Slim top bar for public pages (the catalog, the cart). Gives anonymous visitors a way
@@ -12,7 +13,7 @@ import { CartStore } from '../../../core/services/cart-store.service';
  */
 @Component({
   selector: 'app-public-header',
-  imports: [RouterLink, TuiButton, TuiDataList, TuiDropdown, TuiIcon],
+  imports: [RouterLink, TuiButton, TuiDataList, TuiDropdown, TuiIcon, AccessibilityMenu],
   templateUrl: './public-header.html',
   styleUrl: './public-header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

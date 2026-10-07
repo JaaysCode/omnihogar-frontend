@@ -36,13 +36,29 @@
       {{ productButtonLabel() }}
     </button>
     <ng-template #productDropdown>
-      <tui-data-list>
-        @for (product of products(); track product.id) {
-          <button tuiOption type="button" (click)="onSelectProduct(product)">
-            {{ product.name }} <span class="auth-form__optional">({{ product.sku }})</span>
-          </button>
-        }
-      </tui-data-list>
+      <div class="auth-form__product-menu">
+        <input
+          type="search"
+          class="auth-form__product-search"
+          [value]="productQuery()"
+          (input)="productQuery.set($any($event.target).value)"
+          placeholder="Buscar por nombre o SKU…"
+          i18n-placeholder="@@inventory.addStock.product.search.placeholder"
+          aria-label="Buscar producto por nombre o SKU"
+          i18n-aria-label="@@inventory.addStock.product.search.ariaLabel"
+        />
+        <tui-data-list>
+          @for (product of filteredProducts(); track product.id) {
+            <button tuiOption type="button" (click)="onSelectProduct(product)">
+              {{ product.name }} <span class="auth-form__optional">({{ product.sku }})</span>
+            </button>
+          } @empty {
+            <p class="auth-form__product-empty" role="status" i18n="@@inventory.addStock.product.noMatches">
+              Ningún producto coincide con la búsqueda.
+            </p>
+          }
+        </tui-data-list>
+      </div>
     </ng-template>
     @if (errorFor('productId'); as message) {
       <p class="auth-form__error" id="add-stock-productId-error">{{ message }}</p>

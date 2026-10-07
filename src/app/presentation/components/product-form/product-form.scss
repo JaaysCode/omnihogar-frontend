@@ -209,6 +209,14 @@
     // Spans both grid tracks — kept out of the 20rem `__media` column, which is too narrow to
     // fit "Guardar cambios" + icon at size l next to "Cancelar" without the label overflowing.
     grid-column: 1 / -1;
+    // Pegado al pie del modal: "Guardar" queda visible aunque el formulario sea largo y haga scroll.
+    position: sticky;
+    bottom: -1.75rem;
+    z-index: 2;
+    margin: 0 -1.75rem -1.75rem;
+    padding: 1rem 1.75rem;
+    border-top: 1px solid var(--tui-border-normal);
+    background: var(--tui-background-base, #fff);
     display: flex;
     justify-content: flex-end;
     flex-wrap: wrap;

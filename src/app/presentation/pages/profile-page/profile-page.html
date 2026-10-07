@@ -2,9 +2,6 @@
 
 <div class="profile__viewport">
   <div class="profile">
-    <h1 i18n="@@profile.page.title">Mi perfil</h1>
-    <a class="profile__orders-link" routerLink="/my-orders" i18n="@@profile.page.myOrdersLink">Ver mis pedidos</a>
-
     @if (loadError(); as message) {
       <div class="form-error-banner" role="alert">{{ message }}</div>
     } @else if (!profile()) {
@@ -28,6 +25,19 @@
       @if (formError(); as message) {
         <div class="form-error-banner" role="alert">{{ message }}</div>
       }
+
+      <div class="profile__layout">
+        @if (profile(); as p) {
+          <aside class="profile__summary" aria-labelledby="profile-title">
+            <span class="profile__avatar center-flex" aria-hidden="true">{{ initials() }}</span>
+            <h1 id="profile-title" i18n="@@profile.page.title">Mi perfil</h1>
+            <p class="profile__name">{{ p.firstName }} {{ p.lastName }}</p>
+            <p class="profile__member-since" i18n="@@profile.form.memberSince">
+              Miembro desde {{ p.createdAt | date: 'longDate' }}
+            </p>
+            <a class="profile__orders-link" routerLink="/my-orders" i18n="@@profile.page.myOrdersLink">Ver mis pedidos</a>
+          </aside>
+        }
 
       <form class="profile-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
         <section class="profile-form__card">
@@ -118,23 +128,21 @@
             </div>
           </div>
 
-          @if (profile(); as p) {
-            <p class="profile-form__member-since" i18n="@@profile.form.memberSince">
-              Miembro desde {{ p.createdAt | date: 'longDate' }}
-            </p>
+        <footer class="profile-form__actions">
+          @if (hasChanges()) {
+            <p class="profile-form__status" role="status" i18n="@@profile.form.unsaved">Tienes cambios sin guardar</p>
           }
-        </section>
-
-        <div class="profile-form__actions">
-          <button tuiButton type="submit" size="l" iconStart="@tui.save" [disabled]="pending()">
+          <button tuiButton type="submit" size="l" iconStart="@tui.save" [disabled]="pending() || !hasChanges()">
             @if (pending()) {
               <span i18n="@@profile.form.submit.pending">Guardando…</span>
             } @else {
               <span i18n="@@profile.form.submit.idle">Guardar cambios</span>
             }
           </button>
-        </div>
+        </footer>
+        </section>
       </form>
+      </div>
     }
   </div>
 </div>

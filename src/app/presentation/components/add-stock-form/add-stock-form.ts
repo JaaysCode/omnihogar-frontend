@@ -56,6 +56,18 @@ export class AddStockForm {
 
   protected readonly productMenuOpen = signal(false);
 
+  /** Texto del buscador dentro del menú de productos (filtra por nombre o SKU). */
+  protected readonly productQuery = signal('');
+  protected readonly filteredProducts = computed(() => {
+    const query = this.productQuery().trim().toLowerCase();
+    if (!query) {
+      return this.products();
+    }
+    return this.products().filter(
+      (p) => p.name.toLowerCase().includes(query) || p.sku.toLowerCase().includes(query),
+    );
+  });
+
   protected readonly form = this.fb.group({
     // Holds the selected `Product` object (not just its id) — set from the dropdown's
     // `onSelectProduct` below. Unwrapped to `.id` in `onSubmit`.
@@ -139,6 +151,7 @@ export class AddStockForm {
   protected onSelectProduct(product: Product): void {
     this.form.controls.productId.setValue(product);
     this.form.controls.productId.markAsTouched();
+    this.productQuery.set('');
     this.productMenuOpen.set(false);
   }
 
@@ -146,6 +159,8 @@ export class AddStockForm {
     this.attemptedSubmit = true;
 
     if (this.form.invalid) {
+      // El menú de productos tapa los mensajes de los campos de abajo: al fallar, se cierra.
+      this.productMenuOpen.set(false);
       this.form.markAllAsTouched();
       queueMicrotask(() => this.errorSummary()?.nativeElement.focus());
       return;

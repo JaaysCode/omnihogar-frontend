@@ -71,7 +71,8 @@ export class ProductForm {
     // Holds the selected `Category` object (not just its id) — set from the dropdown's
     // `onSelectCategory` below. Unwrapped to `.id` in `onSubmit`.
     categoryId: this.fb.control<Category | null>(null),
-    price: this.fb.control(0, [Validators.required, Validators.min(0)]),
+    // Vacío al inicio (no 0): así el usuario no envía un precio gratis por olvido.
+    price: this.fb.control<number | null>(null, [Validators.required, Validators.min(0)]),
     imageUrl: this.fb.control(''),
     status: this.fb.control<ProductStatus>('active'),
     // Create-only — see the template's `@if (!isEdit())`. Kept in the same group for simplicity;
@@ -198,7 +199,7 @@ export class ProductForm {
         name: value.name.trim(),
         description: value.description.trim() || null,
         categoryId,
-        price: value.price,
+        price: value.price ?? 0,
         imageUrl: value.imageUrl.trim() || null,
         id: current.id,
         status: value.status,
@@ -210,7 +211,7 @@ export class ProductForm {
         name: value.name.trim(),
         description: value.description.trim() || null,
         categoryId,
-        price: value.price,
+        price: value.price ?? 0,
         imageUrl: value.imageUrl.trim() || null,
         initialStock: value.initialStock || null,
       };

@@ -7,6 +7,17 @@ import { EditRolePermissionsPage } from '../edit-role-permissions-page/edit-role
 import { ADMINISTRADOR_ROLE_ID, Role, RoleApiError } from '../../../domain/models/role.model';
 import { RoleRepository } from '../../../domain/repositories/role.repository';
 
+/** Nombre visible de cada módulo, según el prefijo del código de permiso (p. ej. "inventario."). */
+const MODULE_LABELS: Readonly<Record<string, string>> = {
+  inventario: $localize`:@@roles.module.inventario:Inventario`,
+  productos: $localize`:@@roles.module.productos:Productos`,
+  pedidos: $localize`:@@roles.module.pedidos:Pedidos`,
+  pos: $localize`:@@roles.module.pos:Punto de venta`,
+  usuarios: $localize`:@@roles.module.usuarios:Usuarios`,
+};
+
+export type RolesView = 'roles' | 'matrix';
+
 /**
  * Admin-only role/permission management (HU-31 crit. 1 + 3). Row-level "Editar" opens
  * edit-role-permissions-page as a modal driven by the `?edit` query param (bound via
@@ -32,25 +43,43 @@ export class AdminRolesPage implements OnInit {
 
   protected readonly adminRoleId = ADMINISTRADOR_ROLE_ID;
 
-  /**
-   * Permission name -> human-readable Spanish label. The UI never shows the raw permission
-   * code (e.g. "inventario.ajustar"); this map resolves it to the seed description.
-   */
-  private readonly permissionLabels = signal<ReadonlyMap<string, string>>(new Map());
+  /** Pestaña activa: lista de roles o matriz de permisos. Separa el detalle de la tabla. */
+  protected readonly view = signal<RolesView>('roles');
 
-  protected readonly permissionLabelFor = computed(() => {
-    const labels = this.permissionLabels();
-    return (name: string): string => labels.get(name) ?? name;
+  /** Permisos agrupados por módulo (prefijo antes del punto), para la matriz. */
+  protected readonly permissionGroups = computed(() => {
+    const groups = new Map<string, { key: string; label: string; items: { name: string; label: string }[] }>();
+    for (const permission of this.permissionCatalog()) {
+      const key = permission.name.split('.')[0];
+      let group = groups.get(key);
+      if (!group) {
+        group = { key, label: MODULE_LABELS[key] ?? key, items: [] };
+        groups.set(key, group);
+      }
+      group.items.push(permission);
+    }
+    return [...groups.values()];
   });
+
+  /**
+   * Catálogo de permisos para la matriz (filas). Se muestra la descripción en español; el código
+   * crudo (p. ej. "inventario.ajustar") nunca llega a la UI.
+   */
+  protected readonly permissionCatalog = signal<readonly { name: string; label: string }[]>([]);
 
   ngOnInit(): void {
     this.roleRepository.getPermissions().subscribe({
       next: (permissions) =>
-        this.permissionLabels.set(new Map(permissions.map((p) => [p.name, p.description ?? p.name]))),
-      // Non-fatal: chips fall back to the raw name until this resolves/retries.
-      error: () => this.permissionLabels.set(new Map()),
+        this.permissionCatalog.set(permissions.map((p) => ({ name: p.name, label: p.description ?? p.name }))),
+      // No fatal: la matriz simplemente no muestra filas hasta reintentar.
+      error: () => this.permissionCatalog.set([]),
     });
     this.loadRoles();
+  }
+
+  /** El rol Administrador siempre tiene todos los permisos, aunque su lista venga vacía. */
+  protected hasPermission(role: Role, name: string): boolean {
+    return role.id === ADMINISTRADOR_ROLE_ID || role.permissions.includes(name);
   }
 
   /** Also re-run when the edit modal closes, so an updated permission set shows up. */

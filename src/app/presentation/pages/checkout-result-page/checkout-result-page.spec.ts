@@ -95,7 +95,11 @@ describe('CheckoutResultPage', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Pago rechazado');
 
-    fixture.debugElement.query(By.css('button')).nativeElement.click();
+    // Busca por texto: el header público también renderiza botones (menú de accesibilidad).
+    const retryButton = fixture.debugElement
+      .queryAll(By.css('button'))
+      .find((el) => el.nativeElement.textContent.includes('Reintentar pago'));
+    retryButton?.nativeElement.click();
     expect(checkoutRepository.retry).toHaveBeenCalledWith('o1');
   });
 

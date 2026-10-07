@@ -1,2 +1,23 @@
 /* Global styles. Colour lives in one file: src/styles/_tokens.scss */
 @use 'styles/tokens';
+
+// Foco visible para navegación por teclado: anillo del color de acento (ya ajustado para
+// modo claro y oscuro en _tokens.scss). Los componentes que ya definen su propio foco lo
+// sobrescriben con la misma intención.
+:focus-visible {
+  outline: 3px solid var(--tui-background-accent-1);
+  outline-offset: 2px;
+}
+
+// Texto solo para lectores de pantalla (p. ej. la tabla alternativa de un gráfico).
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

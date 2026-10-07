@@ -4,6 +4,7 @@ import { TuiButton } from '@taiga-ui/core';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { AuthApiError, FieldErrors, LoginPayload, RegisterPayload } from '../../../domain/models/auth.model';
 import { AuthRepository } from '../../../domain/repositories/auth.repository';
+import { AccessibilityMenu } from '../../components/accessibility-menu/accessibility-menu';
 import { LoginForm } from '../../components/login-form/login-form';
 import { RegisterForm } from '../../components/register-form/register-form';
 
@@ -16,7 +17,7 @@ export type AuthMode = 'login' | 'register';
  */
 @Component({
   selector: 'app-auth-page',
-  imports: [RouterLink, TuiButton, RegisterForm, LoginForm],
+  imports: [RouterLink, TuiButton, RegisterForm, LoginForm, AccessibilityMenu],
   templateUrl: './auth-page.html',
   styleUrl: './auth-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

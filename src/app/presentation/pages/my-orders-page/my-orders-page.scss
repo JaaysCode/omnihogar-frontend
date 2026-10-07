@@ -28,102 +28,315 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 1rem 1.125rem;
-    border-radius: 0.75rem;
-    background: var(--tui-background-neutral-1);
+    padding: 2.5rem 1.25rem;
+    border-radius: 1rem;
+    background: var(--tui-background-base, #fff);
     color: var(--tui-text-secondary);
+    text-align: center;
+    justify-content: center;
+  }
 
-    tui-icon {
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
+  // Pestañas de estado: segmentadas y con conteo, scroll horizontal si no caben en móvil.
+  &__tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
 
-    p {
-      margin: 0;
+  &__tab {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding: 0 1rem;
+    border: 1px solid var(--tui-border-normal);
+    border-radius: 999px;
+    background: var(--tui-background-base, #fff);
+    color: var(--tui-text-primary);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &--active {
+      border-color: var(--tui-background-accent-1);
+      background: var(--tui-background-accent-1);
+      color: #fff;
+
+      .my-orders__tab-count {
+        background: rgba(255, 255, 255, 0.25);
+        color: #fff;
+      }
     }
+  }
+
+  &__tab-count {
+    min-width: 1.5rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.06));
+    font-size: 0.75rem;
+    line-height: 1.5rem;
+    text-align: center;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 }
 
-.form-error-banner {
-  margin-bottom: 1.5rem;
-  padding: 1rem 1.25rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--tui-status-negative, #d92d20);
-  background: var(--tui-status-negative-pale, #fee2e2);
-  color: var(--tui-status-negative, #d92d20);
-  font-size: 0.9375rem;
-}
+// --- Tarjeta de pedido -----------------------------------------------------
 
-.my-orders-table {
-  width: 100%;
-  min-width: 40rem;
-  border-collapse: collapse;
-  background: var(--tui-background-base);
-  border-radius: 1rem;
+.order-card {
   overflow: hidden;
+  border-radius: 1rem;
+  background: var(--tui-background-base, #fff);
   box-shadow: var(--oh-shadow-card);
 
-  th,
-  td {
-    padding: 0.875rem 1rem;
-    text-align: left;
+  // Encabezado gris: fecha, total y canal a la izquierda, número de pedido a la derecha.
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
     border-bottom: 1px solid var(--tui-border-normal);
   }
 
-  th {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--tui-text-secondary);
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin: 0;
+
+    div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    dt {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--tui-text-secondary);
+    }
+
+    dd {
+      margin: 0;
+      font-weight: 600;
+      color: var(--tui-text-primary);
+    }
   }
 
   &__number {
-    font-weight: 700;
-  }
-
-  &__total {
-    font-weight: 700;
-    color: var(--tui-text-action);
-  }
-
-  &__muted {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 0.8125rem;
     color: var(--tui-text-secondary);
   }
 
-  &__actions a {
-    color: var(--tui-text-action);
-    text-decoration: none;
+  &__number-value {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-weight: 600;
+    color: var(--tui-text-primary);
+  }
+
+  // Cuerpo: resumen visual de artículos | estado + progreso | acción.
+  &__body {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.25rem;
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 0.75rem;
+    background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+    color: var(--tui-text-secondary);
+
+    tui-icon {
+      font-size: 2rem;
+    }
+  }
+
+  &__count {
+    position: absolute;
+    top: -0.4rem;
+    right: -0.4rem;
+    min-width: 1.5rem;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    background: var(--tui-background-accent-1);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.5rem;
+    text-align: center;
+  }
+
+  &__main {
+    min-width: 0;
+  }
+
+  // El estado va con texto y color: "Enviado", "Cancelado"… nunca solo el color.
+  &__status {
+    margin: 0 0 0.875rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--tui-text-primary);
+
+    &--positive {
+      color: var(--tui-status-positive, #079455);
+    }
+
+    &--warning {
+      color: var(--tui-status-warning, #b54708);
+    }
+
+    &--negative {
+      color: var(--tui-status-negative, #d92d20);
+    }
+  }
+
+  &__closed {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--tui-text-secondary);
+
+    &--negative {
+      color: var(--tui-status-negative, #d92d20);
+    }
+  }
+
+  &__primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+    background: var(--tui-background-accent-1);
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
 
     &:hover {
-      text-decoration: underline;
+      background: var(--tui-background-accent-1-hover);
     }
   }
 }
 
-.my-orders-pill {
-  display: inline-block;
-  padding: 0.125rem 0.625rem;
-  border-radius: 999px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
+// --- Barra de progreso -----------------------------------------------------
+// Horizontal en escritorio; en móvil se apila en vertical para que las etiquetas no se encimen.
 
-.tone-positive {
-  background: var(--tui-status-positive-pale);
-  color: var(--tui-status-positive);
-}
+.progress {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
 
-.tone-neutral {
-  background: var(--tui-background-neutral-1);
-  color: var(--tui-text-secondary);
-}
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
 
-.tone-warning {
-  background: var(--tui-status-warning-pale);
-  color: var(--tui-status-warning);
-}
+  &__step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    text-align: center;
+    color: var(--tui-text-secondary);
 
-.tone-negative {
-  background: var(--tui-status-negative-pale);
-  color: var(--tui-status-negative);
+    // Línea que une cada paso con el siguiente.
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 0.5rem;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: var(--tui-border-normal);
+    }
+
+    &--done::after {
+      background: var(--tui-background-accent-1) !important;
+    }
+
+    &--done,
+    &--current {
+      color: var(--tui-text-primary);
+    }
+
+    &--current .progress__label {
+      font-weight: 700;
+    }
+
+    @media (max-width: 720px) {
+      flex-direction: row;
+      text-align: left;
+
+      &:not(:last-child)::after {
+        display: none;
+      }
+    }
+  }
+
+  &__dot {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 2px solid var(--tui-border-normal);
+    background: var(--tui-background-base, #fff);
+    color: #fff;
+
+    tui-icon {
+      font-size: 0.75rem;
+    }
+  }
+
+  &__step--done &__dot {
+    border-color: var(--tui-background-accent-1);
+    background: var(--tui-background-accent-1);
+  }
+
+  &__step--current &__dot {
+    border-color: var(--tui-background-accent-1);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--tui-background-accent-1) 25%, transparent);
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
 }

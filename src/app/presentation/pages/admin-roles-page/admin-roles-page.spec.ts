@@ -45,10 +45,20 @@ describe('AdminRolesPage', () => {
     fixture.detectChanges();
   });
 
-  it('lists every role, showing the permission description and never the raw code', () => {
+  it('lists every role in the roles tab', () => {
     const text = fixture.nativeElement.textContent;
     expect(text).toContain('Administrador');
     expect(text).toContain('Jefe de Bodega');
+  });
+
+  it('shows the permission description in the matrix and never the raw code', () => {
+    const matrixTab = fixture.debugElement
+      .queryAll(By.css('.admin-roles-tab'))
+      .find((el) => el.nativeElement.textContent.includes('Matriz de permisos'));
+    matrixTab?.nativeElement.click();
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent;
     expect(text).toContain('Ajustar inventario');
     expect(text).not.toContain('inventario.ajustar');
   });

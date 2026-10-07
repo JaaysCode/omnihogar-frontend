@@ -102,8 +102,9 @@
   aspect-ratio: 4 / 3;
   border-radius: 0.75rem;
   margin-bottom: 0.875rem;
-  object-fit: cover;
-  background: var(--tui-background-neutral-1, rgba(0, 0, 0, 0.04));
+  // `contain` + fondo fijo: las fotos de producto (muchas con fondo blanco) no se recortan.
+  object-fit: contain;
+  background: #fff;
 
   &--placeholder {
     display: block;
@@ -119,7 +120,15 @@
   margin: 0 0 0.75rem;
   font-size: 0.875rem;
   color: var(--tui-text-secondary, #6b6b6b);
-  flex: 1;
+}
+
+.catalog__footer {
+  margin-top: auto;
+}
+
+// Tarjeta agotada: la foto se atenúa, pero el estado se dice con texto e ícono, no solo con opacidad.
+.catalog__card--out .catalog__image {
+  opacity: 0.55;
 }
 
 .catalog__price {
@@ -134,9 +143,53 @@
 }
 
 .catalog__out-of-stock {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
   margin: 0;
   padding: 0.375rem 0;
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--tui-text-secondary, #6b6b6b);
+}
+
+.catalog__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: -0.5rem 0 1.25rem;
+}
+
+.catalog__count {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--tui-text-secondary, #6b6b6b);
+}
+
+.catalog__toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.catalog__sort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  select {
+    min-height: 2.25rem;
+    padding: 0 0.5rem;
+    border: 1px solid var(--tui-border-normal);
+    border-radius: 0.5rem;
+    background: var(--tui-background-base);
+    color: var(--tui-text-primary);
+    font: inherit;
+  }
 }

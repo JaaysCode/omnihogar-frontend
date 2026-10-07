@@ -10,17 +10,62 @@
 
 .profile {
   width: 100%;
-  max-width: 42rem;
+  max-width: 64rem;
   margin: 0 auto;
 
-  h1 {
-    margin: 0 0 0.5rem;
-    font-size: 1.75rem;
+  // Dos columnas en escritorio: el resumen de cuenta a la izquierda aprovecha el espacio que antes
+  // quedaba vacío a los lados; en móvil se apilan (resumen arriba).
+  &__layout {
+    display: grid;
+    grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background: var(--tui-background-base, #fff);
+    box-shadow: var(--oh-shadow-card);
+
+    h1 {
+      margin: 0.75rem 0 0.25rem;
+      font-size: 1.5rem;
+    }
+  }
+
+  &__avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--tui-background-accent-1);
+    color: #fff;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  &__name {
+    margin: 0;
+    font-weight: 600;
+    color: var(--tui-text-primary);
+  }
+
+  &__member-since {
+    margin: 0 0 0.75rem;
+    font-size: 0.875rem;
+    color: var(--tui-text-secondary, #6b6b6b);
   }
 
   &__orders-link {
     display: inline-block;
-    margin-bottom: 1.5rem;
+    margin-top: auto;
     color: var(--tui-text-action);
     text-decoration: none;
     font-weight: 600;
@@ -177,15 +222,18 @@
     color: var(--tui-status-negative, #d92d20);
   }
 
-  &__member-since {
-    margin: 0;
-    font-size: 0.8125rem;
-    color: var(--tui-text-secondary, #6b6b6b);
-  }
-
+  // Pie de la tarjeta: ocupa todo el ancho de la tarjeta, separado de los campos por un borde.
   &__actions {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0 -1.5rem -1.5rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--tui-border-normal);
+    border-radius: 0 0 1rem 1rem;
+    background: var(--oh-color-neutral);
 
     button {
       min-width: 12rem;
@@ -196,5 +244,12 @@
         width: 100%;
       }
     }
+  }
+
+  &__status {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--tui-text-secondary, #6b6b6b);
   }
 }

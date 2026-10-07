@@ -1,0 +1,49 @@
+<button
+  type="button"
+  tuiButton
+  size="s"
+  appearance="flat"
+  iconStart="@tui.accessibility"
+  class="a11y-trigger"
+  [tuiDropdown]="panel"
+  [(tuiDropdownOpen)]="menuOpen"
+  [attr.aria-expanded]="menuOpen()"
+  aria-label="Opciones de accesibilidad"
+  i18n-aria-label="@@a11y.trigger"
+></button>
+
+<ng-template #panel>
+  <div class="a11y-panel">
+    <div class="a11y-panel__row">
+      <span id="a11y-dark-label" class="a11y-panel__label" i18n="@@a11y.darkMode">Modo oscuro</span>
+      <button
+        type="button"
+        role="switch"
+        class="a11y-switch"
+        [attr.aria-checked]="prefs.isDarkMode()"
+        aria-labelledby="a11y-dark-label"
+        (click)="prefs.setDarkMode(!prefs.isDarkMode())"
+      >
+        <span class="a11y-switch__thumb" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <div class="a11y-panel__section">
+      <span id="a11y-font-label" class="a11y-panel__label" i18n="@@a11y.fontSize">Tamaño de texto</span>
+      <div class="a11y-panel__options" role="group" aria-labelledby="a11y-font-label">
+        @for (option of fontSizeOptions; track option.value) {
+          <button
+            type="button"
+            tuiButton
+            size="s"
+            [appearance]="prefs.fontSize() === option.value ? 'primary' : 'outline'"
+            [attr.aria-pressed]="prefs.fontSize() === option.value"
+            (click)="prefs.setFontSize(option.value)"
+          >
+            {{ option.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</ng-template>

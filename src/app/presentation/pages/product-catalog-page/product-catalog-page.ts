@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TuiButton, TuiAlertService, TuiIcon } from '@taiga-ui/core';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
@@ -42,6 +42,21 @@ export class ProductCatalogPage implements OnInit {
   protected readonly categories = signal<Category[]>([]);
   protected readonly searchTerm = signal('');
   protected readonly selectedCategoryId = signal<string | null>(null);
+  /** Orden aplicado a los resultados ya cargados (no vuelve al servidor). */
+  protected readonly sortOrder = signal<'name' | 'price-asc' | 'price-desc'>('name');
+  protected readonly hasFilters = computed(() => !!this.searchTerm().trim() || this.selectedCategoryId() !== null);
+  /** Resultados ordenados. Se copia antes de ordenar para no mutar la lista del servidor. */
+  protected readonly sortedProducts = computed(() => {
+    const list = [...(this.products() ?? [])];
+    switch (this.sortOrder()) {
+      case 'price-asc':
+        return list.sort((a, b) => a.price - b.price);
+      case 'price-desc':
+        return list.sort((a, b) => b.price - a.price);
+      default:
+        return list.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+    }
+  });
   /** Product ids with an in-flight add request, to disable the button meanwhile. */
   protected readonly adding = signal<ReadonlySet<string>>(new Set());
 
@@ -78,6 +93,16 @@ export class ProductCatalogPage implements OnInit {
 
   protected onCategoryChange(categoryId: string): void {
     this.selectedCategoryId.set(categoryId || null);
+    this.emitCriteria();
+  }
+
+  protected onSortChange(value: string): void {
+    this.sortOrder.set(value as 'name' | 'price-asc' | 'price-desc');
+  }
+
+  protected onClearFilters(): void {
+    this.searchTerm.set('');
+    this.selectedCategoryId.set(null);
     this.emitCriteria();
   }
 

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TuiDropdown, TuiIcon } from '@taiga-ui/core';
+import { AccessibilityMenu } from '../accessibility-menu/accessibility-menu';
 import { AuthSessionService } from '../../../core/services/auth-session.service';
 import { visibleNavItems } from '../admin-nav-items';
 import { NotificationBell } from '../notification-bell/notification-bell';
@@ -17,7 +18,7 @@ import { NotificationBell } from '../notification-bell/notification-bell';
  */
 @Component({
   selector: 'app-admin-tab-bar',
-  imports: [RouterLink, RouterLinkActive, TuiDropdown, TuiIcon, NotificationBell],
+  imports: [RouterLink, RouterLinkActive, TuiDropdown, TuiIcon, NotificationBell, AccessibilityMenu],
   templateUrl: './admin-tab-bar.html',
   styleUrl: './admin-tab-bar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
